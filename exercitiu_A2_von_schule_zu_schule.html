@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A2 – Von Schule zu Schule</title>
+<style>
+  :root{--bg:#f4f6f8;--card:#fff;--ink:#222a35;--muted:#6b7280;--green:#3f7d2c;--accent:#3f7d2c;--line:#e5e7eb;--ok:#16a34a;--okbg:#dcfce7;--bad:#dc2626;--badbg:#fee2e2}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Nunito Sans",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;line-height:1.55}
+  .wrap{max-width:780px;margin:0 auto;padding:20px 16px 40px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;margin-bottom:18px}
+  h1{color:var(--green);font-size:1.4rem;margin:0 0 4px}
+  .lvl{color:var(--muted);font-size:.9rem;margin:0 0 14px}
+  .text p{margin:0 0 14px}
+  .text p:last-child{margin:0}
+  .q{padding:18px 0;border-top:1px solid var(--line)}
+  .q:first-child{border-top:0;padding-top:0}
+  .qt{font-weight:700;margin-bottom:10px}
+  label.o{display:flex;align-items:center;gap:12px;padding:7px 10px;border-radius:10px;cursor:pointer;border:2px solid transparent}
+  label.o:hover{background:#f3f4f6}
+  label.o input{position:absolute;opacity:0}
+  .dot{width:30px;height:30px;flex:none;border:2px solid #d1d5db;border-radius:50%;background:#fff}
+  label.o input:checked + .dot{border-color:var(--accent);background:radial-gradient(circle,var(--accent) 45%,#fff 50%)}
+  label.o input:focus-visible + .dot{outline:3px solid #bbf7d0}
+  label.o.ok{background:var(--okbg);border-color:var(--ok)}
+  label.o.bad{background:var(--badbg);border-color:var(--bad)}
+  .fb{font-size:.9rem;color:var(--bad);margin-top:4px;min-height:1em;padding-left:10px}
+  .bar{position:sticky;bottom:0;background:var(--bg);padding:12px 0;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  button{font:inherit;cursor:pointer;border-radius:10px}
+  .main{background:var(--accent);color:#fff;border:0;padding:12px 26px;font-weight:700}
+  .sec{background:#fff;border:2px solid var(--line);padding:10px 20px}
+  #score{font-weight:800;font-size:1.1rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card text">
+    <h1>Von Schule zu Schule</h1>
+    <p class="lvl">Niveau A2 · Leseverstehen</p>
+    <p>„Ich habe viele Schulen besucht, es waren fünf verschiedene bis zum Abitur in Berlin“, erzählt die Ärztin Lena Richter. Das war nicht ihr Wunsch, aber es war einfach so. Ihr Vater hat in vielen Ländern gearbeitet. Zuerst ist Lena in Deutschland in die Grundschule gegangen, dann ist die Familie nach Frankreich gezogen. „Die Grundschule in Paris war streng, sehr streng. Wir mussten still sitzen, wir mussten viele Hausaufgaben machen. Und ich konnte die Sprache noch nicht gut. Ich war sehr unglücklich“, sagt Lena Richter.</p>
+    <p>Dann war sie zwei Jahre in einer anderen Schule in Straßburg. Mit 13 Jahren ist sie nach Wien gekommen und hat vier Jahre lang das Lycée Français besucht, eine französische Schule in Wien. „Ich war von 8 bis 16 Uhr in der Schule, und dort haben wir fast nur französisch gesprochen. Wir hatten nur kleine Klassen und ich habe bis heute Freunde aus dieser Zeit.“</p>
+    <p>Frau Richter erinnert sich gern an diese Zeit. „Wir haben in der Schule zu Mittag gegessen und das Essen war ganz okay. Dann hatten wir noch Unterricht oder Lernzeit. Nach der Schule hatte ich dann wirklich frei. Ich hatte Zeit für meine Wiener Freundinnen, für Musik und andere Sachen. Und für die Jungs“, erzählt Frau Richter und lächelt. „Unser Musiklehrer war besonders gut. Im Sommer haben wir draußen Gitarre gespielt und gesungen, vor allem die Hits aus den Charts.“</p>
+    <p>Dann ist Frau Richters Familie nach München gezogen und sie war in einem deutschen Gymnasium. Da war der Traum zu Ende. „Wir hatten meistens Unterricht bis 13.30 Uhr, aber danach mussten wir so viele Hausaufgaben machen und lernen. Ich hatte keine Zeit für mich. Für das Abitur mussten wir sehr viel lernen, in allen Fächern. Vielleicht war die Schule auch gar nicht so schlecht“, sagt Lena Richter. „Aber ich war nicht gern in München, weil alle meine Freunde in Wien waren.“</p>
+  </div>
+
+  <div class="card" id="quiz"></div>
+
+  <div class="bar">
+    <button class="main" id="check">Prüfen</button>
+    <button class="sec" id="reset">Neu starten</button>
+    <span id="score"></span>
+  </div>
+</div>
+
+<script>
+const Q = [
+  {q:"Wie viele verschiedene Schulen hat Lena Richter bis zum Abitur besucht?", o:["drei","vier","fünf","sechs"], a:2, fix:true},
+  {q:"Warum hat Lena so viele Schulen besucht?", o:["Weil sie keine gute Schule finden konnte.","Weil ihr Vater in vielen Ländern gearbeitet hat.","Weil sie immer schlechte Noten hatte.","Weil sie gerne neue Schulen ausprobieren wollte."], a:1},
+  {q:"Wo ist Lena zuerst in die Grundschule gegangen?", o:["In Wien","In München","In Straßburg","In Deutschland"], a:3},
+  {q:"Warum war Lena in Paris unglücklich?", o:["Sie hatte keine Freunde.","Sie musste jeden Tag lange arbeiten.","Sie konnte die Sprache noch nicht gut.","Sie wollte nicht in die Schule gehen."], a:2},
+  {q:"Wie alt war Lena, als sie nach Wien kam?", o:["11 Jahre","12 Jahre","13 Jahre","14 Jahre"], a:2, fix:true},
+  {q:"Welche Schule besuchte Lena in Wien?", o:["Ein deutsches Gymnasium","Eine französische Schule","Eine Grundschule","Eine internationale Schule"], a:1},
+  {q:"Was hat Lena nach der Schule in Wien gerne gemacht?", o:["Sie hat viel gelernt.","Sie hat gearbeitet.","Sie hatte Zeit für Freundinnen, Musik und andere Sachen.","Sie ist jeden Tag ins Kino gegangen."], a:2},
+  {q:"Wohin ist Lenas Familie danach gezogen?", o:["Nach Berlin","Nach Paris","Nach München","Nach Straßburg"], a:2},
+  {q:"Wie war die Zeit in Wien für Lena?", o:["Sie war schön, Lena erinnert sich gern daran.","Sie war sehr streng, wie in Paris.","Lena hatte keine Zeit für Hobbys.","Lena wollte die Schule schnell verlassen."], a:0},
+  {q:"Was war in München anders als in Wien?", o:["Lena hatte mehr Freizeit.","Lena hatte weniger Freizeit, weil sie viele Hausaufgaben machen musste.","Lena hatte kleinere Klassen.","Lena hat mehr Französisch gesprochen."], a:1},
+  {q:"Welche Aussage passt zum Text?", o:["Lena ist heute Lehrerin.","Lena war nur in Deutschland in der Schule.","Lena hat bis heute Freunde aus der Zeit in Wien.","Lena hatte in Wien Unterricht bis 13.30 Uhr."], a:2}
+];
+const $ = s => document.querySelector(s);
+const shuffle = a => { a=[...a]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]} return a };
+function render(){
+  Q.forEach(x=>{ const idx=x.o.map((_,k)=>k); x.p = x.fix ? idx : shuffle(idx); });
+  $("#quiz").innerHTML = Q.map((x,i)=>`<div class="q" id="q${i}"><div class="qt">${i+1}. ${x.q}</div>` +
+    x.p.map(j=>`<label class="o"><input type="radio" name="q${i}" value="${j}"><span class="dot"></span><span>${x.o[j]}</span></label>`).join("") +
+    `<div class="fb"></div></div>`).join("");
+  $("#score").textContent = "";
+}
+$("#check").onclick = () => {
+  let score = 0;
+  Q.forEach((x,i)=>{
+    const box = $("#q"+i), labels = box.querySelectorAll("label.o");
+    const sel = box.querySelector("input:checked");
+    labels.forEach(l=>l.classList.remove("ok","bad"));
+    const picked = sel ? +sel.value : null;
+    if(picked === x.a){ score++; labels[x.p.indexOf(picked)].classList.add("ok"); box.querySelector(".fb").textContent=""; }
+    else {
+      if(picked !== null) labels[x.p.indexOf(picked)].classList.add("bad");
+      labels[x.p.indexOf(x.a)].classList.add("ok");
+      box.querySelector(".fb").textContent = picked===null ? "Keine Antwort." : "Nicht ganz – die richtige Antwort ist grün markiert.";
+    }
+  });
+  $("#score").textContent = `${score} / ${Q.length} (${Math.round(score/Q.length*100)}%)`;
+};
+$("#reset").onclick = () => { render(); window.scrollTo({top:0,behavior:"smooth"}); };
+render();
+</script>
+</body>
+</html>
