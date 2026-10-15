@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hören – Lisa hat Geburtstag</title>
+<style>
+  :root{
+    --bg:#f4f5f7; --card:#ffffff; --ink:#1f2430; --muted:#5d6472; --line:#e3e6eb;
+    --accent:#3b5bdb; --accent-soft:#e8edff;
+    --ok:#1f8a5b; --ok-soft:#e6f5ee; --bad:#c92a2a; --bad-soft:#fdecec; --warn:#b06a00; --warn-soft:#fff4de;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    font-size:16px;line-height:1.55;display:flex;flex-direction:column}
+  header{padding:12px 24px;border-bottom:1px solid var(--line);background:var(--card);
+    display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  header h1{margin:0;font-size:20px;font-weight:700}
+  .tabs{display:flex;gap:8px;margin-left:8px}
+  .tab{border:1.5px solid var(--line);background:#fff;color:var(--ink);border-radius:999px;
+    padding:6px 16px;font-size:14px;font-weight:700;cursor:pointer}
+  .tab.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+  .tab .dn{color:var(--ok);margin-left:4px}
+  .total{margin-left:auto;font-size:14px;font-weight:700;color:var(--muted)}
+
+  .audio{background:var(--card);border-bottom:1px solid var(--line);padding:12px 24px;
+    display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .audio-head{font-size:14px;color:var(--muted);margin:0;flex:0 0 auto}
+  .audio-head b{color:var(--ink)}
+  .audio audio{flex:1 1 320px;height:38px;min-width:0}
+
+  section.ex{flex:1;display:none;flex-direction:column;min-height:0}
+  section.ex.on{display:flex}
+  .wrap{flex:1;padding:18px 24px;min-height:0;display:flex;justify-content:center}
+  .pane{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow-y:auto;min-height:0;width:100%;max-width:820px}
+  .pane-inner{padding:22px 26px}
+  .instr{margin:0 0 16px;padding:12px 16px;background:var(--accent-soft);border-left:4px solid var(--accent);
+    border-radius:6px;font-weight:600}
+  h2{font-size:18px;margin:0 0 6px}
+  .sub{color:var(--muted);font-size:14px;margin:0 0 14px}
+
+  /* 1.4 – alegere multiplă */
+  .opt{display:flex;align-items:center;gap:14px;padding:12px 14px;border:1.5px solid var(--line);border-radius:10px;
+    margin-bottom:10px;cursor:pointer;transition:all .15s;font-size:17px;user-select:none;-webkit-user-select:none}
+  .opt:hover{border-color:#aeb6c8}
+  .box{flex:0 0 26px;height:26px;border-radius:7px;border:2px solid #b7bfce;background:#fff;
+    display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:16px}
+  .opt.on{border-color:var(--accent);background:var(--accent-soft)}
+  .opt.on .box{background:var(--accent);border-color:var(--accent)}
+  .opt.on .box::after{content:"✓"}
+  .opt .tag{margin-left:auto;font-size:13px;font-weight:700;white-space:nowrap}
+  .opt.locked{cursor:default}
+  .opt.right{border-color:var(--ok);background:var(--ok-soft)}
+  .opt.right .box{background:var(--ok);border-color:var(--ok)}
+  .opt.right .tag{color:var(--ok)}
+  .opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+  .opt.wrong .box{background:var(--bad);border-color:var(--bad)}
+  .opt.wrong .box::after{content:"✕"}
+  .opt.wrong .tag{color:var(--bad)}
+  .opt.missed{border-color:var(--warn);background:var(--warn-soft);border-style:dashed}
+  .opt.missed .tag{color:var(--warn)}
+
+  /* 1.5 – Richtig / Falsch */
+  .q{padding:16px 0;border-top:1px solid var(--line)}
+  .q:first-of-type{border-top:none;padding-top:2px}
+  .q-text{display:flex;gap:12px;margin-bottom:12px;font-size:17px}
+  .num{flex:0 0 28px;height:28px;border-radius:50%;background:#eef0f4;color:var(--muted);
+    font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px}
+  .rf{margin-left:40px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .rf button{font:inherit;font-weight:700;min-width:120px;padding:9px 18px;border-radius:9px;border:2px solid var(--line);
+    background:#fff;color:var(--ink);cursor:pointer;transition:all .15s}
+  .rf button:hover{border-color:#aeb6c8}
+  .rf button.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+  .rf button.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+  .rf button.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+  .rf button.missed{border-color:var(--ok);border-style:dashed;color:var(--ok)}
+  .rf button:disabled{cursor:default}
+  .fb{display:none;margin:10px 0 0 40px;font-size:14px;padding:9px 12px;border-radius:8px}
+  .fb.show{display:block}
+  .fb.ok{background:var(--ok-soft);color:#155e3e}
+  .fb.no{background:var(--bad-soft);color:#8f1d1d}
+
+  .bar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:14px 24px;background:var(--card);border-top:1px solid var(--line)}
+  .btn{border:none;border-radius:8px;padding:10px 22px;font-size:15px;font-weight:700;cursor:pointer}
+  .btn-primary{background:var(--accent);color:#fff}
+  .btn-primary:disabled{opacity:.45;cursor:not-allowed}
+  .btn-ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line)}
+  .msg{font-size:15px;color:var(--muted)}
+  .score{font-size:16px;font-weight:700}
+  .score.good{color:var(--ok)} .score.mid{color:#b06a00} .score.low{color:var(--bad)}
+  .hidden{display:none !important}
+  @media (max-width:820px){
+    body{height:auto;min-height:100%}
+    header{padding:10px 14px}
+    .audio{padding:10px 14px}
+    .wrap{padding:10px}
+    .pane{overflow:visible}
+    .pane-inner{padding:16px}
+    .rf,.fb{margin-left:0}
+    .opt{font-size:16px;flex-wrap:wrap}
+    .bar{position:sticky;bottom:0;padding:12px 14px}
+    .total{margin-left:0;width:100%}
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Hören: Lisa hat Geburtstag</h1>
+  <div class="tabs">
+    <button class="tab on" data-ex="1">Aufgabe 1<span class="dn hidden" id="dn1">✓</span></button>
+    <button class="tab" data-ex="2">Aufgabe 2<span class="dn hidden" id="dn2">✓</span></button>
+  </div>
+  <span class="total" id="total"></span>
+</header>
+
+<div class="audio">
+  <p class="audio-head"><b>Ascultă înregistrarea.</b> Poți asculta de câte ori vrei.</p>
+  <audio id="au" controls preload="metadata" src="audio.mp3"></audio>
+</div>
+
+<!-- ================= Aufgabe 1 (alegere multiplă) ================= -->
+<section class="ex on" id="ex1">
+  <main class="wrap">
+    <section class="pane">
+      <div class="pane-inner">
+        <p class="instr">Bifează ce a făcut deja Lisa. (Mai multe răspunsuri sunt corecte.)</p>
+        <h2>Lisa hat Geburtstag. Sie telefoniert mit einer Freundin. Was hat sie schon gemacht?</h2>
+        <p class="sub">Pentru fiecare variantă corectă bifată primești un punct; pentru fiecare variantă greșită bifată pierzi unul.</p>
+        <div id="opts"></div>
+      </div>
+    </section>
+  </main>
+  <div class="bar">
+    <button class="btn btn-primary" id="check1" disabled>Verifică răspunsurile</button>
+    <button class="btn btn-ghost hidden" id="retry1">Încearcă din nou</button>
+    <span class="msg" id="msg1">Bifează cel puțin o variantă.</span>
+    <span class="score hidden" id="score1"></span>
+  </div>
+</section>
+
+<!-- ================= Aufgabe 2 (Richtig / Falsch) ================= -->
+<section class="ex" id="ex2">
+  <main class="wrap">
+    <section class="pane">
+      <div class="pane-inner">
+        <p class="instr">Ascultă din nou și decide dacă propozițiile sunt adevărate sau false.</p>
+        <h2>Hören Sie noch einmal und sagen Sie, ob die Sätze richtig oder falsch sind.</h2>
+        <div id="items" style="margin-top:14px"></div>
+      </div>
+    </section>
+  </main>
+  <div class="bar">
+    <button class="btn btn-primary" id="check2" disabled>Verifică răspunsurile</button>
+    <button class="btn btn-ghost hidden" id="retry2">Încearcă din nou</button>
+    <span class="msg" id="msg2"></span>
+    <span class="score hidden" id="score2"></span>
+  </div>
+</section>
+
+<script>
+/* ===== Conținut (de editat pentru exerciții noi) ===== */
+var OPTS = [
+  {t:"Sie hat eingekauft.", ok:true},
+  {t:"Sie hat aufgeräumt.", ok:true},
+  {t:"Sie hat geschlafen.", ok:false},
+  {t:"Sie hat gekocht.", ok:false},
+  {t:"Sie hat den Tisch gedeckt.", ok:true},
+  {t:"Sie hat eine Pause gemacht.", ok:false}
+];
+var ITEMS = [
+  {t:"Lisa hat gerade viel Stress.", a:"F"},
+  {t:"Lisa muss noch kochen.", a:"R"},
+  {t:"Die Gäste kommen um 7 Uhr.", a:"R"},
+  {t:"Lisa hat noch Zeit für ausruhen.", a:"F"}
+];
+var PASS_PERCENT = 50;
+
+/* ===== SCORM 1.2 (inofensiv când pagina e în iframe/embed) ===== */
+var scorm = (function(){
+  var api = null, active = false;
+  function find(w){
+    var n = 0;
+    while (w && n < 10){
+      try { if (w.API) return w.API; } catch(e){}
+      if (w.parent && w.parent !== w) { w = w.parent; n++; } else break;
+    }
+    return null;
+  }
+  function init(){
+    api = find(window);
+    if (!api){ try { if (window.opener) api = find(window.opener); } catch(e){} }
+    if (api){
+      try {
+        active = String(api.LMSInitialize("")) === "true";
+        if (active){
+          var st = api.LMSGetValue("cmi.core.lesson_status");
+          if (st === "not attempted" || st === "") api.LMSSetValue("cmi.core.lesson_status","incomplete");
+          api.LMSCommit("");
+        }
+      } catch(e){ active = false; }
+    }
+  }
+  function report(correct, total, done){
+    if (!active) return;
+    var pct = Math.round(correct / total * 100);
+    try {
+      api.LMSSetValue("cmi.core.score.min","0");
+      api.LMSSetValue("cmi.core.score.max","100");
+      api.LMSSetValue("cmi.core.score.raw", String(pct));
+      api.LMSSetValue("cmi.core.lesson_status", done ? (pct >= PASS_PERCENT ? "passed" : "failed") : "incomplete");
+      api.LMSCommit("");
+    } catch(e){}
+  }
+  function finish(){ if (!active) return; try { api.LMSFinish(""); } catch(e){} active = false; }
+  return {init:init, report:report, finish:finish};
+})();
+
+/* ===== Util ===== */
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+var MAX1 = OPTS.filter(function(o){return o.ok;}).length;
+var MAX2 = ITEMS.length;
+var res = {1:null, 2:null};
+
+function updateTotal(){
+  var done1 = res[1] !== null, done2 = res[2] !== null;
+  $("dn1").classList.toggle("hidden", !done1);
+  $("dn2").classList.toggle("hidden", !done2);
+  if (!done1 && !done2){ $("total").textContent = ""; return; }
+  var c = (res[1]||0) + (res[2]||0), m = MAX1 + MAX2;
+  $("total").textContent = "Gesamt: " + c + " / " + m + (done1 && done2 ? "" : " (nu ai terminat ambele exerciții)");
+  scorm.report(c, m, done1 && done2);
+}
+function showScore(el, correct, max, extra){
+  var pct = Math.round(correct / max * 100);
+  el.textContent = "Rezultat: " + correct + " / " + max + " (" + pct + "%)" + (extra || "");
+  el.className = "score " + (pct >= 80 ? "good" : pct >= PASS_PERCENT ? "mid" : "low");
+}
+
+/* ===== Tabs ===== */
+document.querySelectorAll(".tab").forEach(function(t){
+  t.addEventListener("click", function(){
+    var n = t.getAttribute("data-ex");
+    document.querySelectorAll(".tab").forEach(function(x){ x.classList.toggle("on", x === t); });
+    $("ex1").classList.toggle("on", n === "1");
+    $("ex2").classList.toggle("on", n === "2");
+  });
+});
+
+/* ===== Aufgabe 1: alegere multiplă ===== */
+var picked = {}, checked1 = false;
+function render1(){
+  var h = "";
+  OPTS.forEach(function(o, i){
+    var cls = "opt", tag = "";
+    if (checked1){
+      cls += " locked";
+      var on = !!picked[i];
+      if (on && o.ok){ cls += " on right"; tag = "Corect"; }
+      else if (on && !o.ok){ cls += " on wrong"; tag = "Greșit – nu trebuia bifat"; }
+      else if (!on && o.ok){ cls += " missed"; tag = "Trebuia bifat"; }
+    } else if (picked[i]) cls += " on";
+    h += '<div class="'+cls+'" data-i="'+i+'" role="checkbox" aria-checked="'+(!!picked[i])+'" tabindex="0">'+
+         '<span class="box"></span><span>'+esc(o.t)+'</span>'+(tag ? '<span class="tag">'+tag+'</span>' : '')+'</div>';
+  });
+  $("opts").innerHTML = h;
+}
+function count1(){ return Object.keys(picked).filter(function(k){return picked[k];}).length; }
+function toggle1(el){
+  if (checked1) return;
+  var o = el.closest(".opt"); if (!o) return;
+  var i = o.getAttribute("data-i");
+  picked[i] = !picked[i];
+  render1();
+  var n = count1();
+  $("check1").disabled = n === 0;
+  $("msg1").textContent = n === 0 ? "Bifează cel puțin o variantă." : "Ai bifat " + n + ". Apasă „Verifică răspunsurile”.";
+  var again = document.querySelector('#opts .opt[data-i="'+i+'"]'); if (again) again.focus();
+}
+$("opts").addEventListener("click", function(e){ toggle1(e.target); });
+$("opts").addEventListener("keydown", function(e){
+  if (e.key === " " || e.key === "Enter"){ e.preventDefault(); toggle1(e.target); }
+});
+$("check1").addEventListener("click", function(){
+  var good = 0, bad = 0;
+  OPTS.forEach(function(o, i){ if (picked[i]){ if (o.ok) good++; else bad++; } });
+  var pts = Math.max(0, good - bad);
+  checked1 = true; render1();
+  showScore($("score1"), pts, MAX1, "  ·  bifate corect: " + good + ", bifate greșit: " + bad);
+  $("score1").classList.remove("hidden");
+  $("msg1").classList.add("hidden"); $("check1").classList.add("hidden"); $("retry1").classList.remove("hidden");
+  res[1] = pts; updateTotal();
+});
+$("retry1").addEventListener("click", function(){
+  picked = {}; checked1 = false; res[1] = null; render1();
+  $("check1").disabled = true; $("check1").classList.remove("hidden"); $("retry1").classList.add("hidden");
+  $("score1").classList.add("hidden"); $("msg1").classList.remove("hidden");
+  $("msg1").textContent = "Bifează cel puțin o variantă.";
+  updateTotal();
+});
+
+/* ===== Aufgabe 2: Richtig / Falsch ===== */
+var ans = {}, checked2 = false;
+function render2(){
+  var h = "";
+  ITEMS.forEach(function(q, i){
+    h += '<div class="q"><div class="q-text"><span class="num">'+(i+1)+'</span><span>'+esc(q.t)+'</span></div>'+
+      '<div class="rf" data-i="'+i+'">'+
+        '<button type="button" data-v="R">Richtig</button><button type="button" data-v="F">Falsch</button>'+
+      '</div><div class="fb" id="fb2-'+i+'"></div></div>';
+  });
+  $("items").innerHTML = h;
+  ans = {}; checked2 = false;
+  $("check2").disabled = true;
+  $("msg2").textContent = "Răspunde la toate cele " + MAX2 + " propoziții.";
+}
+$("items").addEventListener("click", function(e){
+  if (checked2) return;
+  var b = e.target.closest("button"); if (!b) return;
+  var i = b.parentNode.getAttribute("data-i");
+  ans[i] = b.getAttribute("data-v");
+  b.parentNode.querySelectorAll("button").forEach(function(x){ x.classList.toggle("on", x === b); });
+  var n = Object.keys(ans).length;
+  $("check2").disabled = n < MAX2;
+  $("msg2").textContent = n < MAX2 ? "Ai răspuns la " + n + " din " + MAX2 + " propoziții." : "Gata! Apasă „Verifică răspunsurile”.";
+});
+$("check2").addEventListener("click", function(){
+  checked2 = true; var correct = 0;
+  ITEMS.forEach(function(q, i){
+    var row = document.querySelector('.rf[data-i="'+i+'"]');
+    var ok = ans[i] === q.a; if (ok) correct++;
+    row.querySelectorAll("button").forEach(function(b){
+      b.disabled = true; b.classList.remove("on");
+      var v = b.getAttribute("data-v");
+      if (v === ans[i]) b.classList.add(ok ? "right" : "wrong");
+      else if (v === q.a) b.classList.add("missed");
+    });
+    var fb = $("fb2-"+i); fb.className = "fb show " + (ok ? "ok" : "no");
+    fb.innerHTML = ok ? "<b>Corect!</b>" : "<b>Greșit.</b> Răspunsul corect: <b>" + (q.a === "R" ? "Richtig" : "Falsch") + "</b>.";
+  });
+  showScore($("score2"), correct, MAX2);
+  $("score2").classList.remove("hidden");
+  $("msg2").classList.add("hidden"); $("check2").classList.add("hidden"); $("retry2").classList.remove("hidden");
+  res[2] = correct; updateTotal();
+});
+$("retry2").addEventListener("click", function(){
+  res[2] = null; render2();
+  $("check2").classList.remove("hidden"); $("retry2").classList.add("hidden");
+  $("score2").classList.add("hidden"); $("msg2").classList.remove("hidden");
+  updateTotal();
+});
+
+render1(); render2(); scorm.init();
+window.addEventListener("pagehide", scorm.finish);
+window.addEventListener("beforeunload", scorm.finish);
+</script>
+</body>
+</html>
