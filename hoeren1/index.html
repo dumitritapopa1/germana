@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hören – Personen vorstellen</title>
+<style>
+  :root{
+    --bg:#f4f5f7; --card:#ffffff; --ink:#1f2430; --muted:#5d6472; --line:#e3e6eb;
+    --accent:#3b5bdb; --accent-soft:#e8edff;
+    --ok:#1f8a5b; --ok-soft:#e6f5ee; --bad:#c92a2a; --bad-soft:#fdecec; --given:#eef0f4;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    font-size:16px;line-height:1.55;display:flex;flex-direction:column}
+  header{padding:12px 24px;border-bottom:1px solid var(--line);background:var(--card);
+    display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  header h1{margin:0;font-size:20px;font-weight:700}
+  .tabs{display:flex;gap:8px;margin-left:8px}
+  .tab{border:1.5px solid var(--line);background:#fff;color:var(--ink);border-radius:999px;
+    padding:6px 16px;font-size:14px;font-weight:700;cursor:pointer}
+  .tab.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+  .tab .dn{color:var(--ok);margin-left:4px}
+  .total{margin-left:auto;font-size:14px;font-weight:700;color:var(--muted)}
+
+  /* Audio */
+  .audio{background:var(--card);border-bottom:1px solid var(--line);padding:12px 24px}
+  .audio-head{font-size:14px;color:var(--muted);margin:0 0 8px}
+  .audio-head b{color:var(--ink)}
+  .players{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px 14px}
+  .player{display:flex;flex-direction:column;gap:4px}
+  .player label{font-size:13px;font-weight:700;color:var(--accent)}
+  .player audio{width:100%;height:36px}
+
+  section.ex{flex:1;display:none;flex-direction:column;min-height:0}
+  section.ex.on{display:flex}
+  .wrap{flex:1;padding:18px 24px;min-height:0;display:flex;justify-content:center}
+  .pane{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow-y:auto;min-height:0;width:100%;max-width:1080px}
+  .pane-inner{padding:22px 26px}
+  .instr{margin:0 0 16px;padding:12px 16px;background:var(--accent-soft);border-left:4px solid var(--accent);
+    border-radius:6px;font-weight:600}
+  h2{font-size:17px;margin:0 0 4px}
+  .sub{color:var(--muted);font-size:14px;margin:0 0 14px}
+
+  /* Übung 1: drag & drop */
+  .bank{display:flex;flex-wrap:wrap;gap:8px;padding:12px;min-height:60px;border:2px dashed #c5cbd8;border-radius:10px;
+    background:#fafbfd;margin-bottom:18px}
+  .bank.hl{border-color:var(--accent);background:var(--accent-soft)}
+  .bank-empty{color:var(--muted);font-size:14px;align-self:center}
+  .chip{display:inline-block;padding:7px 13px;border-radius:8px;background:#fff;border:1.5px solid #aeb6c8;
+    font-size:15px;font-weight:600;cursor:grab;user-select:none;-webkit-user-select:none;touch-action:none;
+    box-shadow:0 1px 0 rgba(0,0,0,.06)}
+  .chip:hover{border-color:var(--accent)}
+  .chip.sel{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 3px rgba(59,91,219,.25)}
+  .chip.src{opacity:.3}
+  .ghost{position:fixed;z-index:999;pointer-events:none;transform:translate(-50%,-50%);box-shadow:0 8px 20px rgba(0,0,0,.25);
+    background:#fff;border:1.5px solid var(--accent);border-radius:8px;padding:7px 13px;font-size:15px;font-weight:600}
+  .tbl-scroll{overflow-x:auto;border:1px solid #c9cfa8;border-radius:8px}
+  .tbl{display:grid;grid-template-columns:120px repeat(4,minmax(150px,1fr));min-width:720px;background:#fff}
+  .tc{padding:8px 10px;border-right:1px solid #d9dcc0;border-bottom:1px solid #d9dcc0;min-height:58px;
+    display:flex;align-items:center;font-size:15px}
+  .tc:nth-child(5n){border-right:none}
+  .tc.lab{background:#e2e0c3;font-style:italic;font-weight:600;position:sticky;left:0;z-index:1}
+  .tc.head{font-weight:700;background:#fff}
+  .tc.given{background:var(--given);color:#345;font-weight:600}
+  .tc.drop{background:#fff;flex-direction:column;align-items:stretch;justify-content:center;gap:4px;transition:background .15s}
+  .tc.drop.empty{background:#fcfcf4;box-shadow:inset 0 0 0 2px #e3e6cf;border-radius:0;cursor:pointer}
+  .tc.drop.hl{background:var(--accent-soft);box-shadow:inset 0 0 0 2px var(--accent)}
+  .tc.drop .chip{width:100%;cursor:grab;text-align:left}
+  .tc.right .chip{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+  .tc.wrong .chip{background:var(--bad-soft);border-color:var(--bad);color:var(--bad);text-decoration:line-through}
+  .tc .fix{font-size:13px;color:var(--ok);font-weight:700}
+  .tc.locked .chip{cursor:default}
+
+  /* Übung 2 */
+  .gaptext{font-size:18px;line-height:2.5}
+  .gaptext p{margin:0 0 10px;padding-left:30px;position:relative}
+  .gaptext .pn{position:absolute;left:0;font-weight:700;color:var(--muted)}
+  .g{display:inline-flex;align-items:baseline;white-space:nowrap;margin:0 2px}
+  .g .pre{font-weight:700}
+  .g input{font:inherit;font-weight:600;border:none;border-bottom:2px solid #9aa3b5;background:transparent;
+    padding:0 2px;margin:0 1px;text-align:left;color:var(--accent);outline:none;border-radius:0}
+  .g input:focus{border-bottom-color:var(--accent);background:var(--accent-soft)}
+  .g sup{font-size:11px;color:var(--muted);margin-left:2px;font-weight:700}
+  .g.right input{color:var(--ok);border-bottom-color:var(--ok);background:var(--ok-soft)}
+  .g.wrong input{color:var(--bad);border-bottom-color:var(--bad);background:var(--bad-soft);text-decoration:line-through}
+  .g .fix{color:var(--ok);font-weight:700;margin-left:4px;font-size:16px}
+
+  .bar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:14px 24px;background:var(--card);border-top:1px solid var(--line)}
+  .btn{border:none;border-radius:8px;padding:10px 22px;font-size:15px;font-weight:700;cursor:pointer}
+  .btn-primary{background:var(--accent);color:#fff}
+  .btn-primary:disabled{opacity:.45;cursor:not-allowed}
+  .btn-ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line)}
+  .msg{font-size:15px;color:var(--muted)}
+  .score{font-size:16px;font-weight:700}
+  .score.good{color:var(--ok)} .score.mid{color:#b06a00} .score.low{color:var(--bad)}
+  .hidden{display:none !important}
+  @media (max-width:820px){
+    body{height:auto;min-height:100%}
+    header{padding:10px 14px}
+    .audio{padding:10px 14px}
+    .wrap{padding:10px}
+    .pane{overflow:visible}
+    .pane-inner{padding:16px}
+    .gaptext{font-size:17px}
+    .bar{position:sticky;bottom:0;padding:12px 14px}
+    .total{margin-left:0;width:100%}
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Hören: Personen vorstellen</h1>
+  <div class="tabs">
+    <button class="tab on" data-ex="1">Übung 1<span class="dn hidden" id="dn1">✓</span></button>
+    <button class="tab" data-ex="2">Übung 2<span class="dn hidden" id="dn2">✓</span></button>
+  </div>
+  <span class="total" id="total"></span>
+</header>
+
+<div class="audio">
+  <p class="audio-head"><b>Ascultă cele 4 înregistrări.</b> Poți asculta de câte ori vrei.</p>
+  <div class="players" id="players"></div>
+</div>
+
+<!-- ================= Übung 1 ================= -->
+<section class="ex on" id="ex1">
+  <main class="wrap">
+    <section class="pane">
+      <div class="pane-inner">
+        <p class="instr">Ascultă și completează tabelul. Trage fiecare răspuns în caseta potrivită. (Pe telefon: atinge răspunsul, apoi atinge caseta.)</p>
+        <h2>Hören Sie und ergänzen Sie die Tabelle.</h2>
+        <p class="sub">Răspunsuri disponibile – atinge un răspuns plasat ca să-l scoți din tabel. Unele răspunsuri nu se potrivesc nicăieri.</p>
+        <div class="bank" id="bank"></div>
+        <div class="tbl-scroll"><div class="tbl" id="tbl"></div></div>
+      </div>
+    </section>
+  </main>
+  <div class="bar">
+    <button class="btn btn-primary" id="check1" disabled>Verifică răspunsurile</button>
+    <button class="btn btn-ghost hidden" id="retry1">Încearcă din nou</button>
+    <span class="msg" id="msg1"></span>
+    <span class="score hidden" id="score1"></span>
+  </div>
+</section>
+
+<!-- ================= Übung 2 ================= -->
+<section class="ex" id="ex2">
+  <main class="wrap">
+    <section class="pane">
+      <div class="pane-inner">
+        <p class="instr">Ascultă din nou înregistrările și completează cuvintele care lipsesc. Prima literă (sau primele litere) e dată.</p>
+        <h2>Hören Sie und ergänzen Sie.</h2>
+        <p class="sub">Scrie restul fiecărui cuvânt în spațiul liber.</p>
+        <div class="gaptext" id="gaptext"></div>
+      </div>
+    </section>
+  </main>
+  <div class="bar">
+    <button class="btn btn-primary" id="check2">Verifică răspunsurile</button>
+    <button class="btn btn-ghost hidden" id="retry2">Încearcă din nou</button>
+    <span class="msg" id="msg2"></span>
+    <span class="score hidden" id="score2"></span>
+  </div>
+</section>
+
+<script>
+/* ===== Conținut (de editat pentru exerciții noi) ===== */
+var AUDIO = [
+  {file:"audio1.mp3", label:"1 · Abdullah"},
+  {file:"audio2.mp3", label:"2 · Claire"},
+  {file:"audio3.mp3", label:"3 · Philipp"},
+  {file:"audio4.mp3", label:"4 · Elena"}
+];
+
+var NAMES = ["Abdullah","Claire","Philipp","Elena"];
+var ROWS = ["Heimatland","Beruf","Familienstand","Hobbys","Alter"];
+/* răspunsuri corecte [rând][persoană]; given:true = casetă deja completată */
+var GRID = [
+  [ {v:"Tunesien",given:true}, {v:"Frankreich"}, {v:"USA"}, {v:"Russland",given:true} ],
+  [ {v:"Ingenieur (bei Siemens)"}, {v:"Au-pair-Mädchen"}, {v:"(Medizin-) Student"}, {v:"(Grundschul-) Lehrerin"} ],
+  [ {v:"verheiratet, drei Kinder"}, {v:"ledig",given:true}, {v:"ledig"}, {v:"verheiratet"} ],
+  [ {v:"Fußball spielen",given:true}, {v:"shoppen"}, {v:"reisen"}, {v:"lesen, klassische Musik, spazieren gehen"} ],
+  [ {v:"46"}, {v:"18"}, {v:"24",given:true}, {v:"31"} ]
+];
+var DISTRACTORS = ["Italien","geschieden"];
+
+/* gap = {p: prima parte dată, r: restul, n: număr} */
+var TEXT2 = [
+  ["Das ist Abdullah. Er ", {p:"k",r:"ommt",n:1}, " aus Tunesien. Er ist Ingenieur und ", {p:"ar",r:"beitet",n:2},
+   " bei Siemens. Er ist ", {p:"ver",r:"heiratet",n:3}, " und hat drei ", {p:"K",r:"inder",n:4},
+   ". Er spielt gerne Fußball und ist 46 ", {p:"J",r:"ahre",n:5}, " alt."],
+  ["Das ist Claire. Sie kommt ", {p:"a",r:"us",n:6}, " Frankreich. Sie arbeitet ", {p:"a",r:"ls",n:7},
+   " Au-pair-Mädchen. Sie ist nicht verheiratet. Ihr ", {p:"H",r:"obby",n:8}, " ist Shoppen. Sie ", {p:"i",r:"st",n:9}, " 18 Jahre alt."],
+  ["Das ", {p:"i",r:"st",n:10}, " Philipp. Er kommt aus den USA. Er ist ", {p:"St",r:"udent",n:11},
+   " und studiert Medizin. Er ist ", {p:"le",r:"dig",n:12}, " und ", {p:"r",r:"eist",n:13}, " sehr gern. Er ist 24 Jahre alt."],
+  ["Das ist Elena. Sie kommt aus Russland. Sie ist ", {p:"L",r:"ehrerin",n:14}, ". Sie ist verheiratet, aber hat ",
+   {p:"k",r:"eine",n:15}, " Kinder. Sie liest ", {p:"g",r:"ern",n:16}, ", hört gern klassische ", {p:"M",r:"usik",n:17},
+   " und ", {p:"g",r:"eht",n:18}, " gern spazieren. Sie ", {p:"i",r:"st",n:19}, " 31 Jahre alt."]
+];
+var PASS_PERCENT = 50;
+
+/* ===== SCORM 1.2 (inofensiv când pagina e în iframe/embed) ===== */
+var scorm = (function(){
+  var api = null, active = false;
+  function find(w){
+    var n = 0;
+    while (w && n < 10){
+      try { if (w.API) return w.API; } catch(e){}
+      if (w.parent && w.parent !== w) { w = w.parent; n++; } else break;
+    }
+    return null;
+  }
+  function init(){
+    api = find(window);
+    if (!api){ try { if (window.opener) api = find(window.opener); } catch(e){} }
+    if (api){
+      try {
+        active = String(api.LMSInitialize("")) === "true";
+        if (active){
+          var st = api.LMSGetValue("cmi.core.lesson_status");
+          if (st === "not attempted" || st === "") api.LMSSetValue("cmi.core.lesson_status","incomplete");
+          api.LMSCommit("");
+        }
+      } catch(e){ active = false; }
+    }
+  }
+  function report(correct, total, done){
+    if (!active) return;
+    var pct = Math.round(correct / total * 100);
+    try {
+      api.LMSSetValue("cmi.core.score.min","0");
+      api.LMSSetValue("cmi.core.score.max","100");
+      api.LMSSetValue("cmi.core.score.raw", String(pct));
+      api.LMSSetValue("cmi.core.lesson_status", done ? (pct >= PASS_PERCENT ? "passed" : "failed") : "incomplete");
+      api.LMSCommit("");
+    } catch(e){}
+  }
+  function finish(){ if (!active) return; try { api.LMSFinish(""); } catch(e){} active = false; }
+  return {init:init, report:report, finish:finish};
+})();
+
+/* ===== Util ===== */
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function norm(s){
+  return String(s).toLowerCase().trim()
+    .replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss");
+}
+var MAX1 = 0;
+GRID.forEach(function(r){ r.forEach(function(c){ if (!c.given) MAX1++; }); });
+var MAX2 = 0;
+TEXT2.forEach(function(par){ par.forEach(function(x){ if (typeof x !== "string") MAX2++; }); });
+var res = {1:null, 2:null};
+
+function updateTotal(){
+  var done1 = res[1] !== null, done2 = res[2] !== null;
+  if (!done1 && !done2){ $("total").textContent = ""; $("dn1").classList.add("hidden"); $("dn2").classList.add("hidden"); return; }
+  var c = (res[1]||0) + (res[2]||0), m = MAX1 + MAX2;
+  $("total").textContent = "Gesamt: " + c + " / " + m + (done1 && done2 ? "" : " (nu ai terminat ambele exerciții)");
+  $("dn1").classList.toggle("hidden", !done1);
+  $("dn2").classList.toggle("hidden", !done2);
+  scorm.report(c, m, done1 && done2);
+}
+function showScore(el, correct, max){
+  var pct = Math.round(correct / max * 100);
+  el.textContent = "Rezultat: " + correct + " / " + max + " (" + pct + "%)";
+  el.className = "score " + (pct >= 80 ? "good" : pct >= PASS_PERCENT ? "mid" : "low");
+}
+
+/* ===== Audio ===== */
+(function(){
+  var box = $("players");
+  AUDIO.forEach(function(a, i){
+    var d = document.createElement("div"); d.className = "player";
+    d.innerHTML = '<label for="au'+i+'">'+esc(a.label)+'</label><audio id="au'+i+'" controls preload="metadata" src="'+a.file+'"></audio>';
+    box.appendChild(d);
+  });
+  box.addEventListener("play", function(e){
+    box.querySelectorAll("audio").forEach(function(x){ if (x !== e.target) x.pause(); });
+  }, true);
+})();
+
+/* ===== Tabs ===== */
+document.querySelectorAll(".tab").forEach(function(t){
+  t.addEventListener("click", function(){
+    var n = t.getAttribute("data-ex");
+    document.querySelectorAll(".tab").forEach(function(x){ x.classList.toggle("on", x === t); });
+    $("ex1").classList.toggle("on", n === "1");
+    $("ex2").classList.toggle("on", n === "2");
+  });
+});
+
+/* ===== Übung 1: drag & drop ===== */
+var CHIPS = [];      // {id, v}
+var where = {};      // chipId -> cellId | null
+var CELLS = [];      // {id, exp, given}
+var checked1 = false, selChip = null;
+
+(function build(){
+  var k = 0;
+  GRID.forEach(function(row, r){
+    row.forEach(function(c, p){
+      var cell = {id:"c"+r+"_"+p, exp:c.v, given:!!c.given, r:r, p:p};
+      CELLS.push(cell);
+      if (!c.given){ CHIPS.push({id:"k"+(k++), v:c.v}); }
+    });
+  });
+  DISTRACTORS.forEach(function(v){ CHIPS.push({id:"k"+(k++), v:v}); });
+  // amestecă ordinea chip-urilor (determinist, ca să nu stea în ordinea tabelului)
+  var seed = 7;
+  function rnd(){ seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
+  for (var i = CHIPS.length - 1; i > 0; i--){
+    var j = Math.floor(rnd() * (i + 1)), t = CHIPS[i]; CHIPS[i] = CHIPS[j]; CHIPS[j] = t;
+  }
+})();
+function chipById(id){ for (var i=0;i<CHIPS.length;i++) if (CHIPS[i].id===id) return CHIPS[i]; }
+function cellById(id){ for (var i=0;i<CELLS.length;i++) if (CELLS[i].id===id) return CELLS[i]; }
+function chipIn(cellId){ for (var i=0;i<CHIPS.length;i++) if (where[CHIPS[i].id]===cellId) return CHIPS[i]; return null; }
+function chipHTML(c, extra){
+  return '<span class="chip'+(selChip===c.id?' sel':'')+(extra||'')+'" data-id="'+c.id+'">'+esc(c.v)+'</span>';
+}
+function resetState1(){
+  where = {}; CHIPS.forEach(function(c){ where[c.id] = null; });
+  selChip = null; checked1 = false;
+}
+function render1(){
+  // bancă
+  var b = $("bank"), html = "";
+  CHIPS.forEach(function(c){ if (where[c.id] === null) html += chipHTML(c); });
+  b.innerHTML = html || '<span class="bank-empty">Toate răspunsurile au fost plasate.</span>';
+  // tabel
+  var t = '<div class="tc lab head">Name</div>';
+  NAMES.forEach(function(n){ t += '<div class="tc head">'+esc(n)+'</div>'; });
+  ROWS.forEach(function(rl, r){
+    t += '<div class="tc lab">'+esc(rl)+'</div>';
+    NAMES.forEach(function(n, p){
+      var cell = cellById("c"+r+"_"+p);
+      if (cell.given){ t += '<div class="tc given">'+esc(cell.exp)+'</div>'; return; }
+      var ch = chipIn(cell.id);
+      var cls = "tc drop " + (ch ? "" : "empty");
+      var inner = ch ? chipHTML(ch) : "";
+      if (checked1){
+        var ok = ch && ch.v === cell.exp;
+        cls += (ok ? " right" : " wrong") + " locked";
+        if (!ok) inner += '<span class="fix">→ '+esc(cell.exp)+'</span>';
+      }
+      t += '<div class="'+cls+'" data-cell="'+cell.id+'">'+inner+'</div>';
+    });
+  });
+  $("tbl").innerHTML = t;
+  updateBar1();
+}
+function filled1(){
+  var n = 0;
+  CELLS.forEach(function(c){ if (!c.given && chipIn(c.id)) n++; });
+  return n;
+}
+function updateBar1(){
+  if (checked1) return;
+  var n = filled1();
+  $("check1").disabled = n < MAX1;
+  $("msg1").textContent = n < MAX1 ? "Ai completat " + n + " din " + MAX1 + " casete." : "Gata! Apasă „Verifică răspunsurile”.";
+}
+function place(chipId, cellId){
+  var other = chipIn(cellId);
+  if (other && other.id !== chipId) where[other.id] = null;
+  where[chipId] = cellId;
+  if (selChip === chipId) selChip = null;
+  render1();
+}
+function unplace(chipId){ where[chipId] = null; if (selChip === chipId) selChip = null; render1(); }
+function tap(chipId){
+  var inCell = where[chipId];
+  if (inCell){
+    if (selChip && selChip !== chipId) place(selChip, inCell);   // schimb
+    else unplace(chipId);
+  } else {
+    selChip = (selChip === chipId) ? null : chipId; render1();
+  }
+}
+
+var drag = null;
+function clearHL(){
+  document.querySelectorAll(".hl").forEach(function(x){ x.classList.remove("hl"); });
+}
+function targetAt(x, y){
+  var el = document.elementFromPoint(x, y);
+  if (!el) return {};
+  var cell = el.closest(".tc.drop");
+  if (cell) return {cell: cell.getAttribute("data-cell"), el: cell};
+  var bank = el.closest("#bank");
+  if (bank) return {bank: true, el: bank};
+  return {};
+}
+$("ex1").addEventListener("pointerdown", function(e){
+  if (checked1) return;
+  var chip = e.target.closest(".chip"); if (!chip) return;
+  if (e.pointerType === "mouse" && e.button !== 0) return;
+  drag = {id: chip.getAttribute("data-id"), el: chip, sx: e.clientX, sy: e.clientY, moved: false, ghost: null, pid: e.pointerId};
+  e.preventDefault();
+});
+document.addEventListener("pointermove", function(e){
+  if (!drag || e.pointerId !== drag.pid) return;
+  if (!drag.moved && Math.hypot(e.clientX - drag.sx, e.clientY - drag.sy) > 6){
+    drag.moved = true;
+    var g = document.createElement("div"); g.className = "ghost"; g.textContent = chipById(drag.id).v;
+    document.body.appendChild(g); drag.ghost = g; drag.el.classList.add("src");
+  }
+  if (drag.moved){
+    drag.ghost.style.left = e.clientX + "px"; drag.ghost.style.top = e.clientY + "px";
+    clearHL();
+    var t = targetAt(e.clientX, e.clientY);
+    if (t.el) t.el.classList.add("hl");
+  }
+});
+function endDrag(e, cancel){
+  if (!drag || e.pointerId !== drag.pid) return;
+  var d = drag; drag = null;
+  if (d.ghost) d.ghost.remove();
+  d.el.classList.remove("src"); clearHL();
+  if (cancel) return;
+  if (d.moved){
+    var t = targetAt(e.clientX, e.clientY);
+    if (t.cell) place(d.id, t.cell);
+    else if (t.bank) unplace(d.id);
+  } else {
+    tap(d.id);
+  }
+}
+document.addEventListener("pointerup", function(e){ endDrag(e, false); });
+document.addEventListener("pointercancel", function(e){ endDrag(e, true); });
+$("tbl").addEventListener("click", function(e){
+  if (checked1 || e.target.closest(".chip")) return;
+  var cell = e.target.closest(".tc.drop"); if (!cell) return;
+  if (selChip) place(selChip, cell.getAttribute("data-cell"));
+});
+$("bank").addEventListener("click", function(e){
+  if (checked1 || e.target.closest(".chip")) return;
+  if (selChip && where[selChip]) unplace(selChip);
+});
+
+$("check1").addEventListener("click", function(){
+  var correct = 0;
+  CELLS.forEach(function(c){
+    if (c.given) return;
+    var ch = chipIn(c.id); if (ch && ch.v === c.exp) correct++;
+  });
+  checked1 = true; selChip = null; render1();
+  showScore($("score1"), correct, MAX1);
+  $("score1").classList.remove("hidden");
+  $("msg1").classList.add("hidden"); $("check1").classList.add("hidden"); $("retry1").classList.remove("hidden");
+  res[1] = correct; updateTotal();
+});
+$("retry1").addEventListener("click", function(){
+  resetState1(); res[1] = null; render1();
+  $("check1").classList.remove("hidden"); $("retry1").classList.add("hidden");
+  $("score1").classList.add("hidden"); $("msg1").classList.remove("hidden");
+  updateTotal();
+});
+
+/* ===== Übung 2 ===== */
+var ALL2 = {};
+function render2(){
+  var box = $("gaptext"); box.innerHTML = "";
+  TEXT2.forEach(function(par, i){
+    var p = document.createElement("p");
+    var pn = document.createElement("span"); pn.className = "pn"; pn.textContent = (i+1) + "."; p.appendChild(pn);
+    par.forEach(function(x){
+      if (typeof x === "string"){ p.appendChild(document.createTextNode(x)); return; }
+      ALL2[x.n] = x;
+      var w = document.createElement("span"); w.className = "g"; w.id = "g" + x.n;
+      var width = Math.max(x.r.length, 2) + 1;
+      w.innerHTML = '<span class="pre">'+esc(x.p)+'</span><input type="text" data-n="'+x.n+'" autocomplete="off" autocapitalize="off" spellcheck="false" style="width:'+width+'ch"><sup>('+x.n+')</sup>';
+      p.appendChild(w);
+    });
+    box.appendChild(p);
+  });
+  $("msg2").textContent = "Completează cele " + MAX2 + " cuvinte.";
+}
+$("check2").addEventListener("click", function(){
+  var correct = 0;
+  Object.keys(ALL2).forEach(function(n){
+    var g = ALL2[n], w = $("g"+n), inp = w.querySelector("input");
+    var full = norm(g.p + g.r);
+    var ok = norm(g.p + inp.value) === full || norm(inp.value) === full;
+    if (ok) correct++;
+    inp.disabled = true;
+    w.classList.add(ok ? "right" : "wrong");
+    if (!ok){ var f = document.createElement("span"); f.className = "fix"; f.textContent = "→ " + g.p + g.r; w.appendChild(f); }
+  });
+  showScore($("score2"), correct, MAX2);
+  $("score2").classList.remove("hidden");
+  $("msg2").classList.add("hidden"); $("check2").classList.add("hidden"); $("retry2").classList.remove("hidden");
+  res[2] = correct; updateTotal();
+});
+$("retry2").addEventListener("click", function(){
+  res[2] = null; render2();
+  $("check2").classList.remove("hidden"); $("retry2").classList.add("hidden");
+  $("score2").classList.add("hidden"); $("msg2").classList.remove("hidden");
+  updateTotal();
+});
+$("gaptext").addEventListener("keydown", function(e){
+  if (e.key !== "Enter") return;
+  var inputs = Array.prototype.slice.call(document.querySelectorAll("#gaptext input"));
+  var i = inputs.indexOf(e.target);
+  if (i > -1 && i < inputs.length - 1) inputs[i+1].focus();
+});
+
+resetState1(); render1(); render2(); scorm.init();
+window.addEventListener("pagehide", scorm.finish);
+window.addEventListener("beforeunload", scorm.finish);
+</script>
+</body>
+</html>
