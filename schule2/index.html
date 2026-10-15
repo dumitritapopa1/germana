@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Schule: gut oder schlecht?</title>
+<style>
+:root{--bg:#f4f5f7;--card:#fff;--ink:#1f2430;--muted:#5d6472;--line:#e3e6eb;--accent:#3b5bdb;--accent-soft:#e8edff;--ok:#1f8a5b;--ok-soft:#e6f5ee;--bad:#c92a2a;--bad-soft:#fdecec}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;font-size:16px;line-height:1.55;display:flex;flex-direction:column}
+header{padding:10px 24px;border-bottom:1px solid var(--line);background:var(--card);display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+header h1{margin:0;font-size:20px}
+.tabs{display:flex;gap:6px}
+.tab{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:7px 16px;font-size:15px;font-weight:700;cursor:pointer;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.tab .dn{display:none;margin-left:4px}.tab.done .dn{display:inline}
+.total{margin-left:auto;font-size:14px;font-weight:700;color:var(--muted)}
+section.ex{display:none;flex:1;min-height:0;flex-direction:column}
+section.ex.on{display:flex}
+.wrap{flex:1;padding:16px 24px;min-height:0;display:flex;gap:16px;justify-content:center}
+.pane{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow-y:auto;min-height:0}
+.wrap.split .pane{flex:1}
+.wrap.one .pane{width:100%;max-width:780px}
+.pi{padding:20px 26px}
+.instr{margin:0 0 14px;padding:12px 16px;background:var(--accent-soft);border-left:4px solid var(--accent);border-radius:6px;font-weight:600}
+.instr small{display:block;font-weight:400;color:var(--muted);margin-top:2px}
+.txt h2{margin:0 0 12px;font-size:20px}
+.txt p{margin:0 0 14px;font-size:17px;line-height:1.7}
+.q{padding:16px 0;border-top:1px solid var(--line)}
+.q:first-of-type{border-top:none}
+.q h3{margin:0 0 10px;font-size:17px}
+.opt{display:flex;align-items:center;gap:12px;padding:9px 13px;border:1.5px solid var(--line);border-radius:10px;margin-bottom:7px;cursor:pointer;font-size:16px}
+.opt:hover{border-color:#aeb6c8}
+.opt input{position:absolute;opacity:0;pointer-events:none}
+.dot{flex:0 0 22px;height:22px;border-radius:50%;border:2px solid #b7bfce;background:#fff;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:800}
+.opt.on{border-color:var(--accent);background:var(--accent-soft)}
+.opt.on .dot{border-color:var(--accent);background:var(--accent);box-shadow:inset 0 0 0 4px #fff,inset 0 0 0 12px var(--accent)}
+.opt.locked{cursor:default}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}.opt.right .dot{border-color:var(--ok);background:var(--ok);box-shadow:none}.opt.right .dot::after{content:"✓"}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}.opt.wrong .dot{border-color:var(--bad);background:var(--bad);box-shadow:none}.opt.wrong .dot::after{content:"✕"}
+.opt.missed{border-color:var(--ok);border-style:dashed}
+.opt .tag{margin-left:auto;font-size:13px;font-weight:700;white-space:nowrap}
+.opt.right .tag,.opt.missed .tag{color:var(--ok)}.opt.wrong .tag{color:var(--bad)}
+.gaps p{font-size:18px;line-height:2.3;margin:0 0 14px}
+.g{display:inline-flex;align-items:baseline;white-space:nowrap}
+.g .pre{font-weight:600}
+.g input{font:inherit;font-size:17px;border:none;border-bottom:2px solid #9aa3b5;background:var(--accent-soft);padding:0 3px;margin:0 1px;border-radius:3px 3px 0 0;color:var(--ink);text-align:left}
+.g input:focus{outline:none;border-bottom-color:var(--accent);background:#dbe3ff}
+.g sup{font-size:11px;color:var(--muted);margin-left:1px}
+.g.ok input{background:var(--ok-soft);border-bottom-color:var(--ok);color:var(--ok);font-weight:600}
+.g.no input{background:var(--bad-soft);border-bottom-color:var(--bad);color:var(--bad);text-decoration:line-through}
+.fix{color:var(--ok);font-weight:700;font-size:15px;margin-left:4px}
+audio{width:100%;height:40px}
+.audio{position:sticky;top:0;background:var(--card);padding-bottom:10px;z-index:2}
+.s{padding:14px 0;border-top:1px solid var(--line)}
+.s:first-of-type{border-top:none}
+.s .st{font-size:17px;margin-bottom:8px}
+.rf{display:flex;gap:8px}
+.rf button{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:8px 20px;font-size:15px;font-weight:700;cursor:pointer;color:var(--ink)}
+.rf button.on{border-color:var(--accent);background:var(--accent-soft)}
+.rf button.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+.rf button.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.rf button.missed{border-color:var(--ok);border-style:dashed;color:var(--ok)}
+.fb{font-size:14px;font-weight:700;margin-top:6px}.fb.ok{color:var(--ok)}.fb.no{color:var(--bad)}
+.bar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:12px 24px;background:var(--card);border-top:1px solid var(--line)}
+.btn{border:none;border-radius:8px;padding:10px 22px;font-size:15px;font-weight:700;cursor:pointer}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:disabled{opacity:.45;cursor:not-allowed}
+.btn-ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line)}
+.msg{font-size:15px;color:var(--muted)}
+.score{font-size:16px;font-weight:700}.score.good{color:var(--ok)}.score.mid{color:#b06a00}.score.low{color:var(--bad)}
+.hidden{display:none!important}
+@media (max-width:820px){
+ body{height:auto;min-height:100%}
+ header{padding:10px 14px}
+ .wrap{padding:10px;flex-direction:column}
+ .pane{overflow:visible}
+ .pi{padding:16px}
+ .total{margin-left:0;width:100%}
+ .bar{position:sticky;bottom:0;padding:10px 14px;z-index:5}
+ .audio{top:0}
+}
+
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:6px}
+.col{border:2px dashed var(--line);border-radius:12px;padding:10px;min-height:150px;background:#fafbfc}
+.col h3{margin:0 0 10px;text-align:center;font-size:16px;padding:7px;border:1.5px solid var(--line);border-radius:8px;background:#fff}
+.col.good h3{color:var(--ok)}.col.bad h3{color:var(--bad)}
+.col.over,.pool.over{border-color:var(--accent);background:var(--accent-soft)}
+.pool{display:flex;flex-wrap:wrap;gap:8px;padding:10px;border:2px dashed var(--line);border-radius:12px;min-height:54px;margin-bottom:14px}
+.chip{display:block;border:1.5px solid #cfd5e1;background:#fff;border-radius:8px;padding:7px 12px;font-size:16px;cursor:grab;user-select:none;margin:0 0 8px;text-align:center}
+.pool .chip{display:inline-block;margin:0}
+.chip.sel{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 2px rgba(59,91,219,.25)}
+.chip.ok{border-color:var(--ok);background:var(--ok-soft);color:var(--ok);cursor:default}
+.chip.no{border-color:var(--bad);background:var(--bad-soft);color:var(--bad);cursor:default}
+.chip small{display:block;font-weight:700;font-size:12px}
+.rem{width:100%;border-collapse:collapse;margin:0 0 18px;font-size:16px}
+.rem th,.rem td{border:1px solid var(--line);padding:7px 12px;text-align:left}
+.rem th{background:var(--accent-soft)}
+.rem td b{color:var(--accent)}
+.remwrap{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:820px){.cols,.remwrap{grid-template-columns:1fr}.pane{overflow:visible}}
+</style>
+</head>
+<body>
+<header>
+ <h1>Schule</h1>
+ <div class="tabs">
+  <button class="tab on" data-ex="0">Übung 1<span class="dn"> ✓</span></button>
+  <button class="tab" data-ex="1">Übung 2<span class="dn"> ✓</span></button>
+ </div>
+ <span class="total" id="total"></span>
+</header>
+
+<section class="ex on" id="ex0">
+ <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
+  <p class="instr">Übung 1 – Hören Sie. Was war gut, was war schlecht?<small>Ascultă și hotărăște ce a fost bun și ce a fost rău la școală. Trage cuvintele în coloana potrivită sau atinge un cuvânt, apoi coloana.</small></p>
+  <div class="audio"><audio id="aud" controls preload="metadata" src="audio.mp3"></audio></div>
+  <div class="pool" id="pool"></div>
+  <div class="cols">
+   <div class="col good" data-c="G"><h3>Das war GUT!</h3><div class="items"></div></div>
+   <div class="col bad" data-c="S"><h3>Das war SCHLECHT!</h3><div class="items"></div></div>
+  </div>
+ </div></div></div>
+ <div class="bar" data-bar="0">
+  <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
+  <span class="msg"></span><span class="score hidden"></span>
+ </div>
+</section>
+
+<section class="ex" id="ex1">
+ <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
+  <p class="instr">Übung 2 – Die nächste Anruferin erzählt. Ergänzen Sie <i>haben</i> oder <i>sein</i> im Präteritum.<small>Tastează forma corectă a verbului.</small></p>
+  <div class="remwrap">
+   <table class="rem"><tr><th colspan="2">haben – Präteritum</th></tr>
+    <tr><td>ich</td><td><b>hatte</b></td></tr><tr><td>du</td><td><b>hattest</b></td></tr><tr><td>er/sie/es</td><td><b>hatte</b></td></tr>
+    <tr><td>wir</td><td><b>hatten</b></td></tr><tr><td>ihr</td><td><b>hattet</b></td></tr><tr><td>sie/Sie</td><td><b>hatten</b></td></tr></table>
+   <table class="rem"><tr><th colspan="2">sein – Präteritum</th></tr>
+    <tr><td>ich</td><td><b>war</b></td></tr><tr><td>du</td><td><b>warst</b></td></tr><tr><td>er/sie/es</td><td><b>war</b></td></tr>
+    <tr><td>wir</td><td><b>waren</b></td></tr><tr><td>ihr</td><td><b>wart</b></td></tr><tr><td>sie/Sie</td><td><b>waren</b></td></tr></table>
+  </div>
+  <div class="gaps" id="gaps"></div>
+ </div></div></div>
+ <div class="bar" data-bar="1">
+  <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
+  <span class="msg"></span><span class="score hidden"></span>
+ </div>
+</section>
+
+<script>
+var ITEMS=[["Freunde in der Schule","G"],["Pausen","G"],["Schulausflüge","G"],["Ferien","G"],["Biologieunterricht","G"],["Mathe","G"],["Hausaufgaben","S"],["Latein","S"],["Essen in der Schulkantine","S"]];
+var ORDER=[6,3,0,8,5,1,7,4,2];
+var TXT="Eigentlich [war] ich gern in der Schule, ich habe viele tolle Erinnerungen. Meine Klasse [war] sehr nett und wir [hatten] gute Lehrer. Aber natürlich [war] nicht alles gut in der Schule. In Englisch zum Beispiel [war] ich sehr schlecht. Ich [hatte] Probleme mit der Grammatik und viel zu große Angst vor Fehlern. Und in Chemie [hatte] ich auch oft Probleme. Aber da hat mir ein Freund geholfen. Lustig [war] es vor allem in den Pausen und auf dem Schulweg. Wir sind immer mit dem Fahrrad in die Schule gefahren. Da [waren] wir immer zu 4 oder zu 5 und das [war] sehr schön.";
+var PASS_PERCENT=50;
+var scorm=(function(){var api=null,active=false;
+ function find(w){var n=0;while(w&&n<10){try{if(w.API)return w.API;}catch(e){}if(w.parent&&w.parent!==w){w=w.parent;n++;}else break;}return null;}
+ function init(){api=find(window);if(!api){try{if(window.opener)api=find(window.opener);}catch(e){}}
+  if(api){try{active=String(api.LMSInitialize(""))==="true";if(active){var st=api.LMSGetValue("cmi.core.lesson_status");if(st==="not attempted"||st==="")api.LMSSetValue("cmi.core.lesson_status","incomplete");api.LMSCommit("");}}catch(e){active=false;}}}
+ function report(c,t){if(!active)return;var p=Math.round(c/t*100);try{api.LMSSetValue("cmi.core.score.min","0");api.LMSSetValue("cmi.core.score.max","100");api.LMSSetValue("cmi.core.score.raw",String(p));api.LMSSetValue("cmi.core.lesson_status",p>=PASS_PERCENT?"passed":"failed");api.LMSCommit("");}catch(e){}}
+ function finish(){if(!active)return;try{api.LMSFinish("");}catch(e){}active=false;}
+ return{init:init,report:report,finish:finish};})();
+
+
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function norm(s){return String(s).toLowerCase().replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss").replace(/[^a-z0-9]/g,"");}
+var G=[];
+$("gaps").innerHTML="<p>"+TXT.split(/(\[[^\]]+\])/).map(function(x){var m=x.match(/^\[([^\]]+)\]$/);if(!m)return esc(x);
+ var i=G.length;G.push(m[1]);return '<span class="g" data-g="'+i+'"><input type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" style="width:'+(m[1].length+2)+'ch"><sup>('+(i+1)+')</sup></span>';}).join("")+"</p>";
+
+var EX=[{total:ITEMS.length,res:null},{total:G.length,res:null}];
+var place={},sel=null;
+function chip(i,cls,extra){return '<div class="chip '+(cls||"")+'" draggable="'+(EX[0].res?"false":"true")+'" data-i="'+i+'">'+esc(ITEMS[i][0])+(extra||"")+'</div>';}
+function render(){var done=!!EX[0].res,p="",g="",s="";
+ ORDER.forEach(function(i){
+  var cls=sel===i?"sel":"",ex="";
+  if(done){var ok=place[i]===ITEMS[i][1];cls=ok?"ok":"no";if(!ok)ex="<small>→ "+(ITEMS[i][1]==="G"?"GUT":"SCHLECHT")+"</small>";}
+  var h=chip(i,cls,ex);
+  if(place[i]==="G")g+=h;else if(place[i]==="S")s+=h;else p+=h;});
+ $("pool").innerHTML=p;
+ document.querySelector('.col[data-c="G"] .items').innerHTML=g;
+ document.querySelector('.col[data-c="S"] .items').innerHTML=s;
+ upd(0);}
+function put(i,c){if(EX[0].res)return;if(c)place[i]=c;else delete place[i];sel=null;render();}
+document.getElementById("ex0").addEventListener("click",function(e){if(EX[0].res)return;
+ var ch=e.target.closest(".chip"),col=e.target.closest(".col"),pool=e.target.closest(".pool");
+ if(ch){var i=+ch.dataset.i;
+  if(sel!==null&&sel!==i&&col){put(sel,col.dataset.c);return;}
+  if(col&&sel===null){put(i,null);return;}
+  sel=sel===i?null:i;render();return;}
+ if(sel!==null){if(col)put(sel,col.dataset.c);else if(pool)put(sel,null);}});
+var dragI=null;
+document.addEventListener("dragstart",function(e){var ch=e.target.closest&&e.target.closest(".chip");if(!ch||EX[0].res)return;dragI=+ch.dataset.i;try{e.dataTransfer.setData("text/plain",String(dragI));}catch(x){}});
+document.addEventListener("dragover",function(e){var z=e.target.closest&&e.target.closest(".col,.pool");if(z&&dragI!==null){e.preventDefault();z.classList.add("over");}});
+document.addEventListener("dragleave",function(e){var z=e.target.closest&&e.target.closest(".col,.pool");if(z)z.classList.remove("over");});
+document.addEventListener("drop",function(e){var z=e.target.closest&&e.target.closest(".col,.pool");document.querySelectorAll(".over").forEach(function(x){x.classList.remove("over");});
+ if(!z||dragI===null)return;e.preventDefault();var i=dragI;dragI=null;put(i,z.classList.contains("col")?z.dataset.c:null);});
+document.addEventListener("dragend",function(){dragI=null;document.querySelectorAll(".over").forEach(function(x){x.classList.remove("over");});});
+$("gaps").addEventListener("input",function(){upd(1);});
+
+function answered(k){if(k===0)return Object.keys(place).length;var n=0;document.querySelectorAll("#gaps input").forEach(function(x){if(x.value.trim())n++;});return n;}
+function bar(k){return document.querySelector('.bar[data-bar="'+k+'"]');}
+function upd(k){var b=bar(k),n=answered(k),t=EX[k].total;if(EX[k].res!==null)return;
+ b.querySelector(".chk").disabled=n<t;b.querySelector(".msg").textContent=n<t?(k===0?"Ai plasat ":"Ai completat ")+n+" din "+t+".":"Gata! Apasă „Verifică răspunsurile”.";}
+function updTotal(){var c=0,t=0,any=false;EX.forEach(function(e,k){document.querySelector('.tab[data-ex="'+k+'"]').classList.toggle("done",e.res!==null);if(e.res!==null){c+=e.res;t+=e.total;any=true;}});
+ $("total").textContent=any?"Gesamt: "+c+" / "+t:"";if(any)scorm.report(c,t);}
+function check(k){var c=0;
+ if(k===0){ITEMS.forEach(function(it,i){if(place[i]===it[1])c++;});EX[0].res=c;$("aud").pause();render();}
+ else{document.querySelectorAll("#gaps .g").forEach(function(sp){var a=G[+sp.dataset.g],inp=sp.querySelector("input"),ok=norm(inp.value)===norm(a);
+   inp.readOnly=true;sp.classList.add(ok?"ok":"no");if(ok)c++;else{var f=document.createElement("span");f.className="fix";f.textContent="→ "+a;sp.appendChild(f);}});EX[1].res=c;}
+ var t=EX[k].total,p=Math.round(c/t*100),b=bar(k),s=b.querySelector(".score");
+ s.textContent="Rezultat: "+c+" / "+t+" ("+p+"%)";s.className="score "+(p>=80?"good":p>=PASS_PERCENT?"mid":"low");
+ b.querySelector(".msg").classList.add("hidden");b.querySelector(".chk").classList.add("hidden");b.querySelector(".rty").classList.remove("hidden");updTotal();}
+function retry(k){EX[k].res=null;
+ if(k===0){place={};sel=null;}
+ else document.querySelectorAll("#gaps .g").forEach(function(sp){sp.className="g";var i=sp.querySelector("input");i.value="";i.readOnly=false;var f=sp.querySelector(".fix");if(f)f.remove();});
+ var b=bar(k);b.querySelector(".score").className="score hidden";b.querySelector(".msg").classList.remove("hidden");b.querySelector(".chk").classList.remove("hidden");b.querySelector(".rty").classList.add("hidden");
+ if(k===0)render();else upd(1);updTotal();}
+[0,1].forEach(function(k){var b=bar(k);b.querySelector(".chk").addEventListener("click",function(){check(k);});b.querySelector(".rty").addEventListener("click",function(){retry(k);});});
+document.querySelectorAll(".tab").forEach(function(t){t.addEventListener("click",function(){
+ document.querySelectorAll(".tab").forEach(function(x){x.classList.toggle("on",x===t);});
+ document.querySelectorAll("section.ex").forEach(function(s,i){s.classList.toggle("on",i===+t.dataset.ex);});
+ if(+t.dataset.ex!==0)$("aud").pause();window.scrollTo(0,0);});});
+render();upd(1);scorm.init();window.addEventListener("pagehide",scorm.finish);
+</script>
+</body>
+</html>
