@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hören – Richtig oder falsch?</title>
+<style>
+  :root{
+    --bg:#f4f5f7; --card:#ffffff; --ink:#1f2430; --muted:#5d6472; --line:#e3e6eb;
+    --accent:#3b5bdb; --accent-soft:#e8edff;
+    --ok:#1f8a5b; --ok-soft:#e6f5ee; --bad:#c92a2a; --bad-soft:#fdecec;
+    --vocab:#fdecee; --vocab-ink:#e0485a;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    font-size:16px;line-height:1.6}
+  main{max-width:820px;margin:0 auto;padding:18px 16px 110px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 26px;margin-bottom:16px}
+  .title{display:flex;align-items:flex-start;gap:12px;margin:0 0 6px}
+  .badge{flex:0 0 auto;background:#dff3fb;color:#1b9ad6;font-weight:800;border-radius:8px;padding:2px 10px;font-size:15px;margin-top:2px}
+  h1{margin:0;font-size:20px;line-height:1.35}
+  .instr{margin:10px 0 0;padding:10px 14px;background:var(--accent-soft);border-left:4px solid var(--accent);
+    border-radius:6px;font-weight:600;font-size:15px}
+  .pic{display:block;width:100%;max-width:560px;height:auto;margin:6px auto 0;border-radius:10px}
+
+  .vocab{background:var(--vocab);border-color:#f8d3d8}
+  .vocab-head{display:flex;align-items:center;gap:10px}
+  .vocab-head h2{margin:0;font-size:18px;color:var(--vocab-ink)}
+  .vocab-head .i{width:22px;height:22px;border-radius:50%;background:var(--vocab-ink);color:#fff;font-weight:800;
+    display:flex;align-items:center;justify-content:center;font-size:14px}
+  .eye{margin-left:auto;background:#fff;border:1.5px solid #f3c3ca;color:var(--vocab-ink);border-radius:8px;
+    padding:4px 12px;font-weight:700;font-size:13px;cursor:pointer}
+  .words{margin:12px 0 0;padding:0;list-style:none;font-size:17px}
+  .words li{padding:3px 0}
+  .words b{font-weight:800}
+
+  .audio{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+    padding:12px 18px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+  .audio p{margin:0;font-size:14px;color:var(--muted)}
+  .audio p b{color:var(--ink)}
+  .audio audio{flex:1 1 300px;height:38px;min-width:0}
+
+  .q{padding:16px 0;border-top:1px solid var(--line)}
+  .q:first-of-type{border-top:none;padding-top:0}
+  .q-text{display:flex;gap:12px;margin-bottom:10px;font-size:17px}
+  .num{flex:0 0 28px;height:28px;border-radius:50%;background:#eef0f4;color:var(--muted);
+    font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px}
+  .rf{margin-left:40px;display:flex;gap:10px;flex-wrap:wrap}
+  .rf button{font:inherit;font-weight:700;min-width:120px;padding:9px 18px;border-radius:9px;border:2px solid var(--line);
+    background:#fff;color:var(--ink);cursor:pointer;transition:all .15s}
+  .rf button:hover{border-color:#aeb6c8}
+  .rf button.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+  .rf button.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+  .rf button.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+  .rf button.missed{border-color:var(--ok);border-style:dashed;color:var(--ok)}
+  .rf button:disabled{cursor:default}
+  .fb{display:none;margin:10px 0 0 40px;font-size:14px;padding:8px 12px;border-radius:8px}
+  .fb.show{display:block}
+  .fb.ok{background:var(--ok-soft);color:#155e3e}
+  .fb.no{background:var(--bad-soft);color:#8f1d1d}
+
+  .bar{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--card);border-top:1px solid var(--line);
+    padding:12px 24px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:center}
+  .btn{border:none;border-radius:8px;padding:11px 26px;font-size:15px;font-weight:800;cursor:pointer}
+  .btn-primary{background:var(--accent);color:#fff}
+  .btn-primary:disabled{opacity:.45;cursor:not-allowed}
+  .btn-ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line)}
+  .msg{font-size:15px;color:var(--muted)}
+  .score{font-size:17px;font-weight:800}
+  .score.good{color:var(--ok)} .score.mid{color:#b06a00} .score.low{color:var(--bad)}
+  .hidden{display:none !important}
+  @media (max-width:700px){
+    main{padding:10px 10px 120px}
+    .card{padding:16px 14px}
+    .rf,.fb{margin-left:0}
+    .rf button{flex:1;min-width:0}
+    .bar{padding:10px 12px}
+  }
+</style>
+</head>
+<body>
+<main>
+  <section class="card">
+    <div class="title"><span class="badge">1.1</span><h1>Hören Sie den Text und kreuzen Sie an: richtig oder falsch?</h1></div>
+    <p class="instr">Ascultă textul și decide dacă propozițiile sunt adevărate (Richtig) sau false (Falsch).</p>
+    <img class="pic" src="illustration.jpg" alt="Ein Mann und eine Frau treffen sich auf der Straße">
+  </section>
+
+  <section class="card vocab" id="vocab">
+    <div class="vocab-head"><span class="i">i</span><h2>Neue Wörter!</h2><button class="eye" id="eye" type="button" aria-expanded="true">Ascunde</button></div>
+    <ul class="words" id="words"></ul>
+  </section>
+
+  <section class="card audio">
+    <p><b>Ascultă înregistrarea.</b> Poți asculta de câte ori vrei.</p>
+    <audio id="au" controls preload="metadata" src="audio.mp3"></audio>
+  </section>
+
+  <section class="card">
+    <div id="items"></div>
+  </section>
+</main>
+
+<div class="bar">
+  <button class="btn btn-primary" id="check" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost hidden" id="retry">Încearcă din nou</button>
+  <span class="msg" id="msg"></span>
+  <span class="score hidden" id="score"></span>
+</div>
+
+<script>
+/* ===== Conținut (de editat pentru exerciții noi) ===== */
+var WORDS = [
+  ["die Beziehung", "relație"],
+  ["in einer Beziehung sein", "a fi într-o relație"],
+  ["eine feste Beziehung", "o relație serioasă / stabilă"],
+  ["geschieden", "divorțat(ă)"],
+  ["schwanger", "însărcinată"],
+  ["Bescheid sagen", "a anunța / a da de știre"]
+];
+/* a: R = Richtig, F = Falsch */
+var ITEMS = [
+  {t:"Max hat sich sehr verändert.", a:"F"},
+  {t:"Barbara ist seit einem Jahr verheiratet.", a:"R"},
+  {t:"Barbara ist schwanger.", a:"R"},
+  {t:"Barbara hat sich an der Uni in Peter verliebt.", a:"R"},
+  {t:"Max ist seit einem Jahr verheiratet.", a:"F"},
+  {t:"Max und Barbara haben nicht zusammengepasst.", a:"F"},
+  {t:"Barbara und Isabel sehen sich nicht oft.", a:"F"},
+  {t:"Isabel ist in einer Beziehung mit einem Piloten.", a:"R"},
+  {t:"Florian hat mit 24 Jahren geheiratet.", a:"R"},
+  {t:"Florian ist jetzt geschieden.", a:"R"},
+  {t:"Die vier Schulfreunde wollen sich nächsten Samstag im Club treffen.", a:"R"},
+  {t:"Barbara sagt Florian Bescheid.", a:"F"}
+];
+var PASS_PERCENT = 50;
+
+/* ===== SCORM 1.2 (inofensiv când pagina e în iframe/embed) ===== */
+var scorm = (function(){
+  var api = null, active = false;
+  function find(w){
+    var n = 0;
+    while (w && n < 10){
+      try { if (w.API) return w.API; } catch(e){}
+      if (w.parent && w.parent !== w) { w = w.parent; n++; } else break;
+    }
+    return null;
+  }
+  function init(){
+    api = find(window);
+    if (!api){ try { if (window.opener) api = find(window.opener); } catch(e){} }
+    if (api){
+      try {
+        active = String(api.LMSInitialize("")) === "true";
+        if (active){
+          var st = api.LMSGetValue("cmi.core.lesson_status");
+          if (st === "not attempted" || st === "") api.LMSSetValue("cmi.core.lesson_status","incomplete");
+          api.LMSCommit("");
+        }
+      } catch(e){ active = false; }
+    }
+  }
+  function report(correct, total){
+    if (!active) return;
+    var pct = Math.round(correct / total * 100);
+    try {
+      api.LMSSetValue("cmi.core.score.min","0");
+      api.LMSSetValue("cmi.core.score.max","100");
+      api.LMSSetValue("cmi.core.score.raw", String(pct));
+      api.LMSSetValue("cmi.core.lesson_status", pct >= PASS_PERCENT ? "passed" : "failed");
+      api.LMSCommit("");
+    } catch(e){}
+  }
+  function finish(){ if (!active) return; try { api.LMSFinish(""); } catch(e){} active = false; }
+  return {init:init, report:report, finish:finish};
+})();
+
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+var MAX = ITEMS.length, ans = {}, checked = false;
+
+/* vocabular */
+$("words").innerHTML = WORDS.map(function(w){ return '<li><b>'+esc(w[0])+'</b> = '+esc(w[1])+'</li>'; }).join("");
+$("eye").addEventListener("click", function(){
+  var open = $("words").classList.toggle("hidden") === false;
+  $("eye").textContent = open ? "Ascunde" : "Arată";
+  $("eye").setAttribute("aria-expanded", open);
+});
+
+function render(){
+  var h = "";
+  ITEMS.forEach(function(q, i){
+    h += '<div class="q"><div class="q-text"><span class="num">'+(i+1)+'</span><span>'+esc(q.t)+'</span></div>'+
+      '<div class="rf" data-i="'+i+'"><button type="button" data-v="R">Richtig</button><button type="button" data-v="F">Falsch</button></div>'+
+      '<div class="fb" id="fb'+i+'"></div></div>';
+  });
+  $("items").innerHTML = h;
+  ans = {}; checked = false;
+  $("check").disabled = true;
+  $("msg").textContent = "Răspunde la toate cele " + MAX + " propoziții.";
+}
+$("items").addEventListener("click", function(e){
+  if (checked) return;
+  var b = e.target.closest("button"); if (!b) return;
+  var i = b.parentNode.getAttribute("data-i");
+  ans[i] = b.getAttribute("data-v");
+  b.parentNode.querySelectorAll("button").forEach(function(x){ x.classList.toggle("on", x === b); });
+  var n = Object.keys(ans).length;
+  $("check").disabled = n < MAX;
+  $("msg").textContent = n < MAX ? "Ai răspuns la " + n + " din " + MAX + " propoziții." : "Gata! Apasă „Verifică răspunsurile”.";
+});
+$("check").addEventListener("click", function(){
+  checked = true; var correct = 0;
+  $("au").pause();
+  ITEMS.forEach(function(q, i){
+    var row = document.querySelector('.rf[data-i="'+i+'"]');
+    var ok = ans[i] === q.a; if (ok) correct++;
+    row.querySelectorAll("button").forEach(function(b){
+      b.disabled = true; b.classList.remove("on");
+      var v = b.getAttribute("data-v");
+      if (v === ans[i]) b.classList.add(ok ? "right" : "wrong");
+      else if (v === q.a) b.classList.add("missed");
+    });
+    var fb = $("fb"+i); fb.className = "fb show " + (ok ? "ok" : "no");
+    fb.innerHTML = ok ? "<b>Corect!</b>" : "<b>Greșit.</b> Răspunsul corect: <b>" + (q.a === "R" ? "Richtig" : "Falsch") + "</b>.";
+  });
+  var pct = Math.round(correct / MAX * 100);
+  $("score").textContent = "Rezultat: " + correct + " / " + MAX + " (" + pct + "%)";
+  $("score").className = "score " + (pct >= 80 ? "good" : pct >= PASS_PERCENT ? "mid" : "low");
+  $("msg").classList.add("hidden"); $("check").classList.add("hidden"); $("retry").classList.remove("hidden");
+  scorm.report(correct, MAX);
+});
+$("retry").addEventListener("click", function(){
+  render();
+  $("score").className = "score hidden";
+  $("msg").classList.remove("hidden"); $("check").classList.remove("hidden"); $("retry").classList.add("hidden");
+  window.scrollTo({top:0, behavior:"smooth"});
+});
+
+render(); scorm.init();
+window.addEventListener("pagehide", scorm.finish);
+window.addEventListener("beforeunload", scorm.finish);
+</script>
+</body>
+</html>
