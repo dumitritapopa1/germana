@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hören – weil-Sätze</title>
+<style>
+  :root{
+    --bg:#f4f5f7; --card:#ffffff; --ink:#1f2430; --muted:#5d6472; --line:#e3e6eb;
+    --accent:#3b5bdb; --accent-soft:#e8edff;
+    --ok:#1f8a5b; --ok-soft:#e6f5ee; --bad:#c92a2a; --bad-soft:#fdecec; --warn:#b06a00; --warn-soft:#fff4de;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    font-size:16px;line-height:1.55;display:flex;flex-direction:column}
+  header{padding:12px 24px;border-bottom:1px solid var(--line);background:var(--card);
+    display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  header h1{margin:0;font-size:20px;font-weight:700}
+  .total{margin-left:auto;font-size:14px;font-weight:700;color:var(--muted)}
+  .wrap{flex:1;padding:18px 24px;min-height:0;display:flex;justify-content:center}
+  .pane{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow-y:auto;min-height:0;width:100%;max-width:760px}
+  .pane-inner{padding:22px 26px}
+  .instr{margin:0 0 6px;padding:12px 16px;background:var(--accent-soft);border-left:4px solid var(--accent);
+    border-radius:6px;font-weight:600}
+  .q{padding:20px 0;border-top:1px solid var(--line)}
+  .q:first-of-type{border-top:none}
+  .q h3{margin:0 0 10px;font-size:18px}
+  .q audio{width:100%;height:38px;margin-bottom:12px}
+  .opt{display:flex;align-items:center;gap:14px;padding:11px 14px;border:1.5px solid var(--line);border-radius:10px;
+    margin-bottom:8px;cursor:pointer;transition:all .15s;font-size:17px}
+  .opt:hover{border-color:#aeb6c8}
+  .opt input{position:absolute;opacity:0;pointer-events:none}
+  .dot{flex:0 0 24px;height:24px;border-radius:50%;border:2px solid #b7bfce;background:#fff;
+    display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:800}
+  .opt.on{border-color:var(--accent);background:var(--accent-soft)}
+  .opt.on .dot{border-color:var(--accent);background:var(--accent);box-shadow:inset 0 0 0 4px #fff,inset 0 0 0 12px var(--accent)}
+  .opt input:focus-visible + .dot{outline:3px solid rgba(59,91,219,.35)}
+  .opt.locked{cursor:default}
+  .opt.right{border-color:var(--ok);background:var(--ok-soft)}
+  .opt.right .dot{border-color:var(--ok);background:var(--ok);box-shadow:none}
+  .opt.right .dot::after{content:"✓"}
+  .opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+  .opt.wrong .dot{border-color:var(--bad);background:var(--bad);box-shadow:none}
+  .opt.wrong .dot::after{content:"✕"}
+  .opt.missed{border-color:var(--ok);border-style:dashed}
+  .opt .tag{margin-left:auto;font-size:13px;font-weight:700;white-space:nowrap}
+  .opt.right .tag,.opt.missed .tag{color:var(--ok)}
+  .opt.wrong .tag{color:var(--bad)}
+
+  .bar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:14px 24px;background:var(--card);border-top:1px solid var(--line)}
+  .btn{border:none;border-radius:8px;padding:10px 22px;font-size:15px;font-weight:700;cursor:pointer}
+  .btn-primary{background:var(--accent);color:#fff}
+  .btn-primary:disabled{opacity:.45;cursor:not-allowed}
+  .btn-ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line)}
+  .msg{font-size:15px;color:var(--muted)}
+  .score{font-size:16px;font-weight:700}
+  .score.good{color:var(--ok)} .score.mid{color:#b06a00} .score.low{color:var(--bad)}
+  .hidden{display:none !important}
+  @media (max-width:820px){
+    body{height:auto;min-height:100%}
+    header{padding:10px 14px}
+    .wrap{padding:10px}
+    .pane{overflow:visible}
+    .pane-inner{padding:16px}
+    .opt{font-size:16px}
+    .bar{position:sticky;bottom:0;padding:12px 14px}
+    .total{margin-left:0;width:100%}
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Hören: weil-Sätze</h1>
+  <span class="total" id="total"></span>
+</header>
+
+<main class="wrap">
+  <section class="pane">
+    <div class="pane-inner">
+      <p class="instr">Ascultă fiecare înregistrare și alege varianta corectă. Poți asculta de câte ori vrei.</p>
+      <div id="qs"></div>
+    </div>
+  </section>
+</main>
+
+<div class="bar">
+  <button class="btn btn-primary" id="check" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost hidden" id="retry">Încearcă din nou</button>
+  <span class="msg" id="msg"></span>
+  <span class="score hidden" id="score"></span>
+</div>
+
+<script>
+/* ===== Conținut (de editat pentru exerciții noi) ===== */
+var QS = [
+  {audio:"audio1.mp3", t:"Der Mann kommt nicht,",
+   o:["weil er ins Kino geht.", "weil er einen Termin hat.", "weil er Monika trifft."], a:1},
+  {audio:"audio2.mp3", t:"Vera soll Tina helfen,",
+   o:["weil Tina krank war.", "weil Vera gut Mathe kann.", "weil Arno keine Zeit hat."], a:0},
+  {audio:"audio3.mp3", t:"Die Frau geht nicht mit,",
+   o:["weil sie keine Zeit hat.", "weil sie keine Lust hat.", "weil sie keine Schuhe hat."], a:2}
+];
+var PASS_PERCENT = 50;
+
+/* ===== SCORM 1.2 (inofensiv când pagina e în iframe/embed) ===== */
+var scorm = (function(){
+  var api = null, active = false;
+  function find(w){
+    var n = 0;
+    while (w && n < 10){
+      try { if (w.API) return w.API; } catch(e){}
+      if (w.parent && w.parent !== w) { w = w.parent; n++; } else break;
+    }
+    return null;
+  }
+  function init(){
+    api = find(window);
+    if (!api){ try { if (window.opener) api = find(window.opener); } catch(e){} }
+    if (api){
+      try {
+        active = String(api.LMSInitialize("")) === "true";
+        if (active){
+          var st = api.LMSGetValue("cmi.core.lesson_status");
+          if (st === "not attempted" || st === "") api.LMSSetValue("cmi.core.lesson_status","incomplete");
+          api.LMSCommit("");
+        }
+      } catch(e){ active = false; }
+    }
+  }
+  function report(correct, total){
+    if (!active) return;
+    var pct = Math.round(correct / total * 100);
+    try {
+      api.LMSSetValue("cmi.core.score.min","0");
+      api.LMSSetValue("cmi.core.score.max","100");
+      api.LMSSetValue("cmi.core.score.raw", String(pct));
+      api.LMSSetValue("cmi.core.lesson_status", pct >= PASS_PERCENT ? "passed" : "failed");
+      api.LMSCommit("");
+    } catch(e){}
+  }
+  function finish(){ if (!active) return; try { api.LMSFinish(""); } catch(e){} active = false; }
+  return {init:init, report:report, finish:finish};
+})();
+
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+var ans = {}, checked = false;
+
+function render(){
+  var h = "";
+  QS.forEach(function(q, i){
+    h += '<div class="q" data-q="'+i+'"><h3>'+(i+1)+'. '+esc(q.t)+'</h3>'+
+         '<audio controls preload="metadata" src="'+q.audio+'"></audio><div class="opts">';
+    q.o.forEach(function(o, j){
+      var cls = "opt", tag = "", dis = "";
+      if (checked){
+        cls += " locked"; dis = " disabled";
+        if (ans[i] === j && j === q.a){ cls += " right"; tag = "Corect"; }
+        else if (ans[i] === j){ cls += " wrong"; tag = "Greșit"; }
+        else if (j === q.a){ cls += " missed"; tag = "Răspunsul corect"; }
+      } else if (ans[i] === j) cls += " on";
+      h += '<label class="'+cls+'"><input type="radio" name="q'+i+'" value="'+j+'"'+(ans[i]===j?' checked':'')+dis+'>'+
+           '<span class="dot"></span><span>'+esc(o)+'</span>'+(tag?'<span class="tag">'+tag+'</span>':'')+'</label>';
+    });
+    h += '</div></div>';
+  });
+  $("qs").innerHTML = h;
+}
+function updateBar(){
+  var n = Object.keys(ans).length;
+  $("check").disabled = n < QS.length;
+  $("msg").textContent = n < QS.length ? "Ai răspuns la " + n + " din " + QS.length + " întrebări." : "Gata! Apasă „Verifică răspunsurile”.";
+}
+$("qs").addEventListener("change", function(e){
+  if (checked || e.target.type !== "radio") return;
+  var q = +e.target.name.slice(1);
+  ans[q] = +e.target.value;
+  var box = e.target.closest(".opts");
+  box.querySelectorAll(".opt").forEach(function(l){ l.classList.toggle("on", l.contains(e.target)); });
+  updateBar();
+});
+/* un singur player pornit la un moment dat */
+$("qs").addEventListener("play", function(e){
+  document.querySelectorAll("#qs audio").forEach(function(a){ if (a !== e.target) a.pause(); });
+}, true);
+
+$("check").addEventListener("click", function(){
+  var correct = 0;
+  QS.forEach(function(q, i){ if (ans[i] === q.a) correct++; });
+  document.querySelectorAll("#qs audio").forEach(function(a){ a.pause(); });
+  checked = true; render();
+  var pct = Math.round(correct / QS.length * 100);
+  $("score").textContent = "Rezultat: " + correct + " / " + QS.length + " (" + pct + "%)";
+  $("score").className = "score " + (pct >= 80 ? "good" : pct >= PASS_PERCENT ? "mid" : "low");
+  $("total").textContent = "Gesamt: " + correct + " / " + QS.length;
+  $("msg").classList.add("hidden"); $("check").classList.add("hidden"); $("retry").classList.remove("hidden");
+  scorm.report(correct, QS.length);
+});
+$("retry").addEventListener("click", function(){
+  ans = {}; checked = false; render(); updateBar();
+  $("score").className = "score hidden"; $("total").textContent = "";
+  $("msg").classList.remove("hidden"); $("check").classList.remove("hidden"); $("retry").classList.add("hidden");
+});
+
+render(); updateBar(); scorm.init();
+window.addEventListener("pagehide", scorm.finish);
+window.addEventListener("beforeunload", scorm.finish);
+</script>
+</body>
+</html>
