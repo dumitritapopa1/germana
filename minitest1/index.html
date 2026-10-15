@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mini-Test – Reflexivpronomen, weil, und/aber/oder</title>
+<style>
+  :root{
+    --bg:#f4f5f7; --card:#ffffff; --ink:#1f2430; --muted:#5d6472; --line:#e3e6eb;
+    --accent:#3b5bdb; --accent-soft:#e8edff;
+    --ok:#1f8a5b; --ok-soft:#e6f5ee; --bad:#c92a2a; --bad-soft:#fdecec; --warn:#b06a00;
+    --teal:#4cc3c9; --grey:#8a8f99;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth;scroll-padding-top:70px}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    font-size:16px;line-height:1.6}
+  header{position:sticky;top:0;z-index:10;background:var(--card);border-bottom:1px solid var(--line);
+    padding:10px 24px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  header h1{margin:0;font-size:19px;font-weight:800}
+  .nav{display:flex;gap:6px;flex-wrap:wrap}
+  .nav a{display:inline-flex;align-items:center;gap:5px;text-decoration:none;color:var(--ink);font-weight:700;font-size:13px;
+    border:1.5px solid var(--line);border-radius:999px;padding:4px 12px;background:#fff}
+  .nav a.done{border-color:var(--ok);color:var(--ok);background:var(--ok-soft)}
+  .nav a.done::after{content:"✓"}
+  .total{margin-left:auto;font-size:14px;font-weight:800;color:var(--muted)}
+  main{max-width:860px;margin:0 auto;padding:18px 16px 110px}
+  .ex{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 26px;margin-bottom:20px}
+  .ex-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:6px}
+  .badge{flex:0 0 34px;height:34px;border-radius:9px;background:var(--accent);color:#fff;font-weight:800;
+    display:flex;align-items:center;justify-content:center}
+  .ex-head h2{margin:0;font-size:19px;line-height:1.3}
+  .ex-head h2 em{font-style:normal;color:#e8505b}
+  .ex-score{margin-left:auto;font-size:14px;font-weight:800;white-space:nowrap;padding-top:4px}
+  .ex-score.good{color:var(--ok)} .ex-score.mid{color:var(--warn)} .ex-score.low{color:var(--bad)}
+  .instr{margin:8px 0 16px;padding:10px 14px;background:var(--accent-soft);border-left:4px solid var(--accent);
+    border-radius:6px;font-weight:600;font-size:15px}
+
+  /* gap inputs */
+  input.gap,input.sent{font:inherit;font-weight:600;color:var(--accent);border:none;border-bottom:2px solid #9aa3b5;
+    background:transparent;outline:none;padding:0 3px;border-radius:0}
+  input.gap{width:5.2ch;text-align:center}
+  input.sent{width:100%;min-width:200px}
+  input.gap:focus,input.sent:focus{border-bottom-color:var(--accent);background:var(--accent-soft)}
+  .r input{color:var(--ok);border-bottom-color:var(--ok);background:var(--ok-soft)}
+  .w input{color:var(--bad);border-bottom-color:var(--bad);background:var(--bad-soft);text-decoration:line-through}
+  .fix{color:var(--ok);font-weight:700;margin-left:6px;font-size:15px}
+  sup.n{font-size:11px;color:var(--muted);font-weight:700;margin-left:2px}
+
+  /* 1 dialog */
+  .dlg{font-size:18px;line-height:2.3}
+  .ln{position:relative;padding-left:30px;margin:0 0 4px}
+  .ln::before{content:"";position:absolute;left:6px;top:.95em;width:11px;height:11px;background:var(--teal);transform:rotate(45deg)}
+  .ln.b::before{background:var(--grey)}
+  .ln.cont::before{display:none}
+  .g{white-space:nowrap}
+
+  /* 2 corectare */
+  .cor{padding:12px 0;border-top:1px solid var(--line)}
+  .cor:first-of-type{border-top:none}
+  .cor .t{font-size:17px}
+  .cor .t .num{font-weight:700;margin-right:6px}
+  .cor s{color:#555;text-decoration-thickness:2px}
+  .cor .ans{margin-top:6px;margin-left:24px}
+  .cor .given{font-family:"Segoe Print","Bradley Hand","Comic Sans MS",cursive;color:#2b5d8a;font-size:18px;
+    border-bottom:2px solid #9aa3b5;padding:0 4px 2px;display:inline-block;min-width:60%}
+  .tagx{font-size:12px;font-weight:700;color:var(--muted);background:#eef0f4;border-radius:999px;padding:2px 10px;margin-left:8px}
+
+  /* 3 ordine */
+  .ord{padding:14px 0;border-top:1px solid var(--line)}
+  .ord:first-of-type{border-top:none}
+  .ord .lab{font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px}
+  .line{min-height:56px;border:2px dashed #c5cbd8;border-radius:10px;background:#fafbfd;padding:8px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .line .ph{color:#9aa3b5;font-size:14px;padding-left:4px}
+  .pool{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;min-height:44px}
+  .chip{font:inherit;font-size:16px;font-weight:600;padding:7px 13px;border-radius:8px;background:#fff;border:1.5px solid #aeb6c8;
+    cursor:pointer;color:var(--ink);box-shadow:0 1px 0 rgba(0,0,0,.06)}
+  .chip:hover{border-color:var(--accent)}
+  .chip:disabled{cursor:default}
+  .line.r{border-color:var(--ok);border-style:solid;background:var(--ok-soft)}
+  .line.r .chip{border-color:var(--ok);color:var(--ok);background:#fff}
+  .line.w{border-color:var(--bad);border-style:solid;background:var(--bad-soft)}
+  .line.w .chip{border-color:var(--bad);color:var(--bad);background:#fff}
+  .clr{background:none;border:none;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;margin-top:6px;padding:0}
+  .corr{margin-top:8px;font-size:15px;color:var(--ok);font-weight:700}
+
+  /* 4 select */
+  .sel{padding:6px 0;font-size:18px;line-height:2.3}
+  .sel select{font:inherit;font-weight:700;padding:5px 10px;border-radius:8px;border:1.5px solid var(--line);background:#fff;color:var(--ink);margin:0 4px}
+  .sel select:focus{outline:2px solid var(--accent-soft);border-color:var(--accent)}
+  .sel.r select{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+  .sel.w select{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+  .sel ul{margin:0;padding-left:22px}
+
+  .bar{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--card);border-top:1px solid var(--line);
+    padding:12px 24px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:center}
+  .btn{border:none;border-radius:8px;padding:11px 26px;font-size:15px;font-weight:800;cursor:pointer}
+  .btn-primary{background:var(--accent);color:#fff}
+  .btn-ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line)}
+  .msg{font-size:15px;color:var(--muted)}
+  .score{font-size:17px;font-weight:800}
+  .score.good{color:var(--ok)} .score.mid{color:var(--warn)} .score.low{color:var(--bad)}
+  .hidden{display:none !important}
+  @media (max-width:700px){
+    header{padding:8px 12px}
+    .total{margin-left:0;width:100%}
+    main{padding:12px 10px 120px}
+    .ex{padding:16px 14px}
+    .dlg,.sel{font-size:17px}
+    .ex-score{width:100%;margin-left:46px;padding-top:0}
+    .bar{padding:10px 12px}
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Mini-Test</h1>
+  <nav class="nav" id="nav">
+    <a href="#ex1" data-s="1">1</a><a href="#ex2" data-s="2">2</a><a href="#ex3" data-s="3">3</a><a href="#ex4" data-s="4">4</a>
+  </nav>
+  <span class="total" id="total"></span>
+</header>
+
+<main>
+  <section class="ex" id="ex1">
+    <div class="ex-head"><span class="badge">1</span><h2>Ergänzen Sie das Reflexivpronomen.</h2><span class="ex-score hidden" id="sc1"></span></div>
+    <p class="instr">Completează pronumele reflexiv potrivit în spațiile libere.</p>
+    <div class="dlg" id="dlg"></div>
+  </section>
+
+  <section class="ex" id="ex2">
+    <div class="ex-head"><span class="badge">2</span><h2>Wie heißen die Sätze richtig? Korrigieren Sie.</h2><span class="ex-score hidden" id="sc2"></span></div>
+    <p class="instr">Partea tăiată e scrisă greșit. Scrie-o în ordinea corectă. Primul exemplu e rezolvat.</p>
+    <div id="cor"></div>
+  </section>
+
+  <section class="ex" id="ex3">
+    <div class="ex-head"><span class="badge">3</span><h2>Schreiben Sie Sätze mit <em>weil</em>.</h2><span class="ex-score hidden" id="sc3"></span></div>
+    <p class="instr">Atinge cuvintele în ordinea corectă ca să formezi propoziția. Atinge un cuvânt din propoziție ca să-l scoți.</p>
+    <div id="ord"></div>
+  </section>
+
+  <section class="ex" id="ex4">
+    <div class="ex-head"><span class="badge">4</span><h2>Was passt? Ergänzen Sie <em>und, aber, oder, weil</em>.</h2><span class="ex-score hidden" id="sc4"></span></div>
+    <p class="instr">Alege cuvântul care se potrivește în fiecare propoziție.</p>
+    <div id="sel"></div>
+  </section>
+</main>
+
+<div class="bar">
+  <button class="btn btn-primary" id="submit">Verifică testul</button>
+  <button class="btn btn-ghost hidden" id="retry">Încearcă din nou</button>
+  <span class="msg" id="msg"></span>
+  <span class="score hidden" id="score"></span>
+</div>
+
+<script>
+/* ===== Conținut (de editat pentru teste noi) ===== */
+// 1 – pronume reflexive: string = text, {r:"mich"} = gol; kind a/b = vorbitor, cont = continuare
+var DLG = [
+  {k:"a", p:["Gestern Abend habe ich ", {r:"mich"}, " über Felix geärgert."]},
+  {k:"b", p:["Warum? Was hat er gemacht?"]},
+  {k:"a", p:["Wir wollten ", {r:"uns"}, " treffen. Aber Felix hat eine Stunde mit seinem Bruder telefoniert."]},
+  {k:"a cont", p:["Sie haben ", {r:"sich"}, " schon seit zwei Monaten nicht mehr getroffen."]},
+  {k:"b", p:["Ja und? Das ist doch nett! Aber du hast ", {r:"dich"}, " wahrscheinlich gelangweilt?"]},
+  {k:"a", p:["Das war nicht das Problem, wir wollten eigentlich ins Kino. Er hat ", {r:"sich"}, " dann beeilt, aber wir waren zu spät."]},
+  {k:"b", p:["Habt ihr ", {r:"euch"}, " dann gar nicht getroffen?"]},
+  {k:"a", p:["Doch, doch. Er hat mich dann zum Essen eingeladen."]},
+  {k:"b", p:["Und da hast du ", {r:"dich"}, " nicht gefreut?"]},
+  {k:"a", p:["Doch. Aber den Film habe ich immer noch nicht gesehen. Wollen wir ", {r:"uns"}, " heute treffen und ins Kino gehen?"]},
+  {k:"b", p:["Gern!"]}
+];
+
+// 2 – propoziții de corectat
+var COR = [
+  {pre:"Lisa ruft nicht an, weil ", wrong:"kaputt ist ihr Handy", ok:["ihr Handy kaputt ist"], example:true},
+  {pre:"Sie musste länger arbeiten, weil ", wrong:"ist krank ihre Kollegin", ok:["ihre Kollegin krank ist"]},
+  {pre:"Lisa hat Hunger, weil ", wrong:"gemacht keine Pause sie hat", ok:["sie keine Pause gemacht hat"]},
+  {pre:"Ihre Freunde rufen an, weil ", wrong:"wollen sie sehen Lisa", ok:["sie Lisa sehen wollen"]},
+  {pre:"Lisa ist müde, weil ", wrong:"hat sie gearbeitet viel", ok:["sie viel gearbeitet hat"]}
+];
+
+// 3 – ordinea cuvintelor (tokens în ordinea corectă; alt = ordini alternative corecte, ca text)
+var ORD = [
+  {w:["Ich","kann","leider","nichts","kochen,","weil","der","Kühlschrank","leer","ist."]},
+  {w:["Wir","müssen","uns","beeilen,","weil","der","Supermarkt","bald","zumacht."]},
+  {w:["Peter","bleibt","heute","zu","Hause,","weil","er","seinen Lieblingsfilm","sehen","will."]},
+  {w:["Ludwig","kann","gut","kochen,","weil","er","das","von seiner Oma","gelernt","hat."],
+   alt:["Ludwig kann gut kochen, weil er von seiner Oma das gelernt hat."]},
+  {w:["Herr Friedrich","beeilt","sich,","weil","seine Frau","den Tisch","schon","gedeckt","hat."],
+   alt:["Herr Friedrich beeilt sich, weil seine Frau schon den Tisch gedeckt hat."]}
+];
+
+// 4 – und / aber / oder / weil
+var CHOICES = ["und","aber","oder","weil"];
+var SEL = [
+  {p:["Gehen wir heute schwimmen ", 0, " lieber ins Kino?"], a:"oder"},
+  {p:["Ich möchte gern ins Kino, ", 0, " ich endlich den neuen 3D-Film sehen will."], a:"weil"},
+  {p:["Dann machen wir das, ", 0, " danach gehen wir noch tanzen."], a:"aber"},
+  {p:["Ich kann doch nicht tanzen, ", 0, " mein Fuß noch weh tut."], a:"weil"},
+  {p:["Na gut, dann gehen wir danach in ein Restaurant ", 0, " in eine Kneipe."], a:"oder"},
+  {p:["Sollen wir uns um sieben ", 0, " um halb acht treffen?"], a:"oder"},
+  {p:["Um halb acht bei dir ", 0, " dann fahren wir mit dem Fahrrad."], a:"und"}
+];
+var PASS_PERCENT = 50;
+
+/* ===== SCORM 1.2 (inofensiv când pagina e în iframe/embed) ===== */
+var scorm = (function(){
+  var api = null, active = false;
+  function find(w){
+    var n = 0;
+    while (w && n < 10){
+      try { if (w.API) return w.API; } catch(e){}
+      if (w.parent && w.parent !== w) { w = w.parent; n++; } else break;
+    }
+    return null;
+  }
+  function init(){
+    api = find(window);
+    if (!api){ try { if (window.opener) api = find(window.opener); } catch(e){} }
+    if (api){
+      try {
+        active = String(api.LMSInitialize("")) === "true";
+        if (active){
+          var st = api.LMSGetValue("cmi.core.lesson_status");
+          if (st === "not attempted" || st === "") api.LMSSetValue("cmi.core.lesson_status","incomplete");
+          api.LMSCommit("");
+        }
+      } catch(e){ active = false; }
+    }
+  }
+  function report(correct, total){
+    if (!active) return;
+    var pct = Math.round(correct / total * 100);
+    try {
+      api.LMSSetValue("cmi.core.score.min","0");
+      api.LMSSetValue("cmi.core.score.max","100");
+      api.LMSSetValue("cmi.core.score.raw", String(pct));
+      api.LMSSetValue("cmi.core.lesson_status", pct >= PASS_PERCENT ? "passed" : "failed");
+      api.LMSCommit("");
+    } catch(e){}
+  }
+  function finish(){ if (!active) return; try { api.LMSFinish(""); } catch(e){} active = false; }
+  return {init:init, report:report, finish:finish};
+})();
+
+/* ===== Util ===== */
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function norm(s){
+  return String(s).toLowerCase().replace(/[.,;!?]+/g," ").replace(/\s+/g," ").trim()
+    .replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss");
+}
+var submitted = false, warned = false;
+var MAX = {1:0, 2:0, 3:ORD.length, 4:SEL.length};
+DLG.forEach(function(l){ l.p.forEach(function(x){ if (typeof x !== "string") MAX[1]++; }); });
+COR.forEach(function(c){ if (!c.example) MAX[2]++; });
+var TOTAL = MAX[1] + MAX[2] + MAX[3] + MAX[4];
+
+/* ===== 1: dialog ===== */
+var gapN = 0, GAPS = [];
+function render1(){
+  var h = ""; gapN = 0; GAPS = [];
+  DLG.forEach(function(l){
+    h += '<p class="ln '+l.k+'">';
+    l.p.forEach(function(x){
+      if (typeof x === "string"){ h += esc(x); return; }
+      var n = ++gapN; GAPS[n] = x;
+      h += '<span class="g" id="g'+n+'"><input class="gap" data-g="'+n+'" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="spațiul '+n+'"><sup class="n">('+n+')</sup></span>';
+    });
+    h += '</p>';
+  });
+  $("dlg").innerHTML = h;
+}
+
+/* ===== 2: corectare ===== */
+function render2(){
+  var h = "", k = 0;
+  COR.forEach(function(c, i){
+    h += '<div class="cor" data-i="'+i+'"><div class="t"><span class="num">'+(i+1)+'.</span>'+esc(c.pre)+'<s>'+esc(c.wrong)+'</s>.</div><div class="ans">';
+    if (c.example) h += '<span class="given">'+esc(c.ok[0])+'.</span><span class="tagx">Beispiel</span>';
+    else h += '<input class="sent" data-c="'+i+'" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="propoziția corectă '+(i+1)+'">';
+    h += '</div></div>';
+  });
+  $("cor").innerHTML = h;
+}
+
+/* ===== 3: ordine ===== */
+var ordState = [];   // pentru fiecare propoziție: array de indici de cuvinte puse în ordine
+var ordPool = [];    // ordinea amestecată (indici)
+(function(){
+  var seed = 11;
+  function rnd(){ seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
+  ORD.forEach(function(o){
+    var idx = o.w.map(function(_, i){ return i; });
+    do {
+      for (var i = idx.length - 1; i > 0; i--){ var j = Math.floor(rnd() * (i + 1)), t = idx[i]; idx[i] = idx[j]; idx[j] = t; }
+    } while (idx.every(function(v, i){ return v === i; }));
+    ordPool.push(idx); ordState.push([]);
+  });
+})();
+function renderOrd(){
+  var h = "";
+  ORD.forEach(function(o, s){
+    var used = ordState[s];
+    h += '<div class="ord" data-s="'+s+'"><div class="lab">'+(s+1)+' / '+ORD.length+'</div><div class="line" id="line'+s+'">';
+    if (!used.length) h += '<span class="ph">Atinge cuvintele de mai jos…</span>';
+    used.forEach(function(wi, pos){ h += '<button type="button" class="chip" data-s="'+s+'" data-w="'+wi+'" data-pos="'+pos+'" data-from="line">'+esc(o.w[wi])+'</button>'; });
+    h += '</div><div class="pool" id="pool'+s+'">';
+    ordPool[s].forEach(function(wi){
+      if (used.indexOf(wi) === -1) h += '<button type="button" class="chip" data-s="'+s+'" data-w="'+wi+'" data-from="pool">'+esc(o.w[wi])+'</button>';
+    });
+    h += '</div>'+(used.length ? '<button type="button" class="clr" data-s="'+s+'">Șterge tot</button>' : '')+'<div class="corr hidden" id="corr'+s+'"></div></div>';
+  });
+  $("ord").innerHTML = h;
+}
+$("ord").addEventListener("click", function(e){
+  if (submitted) return;
+  var clr = e.target.closest(".clr");
+  if (clr){ ordState[+clr.getAttribute("data-s")] = []; renderOrd(); progress(); return; }
+  var c = e.target.closest(".chip"); if (!c) return;
+  var s = +c.getAttribute("data-s"), w = +c.getAttribute("data-w");
+  if (c.getAttribute("data-from") === "pool") ordState[s].push(w);
+  else ordState[s].splice(ordState[s].indexOf(w), 1);
+  renderOrd(); progress();
+});
+
+/* ===== 4: select ===== */
+function render4(){
+  var h = "<ul>";
+  SEL.forEach(function(q, i){
+    h += '<li class="sel" id="sel'+i+'">';
+    q.p.forEach(function(x){
+      if (typeof x === "string"){ h += esc(x); return; }
+      h += '<select data-q="'+i+'" aria-label="propoziția '+(i+1)+'"><option value="">–</option>' +
+           CHOICES.map(function(c){ return '<option>'+c+'</option>'; }).join("") + '</select>';
+    });
+    h += ' <sup class="n">('+(i+1)+')</sup></li>';
+  });
+  $("sel").innerHTML = h + "</ul>";
+}
+
+/* ===== progres ===== */
+function done(s){
+  if (s === 1){ var a = document.querySelectorAll("input.gap"); return Array.prototype.every.call(a, function(i){ return i.value.trim(); }); }
+  if (s === 2){ var b = document.querySelectorAll("input.sent"); return Array.prototype.every.call(b, function(i){ return i.value.trim(); }); }
+  if (s === 3) return ORD.every(function(o, i){ return ordState[i].length === o.w.length; });
+  if (s === 4){ var c = document.querySelectorAll("#sel select"); return Array.prototype.every.call(c, function(i){ return i.value; }); }
+}
+function progress(){
+  var left = 0;
+  for (var s = 1; s <= 4; s++){
+    var d = done(s);
+    document.querySelector('#nav a[data-s="'+s+'"]').classList.toggle("done", d);
+    if (!d) left++;
+  }
+  if (!submitted){
+    warned = false;
+    $("msg").textContent = left === 0 ? "Ai completat tot testul. Apasă „Verifică testul”." : "Exerciții încă necompletate: " + left + " din 4.";
+  }
+}
+document.addEventListener("input", function(e){ if (!submitted) progress(); });
+document.addEventListener("change", function(e){ if (!submitted) progress(); });
+document.addEventListener("keydown", function(e){
+  if (e.key !== "Enter" || !(e.target.matches("input.gap") || e.target.matches("input.sent"))) return;
+  var all = Array.prototype.slice.call(document.querySelectorAll("input.gap, input.sent"));
+  var i = all.indexOf(e.target);
+  if (i > -1 && i < all.length - 1) all[i+1].focus();
+});
+
+/* ===== verificare ===== */
+function scoreBadge(id, c, m){
+  var el = $(id), pct = Math.round(c / m * 100);
+  el.textContent = c + " / " + m;
+  el.className = "ex-score " + (pct >= 80 ? "good" : pct >= PASS_PERCENT ? "mid" : "low");
+}
+function check(){
+  submitted = true;
+  var sc = {1:0, 2:0, 3:0, 4:0};
+
+  // 1
+  document.querySelectorAll("input.gap").forEach(function(inp){
+    var n = +inp.getAttribute("data-g"), g = GAPS[n], w = $("g"+n);
+    var ok = norm(inp.value) === norm(g.r); if (ok) sc[1]++;
+    inp.disabled = true; w.classList.add(ok ? "r" : "w");
+    if (!ok){ var f = document.createElement("span"); f.className = "fix"; f.textContent = "→ " + g.r; w.appendChild(f); }
+  });
+  // 2
+  document.querySelectorAll("input.sent").forEach(function(inp){
+    var c = COR[+inp.getAttribute("data-c")], v = norm(inp.value);
+    var ok = c.ok.some(function(a){ return norm(a) === v; }); if (ok) sc[2]++;
+    inp.disabled = true; var box = inp.parentNode; box.classList.add(ok ? "r" : "w");
+    if (!ok){ var f = document.createElement("div"); f.className = "corr"; f.textContent = "→ " + c.ok[0] + "."; box.appendChild(f); }
+  });
+  // 3
+  ORD.forEach(function(o, s){
+    var built = ordState[s].map(function(wi){ return o.w[wi]; }).join(" ");
+    var accepted = [o.w.join(" ")].concat(o.alt || []);
+    var ok = accepted.some(function(a){ return norm(a) === norm(built); }); if (ok) sc[3]++;
+    var line = $("line"+s); line.classList.add(ok ? "r" : "w");
+    line.querySelectorAll(".chip").forEach(function(b){ b.disabled = true; });
+    $("pool"+s).querySelectorAll(".chip").forEach(function(b){ b.disabled = true; });
+    var cl = document.querySelector('.clr[data-s="'+s+'"]'); if (cl) cl.classList.add("hidden");
+    if (!ok){ var cr = $("corr"+s); cr.classList.remove("hidden"); cr.textContent = "→ " + o.w.join(" "); }
+  });
+  // 4
+  SEL.forEach(function(q, i){
+    var li = $("sel"+i), s = li.querySelector("select");
+    var ok = s.value === q.a; if (ok) sc[4]++;
+    s.disabled = true; li.classList.add(ok ? "r" : "w");
+    if (!ok){ var f = document.createElement("span"); f.className = "fix"; f.textContent = "→ " + q.a; li.appendChild(f); }
+  });
+
+  for (var s = 1; s <= 4; s++){ scoreBadge("sc"+s, sc[s], MAX[s]); $("sc"+s).classList.remove("hidden"); }
+  var t = sc[1] + sc[2] + sc[3] + sc[4], pct = Math.round(t / TOTAL * 100);
+  $("score").textContent = "Rezultat: " + t + " / " + TOTAL + " (" + pct + "%)";
+  $("score").className = "score " + (pct >= 80 ? "good" : pct >= PASS_PERCENT ? "mid" : "low");
+  $("total").textContent = "Gesamt: " + t + " / " + TOTAL;
+  $("msg").classList.add("hidden"); $("submit").classList.add("hidden"); $("retry").classList.remove("hidden");
+  scorm.report(t, TOTAL);
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+$("submit").addEventListener("click", function(){
+  var left = 0; for (var s = 1; s <= 4; s++) if (!done(s)) left++;
+  if (left && !warned){
+    warned = true;
+    $("msg").textContent = "Mai sunt exerciții necompletate (" + left + "). Apasă din nou ca să verifici oricum.";
+    return;
+  }
+  check();
+});
+$("retry").addEventListener("click", function(){
+  submitted = false; warned = false;
+  ordState = ORD.map(function(){ return []; });
+  render1(); render2(); renderOrd(); render4();
+  for (var s = 1; s <= 4; s++) $("sc"+s).classList.add("hidden");
+  $("score").className = "score hidden"; $("total").textContent = "";
+  $("msg").classList.remove("hidden"); $("submit").classList.remove("hidden"); $("retry").classList.add("hidden");
+  progress(); window.scrollTo({top:0, behavior:"smooth"});
+});
+
+render1(); render2(); renderOrd(); render4(); progress(); scorm.init();
+window.addEventListener("pagehide", scorm.finish);
+window.addEventListener("beforeunload", scorm.finish);
+</script>
+</body>
+</html>
