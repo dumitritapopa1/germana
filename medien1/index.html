@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Medien und Freizeit</title>
+<style>
+:root{--bg:#f4f5f7;--card:#fff;--ink:#1f2430;--muted:#5d6472;--line:#e3e6eb;--accent:#3b5bdb;--accent-soft:#e8edff;--ok:#1f8a5b;--ok-soft:#e6f5ee;--bad:#c92a2a;--bad-soft:#fdecec}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;font-size:16px;line-height:1.55;display:flex;flex-direction:column}
+header{padding:10px 24px;border-bottom:1px solid var(--line);background:var(--card);display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+header h1{margin:0;font-size:20px}
+.tabs{display:flex;gap:6px}
+.tab{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:7px 16px;font-size:15px;font-weight:700;cursor:pointer;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.tab .dn{display:none;margin-left:4px}.tab.done .dn{display:inline}
+.total{margin-left:auto;font-size:14px;font-weight:700;color:var(--muted)}
+section.ex{display:none;flex:1;min-height:0;flex-direction:column}
+section.ex.on{display:flex}
+.wrap{flex:1;padding:16px 24px;min-height:0;display:flex;gap:16px;justify-content:center}
+.pane{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow-y:auto;min-height:0}
+.wrap.split .pane{flex:1}
+.wrap.one .pane{width:100%;max-width:780px}
+.pi{padding:20px 26px}
+.instr{margin:0 0 14px;padding:12px 16px;background:var(--accent-soft);border-left:4px solid var(--accent);border-radius:6px;font-weight:600}
+.instr small{display:block;font-weight:400;color:var(--muted);margin-top:2px}
+.txt h2{margin:0 0 12px;font-size:20px}
+.txt p{margin:0 0 14px;font-size:17px;line-height:1.7}
+.q{padding:16px 0;border-top:1px solid var(--line)}
+.q:first-of-type{border-top:none}
+.q h3{margin:0 0 10px;font-size:17px}
+.opt{display:flex;align-items:center;gap:12px;padding:9px 13px;border:1.5px solid var(--line);border-radius:10px;margin-bottom:7px;cursor:pointer;font-size:16px}
+.opt:hover{border-color:#aeb6c8}
+.opt{position:relative}.opt input{position:absolute;opacity:0;pointer-events:none}
+.dot{flex:0 0 22px;height:22px;border-radius:50%;border:2px solid #b7bfce;background:#fff;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:800}
+.opt.on{border-color:var(--accent);background:var(--accent-soft)}
+.opt.on .dot{border-color:var(--accent);background:var(--accent);box-shadow:inset 0 0 0 4px #fff,inset 0 0 0 12px var(--accent)}
+.opt.locked{cursor:default}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}.opt.right .dot{border-color:var(--ok);background:var(--ok);box-shadow:none}.opt.right .dot::after{content:"✓"}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}.opt.wrong .dot{border-color:var(--bad);background:var(--bad);box-shadow:none}.opt.wrong .dot::after{content:"✕"}
+.opt.missed{border-color:var(--ok);border-style:dashed}
+.opt .tag{margin-left:auto;font-size:13px;font-weight:700;white-space:nowrap}
+.opt.right .tag,.opt.missed .tag{color:var(--ok)}.opt.wrong .tag{color:var(--bad)}
+.gaps p{font-size:18px;line-height:2.3;margin:0 0 14px}
+.g{display:inline-flex;align-items:baseline;white-space:nowrap}
+.g .pre{font-weight:600}
+.g input{font:inherit;font-size:17px;border:none;border-bottom:2px solid #9aa3b5;background:var(--accent-soft);padding:0 3px;margin:0 1px;border-radius:3px 3px 0 0;color:var(--ink);text-align:left}
+.g input:focus{outline:none;border-bottom-color:var(--accent);background:#dbe3ff}
+.g sup{font-size:11px;color:var(--muted);margin-left:1px}
+.g.ok input{background:var(--ok-soft);border-bottom-color:var(--ok);color:var(--ok);font-weight:600}
+.g.no input{background:var(--bad-soft);border-bottom-color:var(--bad);color:var(--bad);text-decoration:line-through}
+.fix{color:var(--ok);font-weight:700;font-size:15px;margin-left:4px}
+audio{width:100%;height:40px}
+.audio{position:sticky;top:0;background:var(--card);padding-bottom:10px;z-index:2}
+.s{padding:14px 0;border-top:1px solid var(--line)}
+.s:first-of-type{border-top:none}
+.s .st{font-size:17px;margin-bottom:8px}
+.rf{display:flex;gap:8px}
+.rf button{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:8px 20px;font-size:15px;font-weight:700;cursor:pointer;color:var(--ink)}
+.rf button.on{border-color:var(--accent);background:var(--accent-soft)}
+.rf button.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+.rf button.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.rf button.missed{border-color:var(--ok);border-style:dashed;color:var(--ok)}
+.fb{font-size:14px;font-weight:700;margin-top:6px}.fb.ok{color:var(--ok)}.fb.no{color:var(--bad)}
+.bar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:12px 24px;background:var(--card);border-top:1px solid var(--line)}
+.btn{border:none;border-radius:8px;padding:10px 22px;font-size:15px;font-weight:700;cursor:pointer}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:disabled{opacity:.45;cursor:not-allowed}
+.btn-ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line)}
+.msg{font-size:15px;color:var(--muted)}
+.score{font-size:16px;font-weight:700}.score.good{color:var(--ok)}.score.mid{color:#b06a00}.score.low{color:var(--bad)}
+.hidden{display:none!important}
+@media (max-width:820px){
+ body{height:auto;min-height:100%}
+ header{padding:10px 14px}
+ .wrap{padding:10px;flex-direction:column}
+ .pane{overflow:visible}
+ .pi{padding:16px}
+ .total{margin-left:0;width:100%}
+ .bar{position:sticky;bottom:0;padding:10px 14px;z-index:5}
+ .audio{top:0}
+}
+
+.sent{width:100%;font:inherit;font-size:17px;border:1.5px solid var(--line);border-radius:8px;padding:9px 12px;background:var(--accent-soft);color:var(--ink)}
+.sent:focus{outline:none;border-color:var(--accent);background:#dbe3ff}
+.sent.ok{background:var(--ok-soft);border-color:var(--ok);color:var(--ok);font-weight:600}
+.sent.no{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.cue{font-weight:600}
+.bank{display:flex;flex-wrap:wrap;gap:8px;padding:12px;background:#eef1f6;border-radius:10px;margin-bottom:18px;min-height:56px}
+.chip{border:1.5px solid #cfd5e1;background:#fff;border-radius:8px;padding:6px 14px;font-size:16px;cursor:grab;user-select:none;display:inline-block}
+.chip.sel{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 2px rgba(59,91,219,.25)}
+.slot{display:inline-block;min-width:8ch;min-height:36px;vertical-align:middle;border:1.5px dashed #9aa3b5;border-radius:8px;padding:2px 4px;margin:0 3px;background:#fff;text-align:center;line-height:1.6}
+.slot.over{border-color:var(--accent);background:var(--accent-soft)}
+.slot .chip{padding:1px 10px;font-size:17px}
+.slot.ok{border-style:solid;border-color:var(--ok);background:var(--ok-soft)}
+.slot.ok .chip{color:var(--ok);border-color:var(--ok);background:transparent;font-weight:600}
+.slot.no{border-style:solid;border-color:var(--bad);background:var(--bad-soft)}
+.slot.no .chip{color:var(--bad);border-color:var(--bad);background:transparent;text-decoration:line-through}
+.bank.over{background:var(--accent-soft)}
+.img img{width:100%;height:auto;display:block;border-radius:8px}
+.sl .g{margin:0 2px}
+.sl p{margin:0 0 6px;font-size:18px;line-height:2.4}
+
+.audiorow{background:var(--card);border-bottom:1px solid var(--line);padding:8px 24px;position:sticky;top:0;z-index:6}
+.audiorow audio{max-width:900px;display:block;margin:0 auto}
+.wordlist{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}
+.wordlist span{background:#eef1f6;border-radius:8px;padding:5px 12px;font-style:italic;font-weight:600}
+.s audio{margin:4px 0 10px}
+.sg p{margin:0 0 4px;font-size:18px;line-height:2.4}
+@media (max-width:820px){.audiorow{padding:8px 12px}}
+</style>
+</head>
+<body>
+<header>
+ <h1>Medien und Freizeit</h1>
+ <div class="tabs">
+  <button class="tab on" data-ex="0">Übung 1<span class="dn"> ✓</span></button>
+  <button class="tab" data-ex="1">Übung 2<span class="dn"> ✓</span></button>
+  <button class="tab" data-ex="2">Übung 3<span class="dn"> ✓</span></button>
+ </div>
+ <span class="total" id="total"></span>
+</header>
+
+<section class="ex on" id="ex0">
+ <div class="audiorow"><audio controls preload="metadata" src="audio1.mp3"></audio></div>
+ <div class="wrap split">
+  <div class="pane"><div class="pi img"><img src="szene.jpg" alt="Max und Lena telefonieren"></div></div>
+  <div class="pane"><div class="pi">
+   <p class="instr">1.1 Hören Sie und kreuzen Sie die richtige Lösung an.<small>Ascultă dialogul (poți reasculta oricând) și alege varianta corectă. Un singur răspuns corect.</small></p>
+   <div id="qs"></div>
+  </div></div>
+ </div>
+ <div class="bar" data-bar="0">
+  <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
+  <span class="msg"></span><span class="score hidden"></span>
+ </div>
+</section>
+
+<section class="ex" id="ex1">
+ <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
+  <p class="instr">1.2 Hören Sie und schreiben Sie die Sätze.<small>Ascultă fiecare înregistrare și scrie propoziția auzită, cu semnele de punctuație. Poți reasculta de câte ori vrei.</small></p>
+  <div id="dict"></div>
+ </div></div></div>
+ <div class="bar" data-bar="1">
+  <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
+  <span class="msg"></span><span class="score hidden"></span>
+ </div>
+</section>
+
+<section class="ex" id="ex2">
+ <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
+  <p class="instr">1.3 Was machen die Personen mit Medien? Ergänzen Sie die Verben in der richtigen Form.<small>Alege verbul potrivit din listă și scrie-l în forma corectă (Perfekt, Präsens sau infinitiv). Un verb din listă rămâne nefolosit.</small></p>
+  <div class="wordlist" id="wl"></div>
+  <div class="sg" id="gaps"></div>
+ </div></div></div>
+ <div class="bar" data-bar="2">
+  <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
+  <span class="msg"></span><span class="score hidden"></span>
+ </div>
+</section>
+
+<script>
+var PASS_PERCENT=50;
+var MC=[
+ {q:"Der Film „Die Killerbienen 2“ ist",o:["sicher.","spanisch.","spannend."],a:2},
+ {q:"Lena findet Science-Fiction-Filme",o:["langweilig.","schrecklich.","tödlich."],a:0},
+ {q:"Max hat keine Lust auf einen Film",o:["im Pyjama.","ohne Herz.","mit viel Romantik."],a:2},
+ {q:"Lena denkt,",o:["Krimis sind gut für ihre Nerven.","Max will in die Alpen gehen.","Komödien sind gut."],a:2},
+ {q:"Max will lieber mit Lena",o:["ins indische Restaurant gehen.","in ein bayrisches Restaurant gehen.","zwei Mal den Film anschauen."],a:1},
+ {q:"Lena möchte gerne",o:["mit Max eine Diät machen.","selbst etwas Gutes kochen.","ihren Liebling Max anschauen."],a:1}
+];
+var DICT=[
+ {audio:"s1.mp3",a:"Das ist doch schrecklich langweilig."},
+ {audio:"s2.mp3",a:"Nein, darauf habe ich wirklich keine Lust."},
+ {audio:"s3.mp3",a:"Ich glaube, wir sollten lieber zum Essen gehen."},
+ {audio:"s4.mp3",a:"Viel zu fett! Ich mache doch gerade eine Diät!"}
+];
+var WORDS=["ansehen","ausmachen","dauern","chatten","laufen","checken","schicken","speichern","halten"];
+var FILL=[
+ "Wann warst du im Kino? – Gar nicht, ich habe den Film im Internet [angesehen].",
+ "Warum hast du nicht gewartet? Ich habe dir doch eine SMS [geschickt].",
+ "OMG, die Datei ist weg. Hilfe, ich habe nicht alle Daten [gespeichert]!",
+ "Die App [läuft] genauso gut wie erwartet.",
+ "Ich komme sofort, ich muss nur noch meine Mails [checken].",
+ "Du bist schon 10 Stunden online! Kannst du bitte mal den Computer [ausmachen]?",
+ "Mein Akku [hält] nicht mehr so lange wie früher.",
+ "Das Laden [dauert] länger als erwartet."
+];
+var scorm=(function(){var api=null,active=false;
+ function find(w){var n=0;while(w&&n<10){try{if(w.API)return w.API;}catch(e){}if(w.parent&&w.parent!==w){w=w.parent;n++;}else break;}return null;}
+ function init(){api=find(window);if(!api){try{if(window.opener)api=find(window.opener);}catch(e){}}
+  if(api){try{active=String(api.LMSInitialize(""))==="true";if(active){var st=api.LMSGetValue("cmi.core.lesson_status");if(st==="not attempted"||st==="")api.LMSSetValue("cmi.core.lesson_status","incomplete");api.LMSCommit("");}}catch(e){active=false;}}}
+ function report(c,t){if(!active)return;var p=Math.round(c/t*100);try{api.LMSSetValue("cmi.core.score.min","0");api.LMSSetValue("cmi.core.score.max","100");api.LMSSetValue("cmi.core.score.raw",String(p));api.LMSSetValue("cmi.core.lesson_status",p>=PASS_PERCENT?"passed":"failed");api.LMSCommit("");}catch(e){}}
+ function finish(){if(!active)return;try{api.LMSFinish("");}catch(e){}active=false;}
+ return{init:init,report:report,finish:finish};})();
+
+
+
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function norm(s){return String(s).toLowerCase().replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss").replace(/[^a-z0-9]/g,"");}
+function normS(s){return String(s).toLowerCase().replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss").replace(/[^a-z0-9 ]/g," ").replace(/\s+/g," ").trim();}
+var EX=[{total:MC.length,res:null},{total:DICT.length,res:null},{total:0,res:null}];
+var ans={};
+
+/* Ex1 */
+function renderMC(){var chk=EX[0].res!==null,h="";
+ MC.forEach(function(q,i){h+='<div class="q"><h3>'+(i+1)+'. '+esc(q.q)+'</h3>';
+  q.o.forEach(function(o,j){var cls="opt",tag="",dis="";
+   if(chk){cls+=" locked";dis=" disabled";
+    if(ans[i]===j&&j===q.a){cls+=" right";tag="Corect";}
+    else if(ans[i]===j){cls+=" wrong";tag="Greșit";}
+    else if(j===q.a){cls+=" missed";tag="Răspunsul corect";}
+   }else if(ans[i]===j)cls+=" on";
+   h+='<label class="'+cls+'"><input type="radio" name="q'+i+'" value="'+j+'"'+(ans[i]===j?" checked":"")+dis+'><span class="dot"></span><span>'+esc(o)+'</span>'+(tag?'<span class="tag">'+tag+'</span>':"")+'</label>';});
+  h+="</div>";});
+ $("qs").innerHTML=h;}
+renderMC();
+$("qs").addEventListener("change",function(e){if(EX[0].res!==null||e.target.type!=="radio")return;
+ ans[+e.target.name.slice(1)]=+e.target.value;
+ e.target.closest(".q").querySelectorAll(".opt").forEach(function(l){l.classList.toggle("on",l.contains(e.target));});upd(0);});
+
+/* Ex2 */
+$("dict").innerHTML=DICT.map(function(d,i){return '<div class="s"><div class="st"><b>'+(i+1)+'.</b></div><audio controls preload="metadata" src="'+d.audio+'"></audio><input class="sent" type="text" data-i="'+i+'" autocomplete="off" autocapitalize="sentences" spellcheck="false"><div class="fb"></div></div>';}).join("");
+$("dict").addEventListener("input",function(){upd(1);});
+
+/* Ex3 */
+$("wl").innerHTML=WORDS.map(function(w){return"<span>"+esc(w)+"</span>";}).join("");
+var FG=[];
+$("gaps").innerHTML=FILL.map(function(t,n){return"<p><b>"+(n+1)+".</b> "+t.split(/(\[[^\]]+\])/).map(function(x){var m=x.match(/^\[([^\]]+)\]$/);if(!m)return esc(x);
+ var i=FG.length;FG.push(m[1]);return '<span class="g" data-g="'+i+'"><input type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" style="width:'+(m[1].length+3)+'ch"></span>';}).join("")+"</p>";}).join("");
+EX[2].total=FG.length;
+$("gaps").addEventListener("input",function(){upd(2);});
+
+/* un singur audio pornit odată */
+document.addEventListener("play",function(e){document.querySelectorAll("audio").forEach(function(a){if(a!==e.target)a.pause();});},true);
+
+function answered(k){var n=0;
+ if(k===0)return Object.keys(ans).length;
+ var sel=k===1?"#dict input":"#gaps input";document.querySelectorAll(sel).forEach(function(x){if(x.value.trim())n++;});return n;}
+function bar(k){return document.querySelector('.bar[data-bar="'+k+'"]');}
+function upd(k){if(EX[k].res!==null)return;var b=bar(k),n=answered(k),t=EX[k].total;
+ b.querySelector(".chk").disabled=n<t;b.querySelector(".msg").textContent=n<t?"Ai completat "+n+" din "+t+".":"Gata! Apasă „Verifică răspunsurile”.";}
+function updTotal(){var c=0,t=0,any=false;EX.forEach(function(e,k){document.querySelector('.tab[data-ex="'+k+'"]').classList.toggle("done",e.res!==null);if(e.res!==null){c+=e.res;t+=e.total;any=true;}});
+ $("total").textContent=any?"Gesamt: "+c+" / "+t:"";if(any)scorm.report(c,t);}
+function check(k){var c=0;
+ document.querySelectorAll("audio").forEach(function(a){a.pause();});
+ if(k===0){MC.forEach(function(q,i){if(ans[i]===q.a)c++;});EX[0].res=c;renderMC();}
+ else if(k===1){document.querySelectorAll("#dict .s").forEach(function(d,i){var inp=d.querySelector("input"),fb=d.querySelector(".fb"),ok=normS(inp.value)===normS(DICT[i].a);
+   inp.readOnly=true;inp.classList.add(ok?"ok":"no");if(ok){c++;fb.className="fb ok";fb.textContent="Corect";}else{fb.className="fb no";fb.textContent="→ "+DICT[i].a;}});EX[1].res=c;}
+ else{document.querySelectorAll("#gaps .g").forEach(function(sp){var a=FG[+sp.dataset.g],inp=sp.querySelector("input"),ok=norm(inp.value)===norm(a);
+   inp.readOnly=true;sp.classList.add(ok?"ok":"no");if(ok)c++;else{var f=document.createElement("span");f.className="fix";f.textContent="→ "+a;sp.appendChild(f);}});EX[2].res=c;}
+ var t=EX[k].total,p=Math.round(c/t*100),b=bar(k),s=b.querySelector(".score");
+ s.textContent="Rezultat: "+c+" / "+t+" ("+p+"%)";s.className="score "+(p>=80?"good":p>=PASS_PERCENT?"mid":"low");
+ b.querySelector(".msg").classList.add("hidden");b.querySelector(".chk").classList.add("hidden");b.querySelector(".rty").classList.remove("hidden");updTotal();}
+function retry(k){EX[k].res=null;
+ if(k===0){ans={};renderMC();}
+ else if(k===1)document.querySelectorAll("#dict .s").forEach(function(d){var i=d.querySelector("input");i.value="";i.readOnly=false;i.className="sent";var f=d.querySelector(".fb");f.className="fb";f.textContent="";});
+ else document.querySelectorAll("#gaps .g").forEach(function(sp){sp.className="g";var i=sp.querySelector("input");i.value="";i.readOnly=false;var f=sp.querySelector(".fix");if(f)f.remove();});
+ var b=bar(k);b.querySelector(".score").className="score hidden";b.querySelector(".msg").classList.remove("hidden");b.querySelector(".chk").classList.remove("hidden");b.querySelector(".rty").classList.add("hidden");upd(k);updTotal();}
+[0,1,2].forEach(function(k){var b=bar(k);b.querySelector(".chk").addEventListener("click",function(){check(k);});b.querySelector(".rty").addEventListener("click",function(){retry(k);});upd(k);});
+document.querySelectorAll(".tab").forEach(function(t){t.addEventListener("click",function(){
+ document.querySelectorAll("audio").forEach(function(a){a.pause();});
+ document.querySelectorAll(".tab").forEach(function(x){x.classList.toggle("on",x===t);});
+ document.querySelectorAll("section.ex").forEach(function(s,i){s.classList.toggle("on",i===+t.dataset.ex);});window.scrollTo(0,0);});});
+scorm.init();window.addEventListener("pagehide",scorm.finish);
+</script>
+</body>
+</html>
