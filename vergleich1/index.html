@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Komparativ, Superlativ und dass</title>
+<style>
+
+:root{--bg:#f4f5f7;--card:#fff;--ink:#1f2430;--muted:#5d6472;--line:#e3e6eb;--accent:#3b5bdb;--accent-soft:#e8edff;--ok:#1f8a5b;--ok-soft:#e6f5ee;--bad:#c92a2a;--bad-soft:#fdecec}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;font-size:16px;line-height:1.55;display:flex;flex-direction:column}
+header{padding:10px 24px;border-bottom:1px solid var(--line);background:var(--card);display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+header h1{margin:0;font-size:20px}
+.tabs{display:flex;gap:6px}
+.tab{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:7px 16px;font-size:15px;font-weight:700;cursor:pointer;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.tab .dn{display:none;margin-left:4px}.tab.done .dn{display:inline}
+.total{margin-left:auto;font-size:14px;font-weight:700;color:var(--muted)}
+section.ex{display:none;flex:1;min-height:0;flex-direction:column}
+section.ex.on{display:flex}
+.wrap{flex:1;padding:16px 24px;min-height:0;display:flex;gap:16px;justify-content:center}
+.pane{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow-y:auto;min-height:0}
+.wrap.split .pane{flex:1}
+.wrap.one .pane{width:100%;max-width:780px}
+.pi{padding:20px 26px}
+.instr{margin:0 0 14px;padding:12px 16px;background:var(--accent-soft);border-left:4px solid var(--accent);border-radius:6px;font-weight:600}
+.instr small{display:block;font-weight:400;color:var(--muted);margin-top:2px}
+.txt h2{margin:0 0 12px;font-size:20px}
+.txt p{margin:0 0 14px;font-size:17px;line-height:1.7}
+.q{padding:16px 0;border-top:1px solid var(--line)}
+.q:first-of-type{border-top:none}
+.q h3{margin:0 0 10px;font-size:17px}
+.opt{display:flex;align-items:center;gap:12px;padding:9px 13px;border:1.5px solid var(--line);border-radius:10px;margin-bottom:7px;cursor:pointer;font-size:16px}
+.opt:hover{border-color:#aeb6c8}
+.opt{position:relative}.opt input{position:absolute;opacity:0;pointer-events:none}
+.dot{flex:0 0 22px;height:22px;border-radius:50%;border:2px solid #b7bfce;background:#fff;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:800}
+.opt.on{border-color:var(--accent);background:var(--accent-soft)}
+.opt.on .dot{border-color:var(--accent);background:var(--accent);box-shadow:inset 0 0 0 4px #fff,inset 0 0 0 12px var(--accent)}
+.opt.locked{cursor:default}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}.opt.right .dot{border-color:var(--ok);background:var(--ok);box-shadow:none}.opt.right .dot::after{content:"✓"}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}.opt.wrong .dot{border-color:var(--bad);background:var(--bad);box-shadow:none}.opt.wrong .dot::after{content:"✕"}
+.opt.missed{border-color:var(--ok);border-style:dashed}
+.opt .tag{margin-left:auto;font-size:13px;font-weight:700;white-space:nowrap}
+.opt.right .tag,.opt.missed .tag{color:var(--ok)}.opt.wrong .tag{color:var(--bad)}
+.gaps p{font-size:18px;line-height:2.3;margin:0 0 14px}
+.g{display:inline-flex;align-items:baseline;white-space:nowrap}
+.g .pre{font-weight:600}
+.g input{font:inherit;font-size:17px;border:none;border-bottom:2px solid #9aa3b5;background:var(--accent-soft);padding:0 3px;margin:0 1px;border-radius:3px 3px 0 0;color:var(--ink);text-align:left}
+.g input:focus{outline:none;border-bottom-color:var(--accent);background:#dbe3ff}
+.g sup{font-size:11px;color:var(--muted);margin-left:1px}
+.g.ok input{background:var(--ok-soft);border-bottom-color:var(--ok);color:var(--ok);font-weight:600}
+.g.no input{background:var(--bad-soft);border-bottom-color:var(--bad);color:var(--bad);text-decoration:line-through}
+.fix{color:var(--ok);font-weight:700;font-size:15px;margin-left:4px}
+audio{width:100%;height:40px}
+.audio{position:sticky;top:0;background:var(--card);padding-bottom:10px;z-index:2}
+.s{padding:14px 0;border-top:1px solid var(--line)}
+.s:first-of-type{border-top:none}
+.s .st{font-size:17px;margin-bottom:8px}
+.rf{display:flex;gap:8px}
+.rf button{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:8px 20px;font-size:15px;font-weight:700;cursor:pointer;color:var(--ink)}
+.rf button.on{border-color:var(--accent);background:var(--accent-soft)}
+.rf button.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+.rf button.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.rf button.missed{border-color:var(--ok);border-style:dashed;color:var(--ok)}
+.fb{font-size:14px;font-weight:700;margin-top:6px}.fb.ok{color:var(--ok)}.fb.no{color:var(--bad)}
+.bar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:12px 24px;background:var(--card);border-top:1px solid var(--line)}
+.btn{border:none;border-radius:8px;padding:10px 22px;font-size:15px;font-weight:700;cursor:pointer}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:disabled{opacity:.45;cursor:not-allowed}
+.btn-ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line)}
+.msg{font-size:15px;color:var(--muted)}
+.score{font-size:16px;font-weight:700}.score.good{color:var(--ok)}.score.mid{color:#b06a00}.score.low{color:var(--bad)}
+.hidden{display:none!important}
+@media (max-width:820px){
+ body{height:auto;min-height:100%}
+ header{padding:10px 14px}
+ .wrap{padding:10px;flex-direction:column}
+ .pane{overflow:visible}
+ .pi{padding:16px}
+ .total{margin-left:0;width:100%}
+ .bar{position:sticky;bottom:0;padding:10px 14px;z-index:5}
+ .audio{top:0}
+}
+
+.sent{width:100%;font:inherit;font-size:17px;border:1.5px solid var(--line);border-radius:8px;padding:9px 12px;background:var(--accent-soft);color:var(--ink)}
+.sent:focus{outline:none;border-color:var(--accent);background:#dbe3ff}
+.sent.ok{background:var(--ok-soft);border-color:var(--ok);color:var(--ok);font-weight:600}
+.sent.no{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.cue{font-weight:600}
+.bank{display:flex;flex-wrap:wrap;gap:8px;padding:12px;background:#eef1f6;border-radius:10px;margin-bottom:18px;min-height:56px}
+.chip{border:1.5px solid #cfd5e1;background:#fff;border-radius:8px;padding:6px 14px;font-size:16px;cursor:grab;user-select:none;display:inline-block}
+.chip.sel{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 2px rgba(59,91,219,.25)}
+.slot{display:inline-block;min-width:8ch;min-height:36px;vertical-align:middle;border:1.5px dashed #9aa3b5;border-radius:8px;padding:2px 4px;margin:0 3px;background:#fff;text-align:center;line-height:1.6}
+.slot.over{border-color:var(--accent);background:var(--accent-soft)}
+.slot .chip{padding:1px 10px;font-size:17px}
+.slot.ok{border-style:solid;border-color:var(--ok);background:var(--ok-soft)}
+.slot.ok .chip{color:var(--ok);border-color:var(--ok);background:transparent;font-weight:600}
+.slot.no{border-style:solid;border-color:var(--bad);background:var(--bad-soft)}
+.slot.no .chip{color:var(--bad);border-color:var(--bad);background:transparent;text-decoration:line-through}
+.bank.over{background:var(--accent-soft)}
+.img img{width:100%;height:auto;display:block;border-radius:8px}
+.sl .g{margin:0 2px}
+.sl p{margin:0 0 6px;font-size:18px;line-height:2.4}
+
+.audiorow{background:var(--card);border-bottom:1px solid var(--line);padding:8px 24px;position:sticky;top:0;z-index:6}
+.audiorow audio{max-width:900px;display:block;margin:0 auto}
+.wordlist{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}
+.wordlist span{background:#eef1f6;border-radius:8px;padding:5px 12px;font-style:italic;font-weight:600}
+.s audio{margin:4px 0 10px}
+.sg p{margin:0 0 4px;font-size:18px;line-height:2.4}
+@media (max-width:820px){.audiorow{padding:8px 12px}}
+
+.tabs{flex-wrap:wrap}
+.tab{padding:7px 12px}
+.row{display:flex;align-items:baseline;gap:8px;padding:6px 0;font-size:18px;line-height:2.2}
+.row .n{color:var(--muted);min-width:1.8em}
+.row .base{font-weight:600;min-width:6.5em}
+.row.ex{color:var(--muted)}
+.row.ex .ans{font-weight:700;color:var(--ok)}
+.hint{color:var(--muted);font-size:14px}
+.convs{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:6px}
+.conv{border:2px dashed var(--line);border-radius:12px;padding:10px;background:#fafbfc;min-height:150px}
+.conv.over,.pool.over{border-color:var(--accent);background:var(--accent-soft)}
+.conv h3{margin:0 0 6px;text-align:center;font-size:16px}
+.conv audio{height:36px;margin-bottom:8px}
+.pool{display:flex;flex-wrap:wrap;gap:8px;padding:10px;border:2px dashed var(--line);border-radius:12px;min-height:54px;margin-bottom:14px}
+.pool .chip{margin:0}
+.conv .chip{display:block;margin:0 0 7px;text-align:left}
+.chip small{display:block;font-weight:700;font-size:12px;margin-top:2px}
+.chip.ok{border-color:var(--ok);background:var(--ok-soft);color:var(--ok);cursor:default}
+.chip.no{border-color:var(--bad);background:var(--bad-soft);color:var(--bad);cursor:default}
+.aw{display:inline-flex;gap:4px;vertical-align:middle;margin:0 3px}
+.aw button{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:2px 14px;font-size:16px;font-weight:700;cursor:pointer;color:var(--ink)}
+.aw button.on{border-color:var(--accent);background:var(--accent-soft)}
+.aw button.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+.aw button.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.aw button.missed{border-color:var(--ok);border-style:dashed;color:var(--ok)}
+.forum p{margin:0 0 4px;font-size:17px;line-height:2.3}
+.forum .gap{height:10px}
+@media (max-width:820px){.convs{grid-template-columns:1fr}}
+
+.qrow{display:grid;grid-template-columns:1fr 1.15fr;gap:10px;margin-bottom:10px;align-items:stretch}
+.qbox{border:1.5px solid var(--line);border-radius:10px;padding:10px 14px;background:#fff;font-weight:600;display:flex;align-items:center}
+.aslot{border:2px dashed #b7bfce;border-radius:10px;min-height:56px;padding:4px;background:#fafbfc;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:14px;text-align:center}
+.aslot.over{border-color:var(--accent);background:var(--accent-soft)}
+.aslot .chip{display:block;width:100%;margin:0;text-align:left}
+.aslot.ok{border-style:solid;border-color:var(--ok);background:var(--ok-soft)}
+.aslot.no{border-style:solid;border-color:var(--bad);background:var(--bad-soft)}
+.aslot .chip.ok{border-color:var(--ok);background:transparent;color:var(--ok)}
+.aslot .chip.no{border-color:var(--bad);background:transparent;color:var(--bad);text-decoration:line-through}
+.aslot .fixt{display:block;color:var(--ok);font-size:13px;font-weight:700;margin-top:3px;text-decoration:none}
+.abank{display:flex;flex-direction:column;gap:8px;padding:12px;background:#eef1f6;border-radius:10px;margin-bottom:18px;min-height:56px}
+.abank .chip{margin:0;text-align:left;display:block}
+.abank.over{background:var(--accent-soft)}
+.fqitem{margin-bottom:12px;padding:10px 12px;background:#f7f8fb;border-radius:10px}
+.fqbuilt{min-height:48px;padding:6px;border:2px dashed #b7bfce;border-radius:10px;background:#fff;display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:4px 0 8px}
+.fqbuilt.ok{border-style:solid;border-color:var(--ok);background:var(--ok-soft)}
+.fqbuilt.no{border-style:solid;border-color:var(--bad);background:var(--bad-soft)}
+.fqtiles{display:flex;flex-wrap:wrap;gap:8px}
+.fqitem .chip{margin:0;cursor:pointer}
+.cmpd{font-size:19px;line-height:2.4;padding:4px 0}
+.cmpd .n{color:var(--muted);display:inline-block;min-width:1.8em}
+@media (min-width:821px){.abank{display:grid;grid-template-columns:1fr 1fr}}
+@media (max-width:820px){.qrow{grid-template-columns:1fr}}
+
+.txt .title{font-weight:700;font-size:18px;margin:0 0 6px}
+.txt p{margin:0 0 12px;font-size:17px;line-height:1.7}
+.rfs{padding:14px 0;border-top:1px solid var(--line)}
+.rfs:first-of-type{border-top:none}
+.rfs .st{font-size:17px;margin-bottom:8px}
+.rf{display:flex;gap:8px}
+.rf button{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:8px 20px;font-size:15px;font-weight:700;cursor:pointer;color:var(--ink)}
+.rf button.on{border-color:var(--accent);background:var(--accent-soft)}
+.rf button.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+.rf button.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.rf button.missed{border-color:var(--ok);border-style:dashed;color:var(--ok)}
+.corr{display:none;margin-top:10px}
+.corr.show{display:block}
+.corr label{display:block;font-size:13px;color:var(--muted);margin-bottom:4px}
+.sug{margin-top:8px;font-size:14px;color:var(--ok);font-weight:700}
+.film{padding:14px 0;border-top:1px solid var(--line)}
+.film:first-of-type{border-top:none}
+.film h3{margin:0 0 6px;font-size:17px}
+.film audio{margin-bottom:10px}
+
+.drow{padding:12px 0;border-top:1px solid var(--line)}
+.drow:first-of-type{border-top:none}
+.drow .st{font-size:17px;margin-bottom:6px}
+.dline{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dline .pre{font-weight:700;white-space:nowrap;font-size:17px}
+.dline input{flex:1;min-width:220px}
+.drow.ex{background:#f3f7f4;border-radius:10px;padding:12px 14px;margin-bottom:6px;border:1px solid var(--ok)}
+.drow.ex .ans{color:var(--ok);font-weight:700;font-size:17px}
+.tip{background:#fff8e6;border-left:4px solid #e0a100;border-radius:6px;padding:10px 14px;margin:0 0 14px;font-size:15px}
+.tip b{color:#8a5a00}
+.convs.four{grid-template-columns:1fr 1fr}
+
+.mbank{display:flex;flex-wrap:wrap;gap:8px;padding:12px;background:#eef1f6;border-radius:10px;margin-bottom:18px;min-height:56px}
+.mbank.over{background:var(--accent-soft)}
+.mbank .chip{margin:0}
+.pgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.pcell{text-align:center}
+.pcell img{width:100%;height:auto;display:block;border-radius:6px}
+.pcell .slot{display:block;margin:6px auto 0;width:76px;min-width:0;min-height:38px;font-size:18px}
+.pcell .slot .chip{padding:1px 10px;font-size:18px;font-weight:700}
+.msl .slot .chip{font-size:16px}
+.sl2 p{margin:0 0 4px;font-size:18px;line-height:2.5}
+.post{margin-bottom:14px}
+.post .nm{font-weight:700}
+.post p{margin:4px 0 0;font-size:17px;line-height:1.75}
+.post .ttl{display:inline-block;vertical-align:middle}
+.exchip{display:inline-block;border:1.5px solid var(--ok);background:var(--ok-soft);color:var(--ok);border-radius:8px;padding:2px 10px;font-size:16px;font-weight:600}
+.fixs{color:var(--ok);font-weight:700;font-size:13px;display:block}
+@media (max-width:820px){.pgrid{grid-template-columns:repeat(2,1fr)}}
+
+.pk{display:inline-flex;gap:5px;vertical-align:middle;margin:0 3px;flex-wrap:wrap}
+.cw{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:2px 11px;font:inherit;font-size:16px;cursor:pointer;color:var(--ink)}
+.cw:hover{border-color:#aeb6c8}
+.cw.on{border-color:var(--accent);background:var(--accent-soft);font-weight:700}
+.cw.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok);font-weight:700}
+.cw.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad);text-decoration:line-through}
+.cw.missed{border-color:var(--ok);border-style:dashed;color:var(--ok);font-weight:700}
+.cw:disabled{cursor:default}
+.s2 .st{font-size:18px;line-height:2.3}
+.g input{text-align:center;padding:0 3px}
+.d1{padding:14px 0;border-top:1px solid var(--line)}
+.d1 .q{font-style:italic;color:var(--muted);font-size:16px;border:none;padding:0;margin:0 0 4px}
+.d1 .st{font-size:18px;line-height:2.4}
+.vb{font-weight:800;color:var(--accent);font-style:normal}
+.exb{margin:0 0 8px;padding:12px 14px;background:#f3f7f4;border:1px solid var(--ok);border-radius:10px;font-size:18px}
+.exb .ans{color:var(--ok);font-weight:700}
+.exb .hint{display:block;font-size:14px}
+.exb .q{font-style:italic;color:var(--muted);font-size:16px;margin-bottom:4px;border:none;padding:0}
+.fix{color:var(--ok);font-weight:700;font-size:15px;margin-left:4px}
+details.help{margin:0 0 14px;border:1px solid var(--line);border-radius:10px;background:#fafbfc;padding:8px 14px}
+details.help summary{cursor:pointer;font-weight:700;color:var(--accent)}
+details.help table{border-collapse:collapse;margin-top:8px;font-size:15px}
+details.help th,details.help td{border:1px solid var(--line);padding:4px 12px;text-align:left}
+details.help th{background:#eef1f6}
+.bld{padding:14px 0;border-top:1px solid var(--line)}
+.bld .ro{font-size:16px;color:var(--muted);font-style:italic}
+.bld .ro b{font-style:normal;color:var(--ink)}
+.line{min-height:50px;border:1.5px dashed #9aa3b5;border-radius:10px;padding:6px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;background:#fff;margin:8px 0}
+.line .pf{font-size:17px;font-weight:600;margin:0 4px}
+.line .chip,.pl .chip{cursor:pointer}
+.pl{display:flex;flex-wrap:wrap;gap:6px}
+.line.ok{border-style:solid;border-color:var(--ok);background:var(--ok-soft)}
+.line.no{border-style:solid;border-color:var(--bad);background:var(--bad-soft)}
+.line.ok .chip{color:var(--ok);border-color:var(--ok);background:transparent;font-weight:600}
+.line.no .chip{color:var(--bad);border-color:var(--bad);background:transparent}
+.clr{border:none;background:none;color:var(--muted);font-size:13px;cursor:pointer;text-decoration:underline;padding:2px 0}
+.fbk{font-size:15px;margin-top:6px}.fbk.ok{color:var(--ok);font-weight:700}.fbk.no{color:var(--bad)}.fbk .cr{color:var(--ok);font-weight:700;display:block}
+</style>
+</head>
+<body>
+<header>
+ <h1>Vergleiche &amp; dass</h1>
+ <div class="tabs"><button class="tab on" data-ex="0">Übung 1<span class="dn"> ✓</span></button><button class="tab" data-ex="1">Übung 2<span class="dn"> ✓</span></button><button class="tab" data-ex="2">Übung 3<span class="dn"> ✓</span></button><button class="tab" data-ex="3">Übung 4<span class="dn"> ✓</span></button></div>
+ <span class="total" id="total"></span>
+</header>
+<section class="ex on" id="ex0">
+ <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
+  <p class="instr">1.1 Was ist richtig: <i>als</i> oder <i>wie</i>? Kreuzen Sie an.<small>Alege cuvântul potrivit pentru fiecare spațiu (atinge varianta aleasă). Reține: după Komparativ → <b>als</b>; după „so … wie“ → <b>wie</b>.</small></p>
+  <div id="c0"></div>
+ </div></div></div>
+ <div class="bar" data-bar="0">
+  <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
+  <span class="msg"></span><span class="score hidden"></span>
+ </div>
+</section>
+<section class="ex" id="ex1">
+ <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
+  <p class="instr">1.2 Vier Leute, vier Meinungen. Ergänzen Sie die dass-Sätze. Wohin wandert das Verb?<small>Transformă propoziția în una cu <b>dass</b>: scrie pronumele personal și posesivul potrivit. Observă verbul (albastru): în propoziția cu dass ajunge la <b>sfârșit</b>. Cu Enter treci la următorul spațiu.</small></p>
+  <div class="exb"><div class="q">Ich <span class="vb">kann</span> zu Hause für meine Firma arbeiten.</div><span class="hint">Exemplu:</span>1. Frau Weber sagt, dass <span class="ans">sie</span> zu Hause für <span class="ans">ihre</span> Firma arbeiten <span class="vb">kann</span>.</div>
+  <div id="g1"></div>
+ </div></div></div>
+ <div class="bar" data-bar="1">
+  <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
+  <span class="msg"></span><span class="score hidden"></span>
+ </div>
+</section>
+<section class="ex" id="ex2">
+ <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
+  <p class="instr">1.3 Komparativ oder Superlativ?<small>Alege forma corectă a adjectivului sau adverbului. Atenție la indicii din propoziție: <b>als</b> → Komparativ; <b>von allen / in der Familie</b> → Superlativ (am …sten).</small></p>
+  <details class="help"><summary>Hilfe / Ajutor</summary>
+   <table><tr><th>Komparativ (A &gt; B)</th><th>Superlativ (A &gt; toți)</th></tr>
+   <tr><td>schnell<b>er</b> als</td><td><b>am</b> schnell<b>sten</b></td></tr>
+   <tr><td>lieb → <b>lieber</b></td><td>lieb → <b>am liebsten</b></td></tr>
+   <tr><td>gut → <b>besser</b></td><td>gut → <b>am besten</b></td></tr></table></details>
+  <div id="c2"></div>
+ </div></div></div>
+ <div class="bar" data-bar="2">
+  <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
+  <span class="msg"></span><span class="score hidden"></span>
+ </div>
+</section>
+<section class="ex" id="ex3">
+ <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
+  <p class="instr">1.4 Was sagen die Leute? Bilden Sie dass-Sätze.<small>Transformă citatul într-o propoziție cu <b>dass</b>: atinge cuvintele în ordinea corectă. Verbul conjugat merge la sfârșit (la Perfekt: hat/ist la sfârșit). Se acceptă mai multe variante corecte; virgula nu contează.</small></p>
+  <div id="bl"></div>
+ </div></div></div>
+ <div class="bar" data-bar="3">
+  <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
+  <span class="msg"></span><span class="score hidden"></span>
+ </div>
+</section>
+<script>
+var PASS_PERCENT=50;
+var C0=[
+ "Das Internet ist viel schneller {*als|wie} Zeitungen.",
+ "Im Kaufhaus einkaufen ist nicht so bequem {als|*wie} online einkaufen.",
+ "Eva sieht seltener Filme im Kino {*als|wie} zu Hause.",
+ "Philipp spielt lieber mit dem Computer {*als|wie} mit seiner Spielekonsole.",
+ "Telefonieren kostet oft mehr {*als|wie} simsen.",
+ "Vera liest E-Books nicht so gern {als|*wie} Bücher aus Papier."
+];
+var G1=[
+ {q:"Ich ~passe~ im Internet gut auf meine Daten ~auf~.",s:"Herr Weber sagt, dass [|er] im Internet gut auf [|seine] Daten ~aufpasst~."},
+ {q:"Ich ~rufe~ meine Freundin übers Internet ~an~.",s:"Julia sagt, dass [|sie] [|ihre] Freundin übers Internet ~anruft~."},
+ {q:"Ich ~muss~ immer meine E-Mails checken.",s:"Simon sagt, dass [|er] immer [|seine] E-Mails checken ~muss~."}
+];
+var C2=[
+ "Das Internet ist {*schneller|am schnellsten} als eine Zeitung.",
+ "Von allen Medien finde ich das Smartphone {besser|*am besten}.",
+ "Mein Bruder spielt {*lieber|am liebsten} Fußball als Tennis.",
+ "Von allen Hobbys spielt er {lieber|*am liebsten} Computerspiele.",
+ "Im Winter sind die Tage {*kürzer|am kürzesten} als im Sommer.",
+ "Dieses Handy ist von allen Handys im Geschäft {teurer|*am teuersten}.",
+ "Max ist {*älter|am ältesten} als seine Schwester.",
+ "In unserer Familie ist Lena {jünger|*am jüngsten}."
+];
+var B3=[{"p": "Anna sagt,", "q": "Ich surfe jeden Tag im Internet.", "v": ["dass sie jeden Tag im Internet surft", "dass sie im Internet jeden Tag surft"], "o": [5, 1, 6, 4, 3, 2, 0]}, {"p": "Tom sagt,", "q": "Ich kann ohne Handy nicht leben.", "v": ["dass er ohne Handy nicht leben kann"], "o": [6, 3, 1, 0, 5, 4, 2]}, {"p": "Meine Eltern sagen,", "q": "Wir telefonieren oft mit unseren Freunden.", "v": ["dass sie oft mit ihren Freunden telefonieren", "dass sie mit ihren Freunden oft telefonieren"], "o": [6, 5, 3, 2, 1, 4, 0]}, {"p": "Ich finde,", "q": "Online einkaufen ist bequem.", "v": ["dass online einkaufen bequem ist"], "o": [3, 1, 4, 0, 2]}, {"p": "Lisa sagt,", "q": "Ich habe gestern einen Film gesehen.", "v": ["dass sie gestern einen Film gesehen hat", "dass sie einen Film gestern gesehen hat"], "o": [2, 3, 1, 0, 5, 4, 6]}, {"p": "Jan sagt,", "q": "Ich muss heute lange arbeiten.", "v": ["dass er heute lange arbeiten muss"], "o": [2, 0, 1, 5, 4, 3]}];
+var scorm=(function(){var api=null,active=false;
+ function find(w){var n=0;while(w&&n<10){try{if(w.API)return w.API;}catch(e){}if(w.parent&&w.parent!==w){w=w.parent;n++;}else break;}return null;}
+ function init(){api=find(window);if(!api){try{if(window.opener)api=find(window.opener);}catch(e){}}
+  if(api){try{active=String(api.LMSInitialize(""))==="true";if(active){var st=api.LMSGetValue("cmi.core.lesson_status");if(st==="not attempted"||st==="")api.LMSSetValue("cmi.core.lesson_status","incomplete");api.LMSCommit("");}}catch(e){active=false;}}}
+ function report(c,t){if(!active)return;var p=Math.round(c/t*100);try{api.LMSSetValue("cmi.core.score.min","0");api.LMSSetValue("cmi.core.score.max","100");api.LMSSetValue("cmi.core.score.raw",String(p));api.LMSSetValue("cmi.core.lesson_status",p>=PASS_PERCENT?"passed":"failed");api.LMSCommit("");}catch(e){}}
+ function finish(){if(!active)return;try{api.LMSFinish("");}catch(e){}active=false;}
+ return{init:init,report:report,finish:finish};})();
+
+
+
+
+
+
+
+
+
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function norm(s){return String(s).toLowerCase().replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss").replace(/[^a-z0-9]/g,"");}
+function normS(s){return String(s).toLowerCase().replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss").replace(/[^a-z0-9 ]/g," ").replace(/\s+/g," ").trim();}
+function vbH(s){return s.replace(/~([^~]+)~/g,'<span class="vb">$1</span>');}
+function choiceHTML(a){return a.map(function(t,i){var h=esc(t).replace(/\{([^}]+)\}/g,function(_,g){var o=g.split("|"),ans=0;
+  var b=o.map(function(x,j){if(x.charAt(0)==="*"){ans=j;x=x.slice(1);}return '<button type="button" class="cw" data-v="'+j+'">'+x+'</button>';}).join("");
+  return '<span class="pk" data-a="'+ans+'">'+b+'</span>';});
+ return '<div class="s s2"><div class="st"><b>'+(i+1)+'.</b> '+h+'</div></div>';}).join("");}
+function gapsHTML(t){return esc(t).replace(/\[([^|\]]*)\|([^\]]*)\]/g,function(_,p,r){return '<span class="g" data-p="'+p+'" data-r="'+r+'">'+p+'<input type="text" style="width:'+(r.length+3)+'ch" autocomplete="off" autocapitalize="off" spellcheck="false"></span>';});}
+$("c0").innerHTML=choiceHTML(C0);$("c2").innerHTML=choiceHTML(C2);
+$("g1").innerHTML=G1.map(function(g,i){return '<div class="d1"><div class="q">'+vbH(esc(g.q))+'</div><div class="st"><b>'+(i+2)+'.</b> '+vbH(gapsHTML(g.s))+'</div></div>';}).join("");
+var EX=[{res:null,total:C0.length},{res:null,total:$("g1").querySelectorAll(".g").length},{res:null,total:C2.length},{res:null,total:B3.length}];
+/* builder */
+var BS=[];
+function initB(){BS=B3.map(function(it){return {pool:it.o.slice(),line:[],done:false};});}
+function Tk(i){return B3[i].v[0].split(" ");}
+function renderItem(i){var s=BS[i],t=Tk(i),it=B3[i],el=$("b"+i);
+ var line='<span class="pf">'+esc(it.p)+'</span>'+s.line.map(function(k){return '<span class="chip" data-k="'+k+'">'+esc(t[k])+'</span>';}).join("");
+ if(!s.line.length)line+='<span class="hint">Atinge cuvintele în ordinea corectă…</span>';
+ var pool=s.pool.map(function(k){return '<span class="chip" data-k="'+k+'">'+esc(t[k])+'</span>';}).join("");
+ var cls="line",fb="";
+ if(s.done){cls+=s.ok?" ok":" no";
+  fb=s.ok?'<div class="fbk ok">Corect</div>':'<div class="fbk no">Greșit – varianta corectă:'+it.v.map(function(v){return '<span class="cr">'+esc(it.p+" "+v+".")+'</span>';}).join("")+'</div>';}
+ el.innerHTML='<div class="ro"><b>'+(i+1)+'.</b> '+esc(it.p.replace(/,$/,":"))+' „'+esc(it.q)+'“</div><div class="'+cls+'">'+line+'</div>'+
+  (s.done?"":'<div class="pl" data-w="pool">'+pool+'</div><button type="button" class="clr">șterge tot</button>')+fb;}
+$("bl").innerHTML=B3.map(function(_,i){return '<div class="bld" id="b'+i+'"></div>';}).join("");
+$("bl").addEventListener("click",function(e){if(EX[3].res!==null)return;
+ var box=e.target.closest(".bld");if(!box)return;var i=+box.id.slice(1),s=BS[i];
+ if(e.target.closest(".clr")){s.pool=s.pool.concat(s.line);s.line=[];renderItem(i);upd(3);return;}
+ var ch=e.target.closest(".chip");if(!ch)return;var k=+ch.dataset.k;
+ if(ch.parentNode.dataset.w==="pool"){s.pool.splice(s.pool.indexOf(k),1);s.line.push(k);}
+ else{s.line.splice(s.line.indexOf(k),1);s.pool.push(k);}
+ renderItem(i);upd(3);});
+function initBAll(){initB();B3.forEach(function(_,i){renderItem(i);});}
+/* interaction */
+["c0","c2"].forEach(function(id,n){var k=n*2;$(id).addEventListener("click",function(e){var bt=e.target.closest(".cw");if(!bt||EX[k].res!==null)return;
+ bt.parentNode.querySelectorAll(".cw").forEach(function(x){x.classList.toggle("on",x===bt&&!x.classList.contains("on"));});upd(k);});});
+$("g1").addEventListener("input",function(){upd(1);});
+$("g1").addEventListener("keydown",function(e){if(e.key!=="Enter")return;e.preventDefault();var a=[].slice.call($("g1").querySelectorAll("input:not([disabled])")),i=a.indexOf(e.target);if(i>-1&&a[i+1])a[i+1].focus();});
+function answered(k){if(k===0)return $("c0").querySelectorAll(".pk .cw.on").length;if(k===2)return $("c2").querySelectorAll(".pk .cw.on").length;
+ if(k===1)return [].filter.call($("g1").querySelectorAll("input"),function(i){return i.value.trim()!=="";}).length;
+ return BS.filter(function(s){return s.pool.length===0;}).length;}
+function bar(k){return document.querySelector('.bar[data-bar="'+k+'"]');}
+function upd(k){if(EX[k].res!==null)return;var b=bar(k),n=answered(k),t=EX[k].total;
+ b.querySelector(".chk").disabled=n<t;b.querySelector(".msg").textContent=n<t?"Ai completat "+n+" din "+t+".":"Gata! Apasă „Verifică răspunsurile”.";}
+function updTotal(){var c=0,t=0,any=false;EX.forEach(function(e,k){document.querySelector('.tab[data-ex="'+k+'"]').classList.toggle("done",e.res!==null);if(e.res!==null){c+=e.res;t+=e.total;any=true;}});
+ $("total").textContent=any?"Gesamt: "+c+" / "+t:"";if(any)scorm.report(c,t);}
+function checkPk(id){var c=0;$(id).querySelectorAll(".pk").forEach(function(p){var a=+p.dataset.a,on=p.querySelector(".cw.on"),ok=on&&+on.dataset.v===a;if(ok)c++;
+   p.querySelectorAll(".cw").forEach(function(b){var v=+b.dataset.v;b.disabled=true;b.classList.remove("on");
+    if(on===b&&v===a)b.classList.add("right");else if(on===b)b.classList.add("wrong");else if(v===a)b.classList.add("missed");});});return c;}
+function check(k){var c=0;
+ if(k===0)c=checkPk("c0");else if(k===2)c=checkPk("c2");
+ else if(k===1){$("g1").querySelectorAll(".g").forEach(function(g){var inp=g.querySelector("input"),v=norm(inp.value),r=g.dataset.r;
+   var ok=v===norm(r);inp.disabled=true;g.classList.add(ok?"ok":"no");if(ok)c++;else{var f=document.createElement("span");f.className="fix";f.textContent="→ "+r;g.appendChild(f);}});}
+ else{B3.forEach(function(it,i){var s=BS[i],w=normS(s.line.map(function(x){return Tk(i)[x];}).join(" "));
+   s.done=true;s.ok=it.v.map(normS).indexOf(w)>-1;if(s.ok)c++;renderItem(i);});}
+ EX[k].res=c;
+ var t=EX[k].total,p=Math.round(c/t*100),b=bar(k),s=b.querySelector(".score");
+ s.textContent="Rezultat: "+c+" / "+t+" ("+p+"%)";s.className="score "+(p>=80?"good":p>=PASS_PERCENT?"mid":"low");
+ b.querySelector(".msg").classList.add("hidden");b.querySelector(".chk").classList.add("hidden");b.querySelector(".rty").classList.remove("hidden");updTotal();}
+function retry(k){EX[k].res=null;
+ if(k===0||k===2){$(k===0?"c0":"c2").querySelectorAll(".cw").forEach(function(b){b.disabled=false;b.className="cw";});}
+ else if(k===1){$("g1").querySelectorAll(".g").forEach(function(g){g.className="g";var i=g.querySelector("input");i.disabled=false;i.value="";var f=g.querySelector(".fix");if(f)f.remove();});}
+ else initBAll();
+ var b=bar(k);b.querySelector(".score").className="score hidden";b.querySelector(".msg").classList.remove("hidden");b.querySelector(".chk").classList.remove("hidden");b.querySelector(".rty").classList.add("hidden");upd(k);updTotal();}
+[0,1,2,3].forEach(function(k){var b=bar(k);b.querySelector(".chk").addEventListener("click",function(){check(k);});b.querySelector(".rty").addEventListener("click",function(){retry(k);});});
+document.querySelectorAll(".tab").forEach(function(t){t.addEventListener("click",function(){
+ document.querySelectorAll(".tab").forEach(function(x){x.classList.toggle("on",x===t);});
+ document.querySelectorAll("section.ex").forEach(function(s,i){s.classList.toggle("on",i===+t.dataset.ex);});window.scrollTo(0,0);});});
+initBAll();[0,1,2].forEach(upd);upd(3);
+scorm.init();window.addEventListener("pagehide",scorm.finish);
+</script>
+</body>
+</html>
