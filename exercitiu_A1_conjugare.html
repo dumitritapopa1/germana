@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A1 – Conjugarea verbelor</title>
+<style>
+  :root{
+    --bg:#f1f4f6;--card:#ffffff;--ink:#1f2933;--muted:#667085;--line:#e1e6ea;
+    --green:#3f7d2c;--accent:#3f7d2c;--ok:#16a34a;--okbg:#dcfce7;--bad:#dc2626;--badbg:#fee2e2;
+    --sel:#dbeafe;--selb:#2563eb;--surface:#f2f5f8;--field:#ffffff;--border2:#cbd5e1;
+    --instr:#eef6ea;--instrink:#2f5e20;--numbg:#e0f2fe;--numfg:#0369a1;--ph:#94a3b8;--hint:#14532d;
+  }
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+    --bg:#13181d;--card:#1b2229;--ink:#e6eaf0;--muted:#98a2b3;--line:#2b3541;
+    --green:#8fd07a;--accent:#4a8f36;--ok:#3ecf6b;--okbg:#12391f;--bad:#f87171;--badbg:#4a1d1d;
+    --sel:#1e3a5f;--selb:#60a5fa;--surface:#222a33;--field:#222a33;--border2:#3b4654;
+    --instr:#1f2d1b;--instrink:#b7e0a5;--numbg:#0c3a52;--numfg:#7dd3fc;--ph:#7b8794;--hint:#86efac;color-scheme:dark}}
+  :root[data-theme="dark"]{
+    --bg:#13181d;--card:#1b2229;--ink:#e6eaf0;--muted:#98a2b3;--line:#2b3541;
+    --green:#8fd07a;--accent:#4a8f36;--ok:#3ecf6b;--okbg:#12391f;--bad:#f87171;--badbg:#4a1d1d;
+    --sel:#1e3a5f;--selb:#60a5fa;--surface:#222a33;--field:#222a33;--border2:#3b4654;
+    --instr:#1f2d1b;--instrink:#b7e0a5;--numbg:#0c3a52;--numfg:#7dd3fc;--ph:#7b8794;--hint:#86efac;color-scheme:dark}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Nunito Sans",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;line-height:1.55;font-size:17px}
+  .wrap{max-width:780px;margin:0 auto;padding:20px 16px 50px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;margin-bottom:20px}
+  .head{display:flex;gap:12px;align-items:flex-start;margin-bottom:10px}
+  .num{background:var(--numbg);color:var(--numfg);font-weight:800;border-radius:10px;padding:2px 10px;flex:none}
+  h1{font-size:1.2rem;margin:0;color:var(--green);min-width:0}
+  .instr{background:var(--instr);border-left:4px solid var(--green);border-radius:6px;padding:10px 14px;margin:0 0 14px;font-size:.95rem}
+  .instr b{color:var(--instrink)}
+  details.help{margin:0 0 16px;font-size:.92rem}
+  details.help summary{cursor:pointer;color:var(--selb);font-weight:700}
+  .tw{overflow-x:auto}
+  details.help table{border-collapse:collapse;margin-top:8px;min-width:300px}
+  details.help th,details.help td{border:1px solid var(--line);padding:4px 10px;text-align:left}
+  details.help th{background:var(--surface)}
+  details.help p{margin:8px 0 0;color:var(--muted)}
+  .q{padding:14px 0;border-top:1px solid var(--line)}
+  .q:first-child{border-top:0;padding-top:0}
+  .qt{font-weight:700;margin-bottom:8px}
+  .blank{display:inline-block;min-width:4.5em;border-bottom:2px solid var(--muted);margin:0 2px}
+  label.o{display:flex;align-items:center;gap:12px;padding:6px 10px;border-radius:10px;cursor:pointer;border:2px solid transparent}
+  label.o:hover{background:var(--surface)}
+  label.o input{position:absolute;opacity:0}
+  .dot{width:28px;height:28px;flex:none;border:2px solid var(--border2);border-radius:50%;background:var(--field)}
+  label.o input:checked + .dot{border-color:var(--accent);background:radial-gradient(circle,var(--accent) 45%,var(--field) 50%)}
+  label.o input:focus-visible + .dot{outline:3px solid var(--selb)}
+  label.o.ok{background:var(--okbg);border-color:var(--ok)}
+  label.o.bad{background:var(--badbg);border-color:var(--bad)}
+  .fb{font-size:.9rem;color:var(--bad);min-height:1.2em;margin-top:4px}
+  .fb.good{color:var(--ok)}
+  .fb .more{color:var(--muted)}
+  .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  .rn{color:var(--muted);min-width:1.6em}
+  select,input[type=text]{font:inherit;color:var(--ink);background:var(--field);border:2px solid var(--border2);border-radius:10px;padding:6px 10px;max-width:100%}
+  select{min-width:12em}
+  input[type=text]{width:16em}
+  input.long{width:min(100%,26em)}
+  select:focus,input[type=text]:focus{outline:none;border-color:var(--selb)}
+  select.ok,input.ok{border-color:var(--ok);background:var(--okbg)}
+  select.bad,input.bad{border-color:var(--bad);background:var(--badbg)}
+  .ro{font-weight:700}
+  .tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap;position:sticky;bottom:0;background:var(--bg);padding:12px 0}
+  button.main{background:var(--accent);color:#fff;border:0;border-radius:10px;padding:11px 26px;font:inherit;font-weight:700;cursor:pointer}
+  button.sec{background:var(--field);color:var(--ink);border:2px solid var(--border2);border-radius:10px;padding:9px 18px;font:inherit;cursor:pointer}
+  .score{font-weight:800;font-size:1.1rem}
+  :focus-visible{outline:3px solid var(--selb);outline-offset:2px}
+  @media(max-width:520px){body{font-size:16px}.card{padding:16px}}
+
+  .tools{position:static;padding:14px 0 0}
+  h1.page{font-size:1.5rem;margin:0 0 4px;color:var(--green)}
+  .sub{color:var(--muted);margin:0 0 16px}
+  .total{text-align:center;font-weight:800;font-size:1.15rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1 class="page">Conjugarea verbelor la prezent</h1>
+  <p class="sub">Niveau A1 · 4 exerciții</p>
+  <div class="card" style="padding:14px 22px"><details class="help"><summary>Ajutor: terminațiile la prezent</summary>
+<div class="tw"><table><tr><th>Pronume</th><th>Terminație</th><th>lernen</th></tr>
+<tr><td>ich</td><td>-e</td><td>lerne</td></tr>
+<tr><td>du</td><td>-st</td><td>lernst</td></tr>
+<tr><td>er / sie / es</td><td>-t</td><td>lernt</td></tr>
+<tr><td>wir</td><td>-en</td><td>lernen</td></tr>
+<tr><td>ihr</td><td>-t</td><td>lernt</td></tr>
+<tr><td>sie / Sie</td><td>-en</td><td>lernen</td></tr></table></div>
+<p>Atenție: la verbele cu radical în <i>-t</i> sau <i>-d</i> (de ex. <i>arbeiten</i>) apare un <i>-e-</i> în plus la du, er/sie/es și ihr: du arbeit<b>e</b>st, er arbeit<b>e</b>t, ihr arbeit<b>e</b>t.</p></details></div>
+  <section class="card" id="ex1">
+    <div class="head"><span class="num">1</span><h1>Alege forma corectă a verbului</h1></div>
+    <p class="instr"><b>Cerință:</b> Citește propoziția și alege forma corectă a verbului, potrivită cu subiectul (<i>ich, du, er, wir, ihr, sie</i> sau un nume). O singură variantă este corectă. Uită-te la <b>terminația</b> verbului.</p>
+    <div class="exbody"></div>
+    <div class="tools"><button class="main bcheck">Prüfen</button><button class="sec breset">Neu starten</button><span class="score"></span></div>
+  </section>
+  <section class="card" id="ex2">
+    <div class="head"><span class="num">2</span><h1>Alege pronumele care se potrivesc</h1></div>
+    <p class="instr"><b>Cerință:</b> Alege din listă subiectul care se potrivește cu verbul, orientându-te după <b>terminații</b>. În unele cazuri sunt corecte mai multe răspunsuri (de exemplu <i>Er</i> și <i>Fabio</i> cer aceeași terminație). Alege unul dintre ele.</p>
+    <div class="exbody"></div>
+    <div class="tools"><button class="main bcheck">Prüfen</button><button class="sec breset">Neu starten</button><span class="score"></span></div>
+  </section>
+  <section class="card" id="ex3">
+    <div class="head"><span class="num">3</span><h1>Tradu în germană propozițiile</h1></div>
+    <p class="instr"><b>Cerință:</b> Tradu fiecare propoziție din română în germană. Scrie propoziția întreagă, cu verbul la forma potrivită. Nu contează literele mari sau mici și punctul de la sfârșit, dar <b>ortografia</b> și <b>terminațiile</b> contează.</p>
+    <div class="exbody"></div>
+    <div class="tools"><button class="main bcheck">Prüfen</button><button class="sec breset">Neu starten</button><span class="score"></span></div>
+  </section>
+  <section class="card" id="ex4">
+    <div class="head"><span class="num">4</span><h1>Găsește greșeala de terminație</h1></div>
+    <p class="instr"><b>Cerință:</b> Fiecare propoziție conține <b>o greșeală de terminație</b> la verb. Scrie <b>forma corectă</b> a verbului în căsuță (poți scrie și propoziția întreagă).</p>
+    <div class="exbody"></div>
+    <div class="tools"><button class="main bcheck">Prüfen</button><button class="sec breset">Neu starten</button><span class="score"></span></div>
+  </section>
+  <div class="card total" id="total" hidden></div>
+</div>
+<script>
+const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;");
+const shuffle = a => { a=[...a]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]} return a };
+const norm = s => s.normalize("NFC").trim().toLowerCase().replace(/[.,!?;:"“”„']/g,"").replace(/\s+/g," ");
+const RES = {};
+function updateTotal(){
+  const d = Object.values(RES).filter(Boolean), el = document.getElementById("total");
+  if(!d.length){ el.hidden = true; return; }
+  const s = d.reduce((a,r)=>a+r.s,0), t = d.reduce((a,r)=>a+r.t,0);
+  el.hidden = false;
+  el.textContent = "Gesamt: "+s+" / "+t+" ("+Math.round(s/t*100)+"%) · "+d.length+" von 4 Übungen geprüft";
+}
+(function(){
+  const N=1, P="e1_", root=document.getElementById("ex1");
+  const $ = s => root.querySelector(s);
+  function showScore(s,t){ $(".score").textContent = s+" / "+t+" ("+Math.round(s/t*100)+"%)"; RES[N]={s,t}; updateTotal(); }
+
+const Q = [
+  {s:"Ich ___ aus Rumänien.", o:["komme","kommst","kommt"], a:0},
+  {s:"Er ___ bei einer Firma.", o:["arbeite","arbeitet","arbeiten"], a:1},
+  {s:"Wir ___ Deutsch.", o:["lernen","lernt","lernst"], a:0},
+  {s:"Du ___ in Bukarest.", o:["wohne","wohnt","wohnst"], a:2},
+  {s:"Maria ___ in Berlin.", o:["arbeitest","arbeiten","arbeitet"], a:2},
+  {s:"Ich ___ eine Pause.", o:["machst","mache","machen"], a:1},
+  {s:"Sie ___ heute.", o:["kommen","komme","kommst"], a:0},
+  {s:"Ihr ___ über einen Film.", o:["sprecht","sprechen","sprichst"], a:0}
+];
+function render(){
+  Q.forEach(x=>{ x.p = shuffle(x.o.map((_,k)=>k)); });
+  $(".exbody").innerHTML = Q.map((x,i)=>`<div class="q" id="${P}q${i}"><div class="qt">${i+1}. ${esc(x.s).replace("___",'<span class="blank"></span>')}</div>` +
+    x.p.map(j=>`<label class="o"><input type="radio" name="${P}q${i}" value="${j}"><span class="dot"></span><span>${x.o[j]}</span></label>`).join("") +
+    `<div class="fb"></div></div>`).join("");
+  $(".score").textContent = "";
+}
+$(".bcheck").onclick = () => {
+  let s = 0;
+  Q.forEach((x,i)=>{
+    const box = $("#"+P+"q"+i), labels = box.querySelectorAll("label.o"), sel = box.querySelector("input:checked");
+    labels.forEach(l=>l.classList.remove("ok","bad"));
+    const picked = sel ? +sel.value : null, fb = box.querySelector(".fb");
+    if(picked === x.a){ s++; labels[x.p.indexOf(picked)].classList.add("ok"); fb.textContent=""; }
+    else {
+      if(picked !== null) labels[x.p.indexOf(picked)].classList.add("bad");
+      labels[x.p.indexOf(x.a)].classList.add("ok");
+      fb.textContent = picked===null ? "Nicio variantă aleasă. Răspuns corect: " + x.o[x.a] : "Greșit. Răspuns corect: " + x.o[x.a];
+    }
+  });
+  showScore(s, Q.length);
+};
+
+  $(".breset").onclick = () => { RES[N]=null; updateTotal(); render(); };
+  render();
+})();
+(function(){
+  const N=2, P="e2_", root=document.getElementById("ex2");
+  const $ = s => root.querySelector(s);
+  function showScore(s,t){ $(".score").textContent = s+" / "+t+" ("+Math.round(s/t*100)+"%)"; RES[N]={s,t}; updateTotal(); }
+
+const OPT = ["Ich","Du","Er","Sie (singular – ea)","Wir","Ihr","Sie (plural – ei)","Fabio","Mariane und Alexander"];
+// a = răspunsuri corecte; primul din listă este răspunsul „de bază"
+const IT = [
+  {t:" lernt jeden Tag Deutsch.", a:["Fabio","Er","Sie (singular – ea)","Ihr"]},
+  {t:" arbeiten heute bis 7 Uhr.", a:["Wir","Sie (plural – ei)","Mariane und Alexander"]},
+  {t:" spreche gut Deutsch.", a:["Ich"]},
+  {t:" kommt gern zu Partys.", a:["Ihr","Er","Sie (singular – ea)","Fabio"]},
+  {t:" lesen gern.", a:["Mariane und Alexander","Sie (plural – ei)","Wir"]},
+  {t:" kochst eine Suppe.", a:["Du"]},
+  {t:" kommt aus Italien.", a:["Er","Fabio","Sie (singular – ea)","Ihr"]},
+  {t:" heißt Sofia Müller.", a:["Sie (singular – ea)"]}
+];
+function render(){
+  $(".exbody").innerHTML = IT.map((x,i)=>`<div class="q" id="${P}q${i}"><div class="row"><span class="rn">${i+1}.</span><select id="${P}s${i}" aria-label="Subiectul propoziției ${i+1}"><option value="">– alege –</option>${OPT.map(o=>`<option>${esc(o)}</option>`).join("")}</select><span>${esc(x.t)}</span></div><div class="fb"></div></div>`).join("");
+  $(".score").textContent = "";
+}
+$(".bcheck").onclick = () => {
+  let s = 0;
+  IT.forEach((x,i)=>{
+    const sel = $("#"+P+"s"+i), fb = $("#"+P+"q"+i+" .fb"), v = sel.value;
+    const ok = x.a.includes(v);
+    sel.classList.remove("ok","bad"); sel.classList.add(ok?"ok":"bad");
+    if(ok){ s++; const rest = x.a.filter(a=>a!==v);
+      fb.className="fb good"; fb.innerHTML = rest.length ? `Corect. <span class="more">Mai erau corecte: ${rest.map(esc).join(" · ")}</span>` : "Corect.";
+    } else { fb.className="fb"; fb.textContent = (v===""?"Nicio variantă aleasă. ":"Greșit. ") + "Corect: " + x.a.join(" · "); }
+  });
+  showScore(s, IT.length);
+};
+
+  $(".breset").onclick = () => { RES[N]=null; updateTotal(); render(); };
+  render();
+})();
+(function(){
+  const N=3, P="e3_", root=document.getElementById("ex3");
+  const $ = s => root.querySelector(s);
+  function showScore(s,t){ $(".score").textContent = s+" / "+t+" ("+Math.round(s/t*100)+"%)"; RES[N]={s,t}; updateTotal(); }
+
+const T = [
+  {ro:"Eu locuiesc în București.", a:["Ich wohne in Bukarest.","Ich lebe in Bukarest.","In Bukarest wohne ich.","In Bukarest lebe ich."]},
+  {ro:"Tu lucrezi mult.", a:["Du arbeitest viel."]},
+  {ro:"El vine din Germania.", a:["Er kommt aus Deutschland.","Aus Deutschland kommt er."]},
+  {ro:"Noi învățăm germană.", a:["Wir lernen Deutsch.","Deutsch lernen wir."]},
+  {ro:"Voi faceți o pauză.", a:["Ihr macht eine Pause."]},
+  {ro:"Ei gătesc o supă.", a:["Sie kochen eine Suppe."]}
+];
+function render(){
+  $(".exbody").innerHTML = T.map((x,i)=>`<div class="q" id="${P}q${i}"><div class="qt"><span class="rn">${i+1}.</span> <span class="ro">${esc(x.ro)}</span></div><input type="text" class="long" id="${P}i${i}" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Traducerea propoziției ${i+1}"><div class="fb"></div></div>`).join("");
+  $(".score").textContent = "";
+}
+$(".bcheck").onclick = () => {
+  let s = 0;
+  T.forEach((x,i)=>{
+    const inp = $("#"+P+"i"+i), fb = $("#"+P+"q"+i+" .fb");
+    const ok = x.a.some(a => norm(a) === norm(inp.value));
+    inp.classList.remove("ok","bad"); inp.classList.add(ok?"ok":"bad");
+    if(ok){ s++; fb.className="fb good"; fb.textContent = x.a.length>1 && norm(inp.value)!==norm(x.a[0]) ? "Corect. Variantă de bază: " + x.a[0] : "Corect."; }
+    else { fb.className="fb"; fb.textContent = (inp.value.trim()===""?"Nimic scris. ":"Nu e corect. ") + "Exemplu: " + x.a[0]; }
+  });
+  showScore(s, T.length);
+};
+
+  $(".breset").onclick = () => { RES[N]=null; updateTotal(); render(); };
+  render();
+})();
+(function(){
+  const N=4, P="e4_", root=document.getElementById("ex4");
+  const $ = s => root.querySelector(s);
+  function showScore(s,t){ $(".score").textContent = s+" / "+t+" ("+Math.round(s/t*100)+"%)"; RES[N]={s,t}; updateTotal(); }
+
+const S = [
+  {pre:"Du ", bad:"arbeitst", post:" jeden Tag.", a:"arbeitest"},
+  {pre:"Er ", bad:"arbeitt", post:" am Wochenende.", a:"arbeitet"},
+  {pre:"Ich ", bad:"wohnst", post:" in Timișoara.", a:"wohne"},
+  {pre:"Wir ", bad:"machst", post:" ein Foto.", a:"machen"},
+  {pre:"Ihr ", bad:"kommen", post:" spät.", a:"kommt"}
+];
+function render(){
+  $(".exbody").innerHTML = S.map((x,i)=>`<div class="q" id="${P}q${i}"><div class="qt"><span class="rn">${i+1}.</span> ${esc(x.pre+x.bad+x.post)}</div><div class="row"><label for="${P}i${i}" class="rn" style="min-width:0">Verb corect:</label><input type="text" id="${P}i${i}" autocomplete="off" autocapitalize="off" spellcheck="false"></div><div class="fb"></div></div>`).join("");
+  $(".score").textContent = "";
+}
+$(".bcheck").onclick = () => {
+  let s = 0;
+  S.forEach((x,i)=>{
+    const inp = $("#"+P+"i"+i), fb = $("#"+P+"q"+i+" .fb"), v = norm(inp.value);
+    const ok = v === norm(x.a) || v === norm(x.pre + x.a + x.post);
+    inp.classList.remove("ok","bad"); inp.classList.add(ok?"ok":"bad");
+    if(ok){ s++; fb.className="fb good"; fb.textContent = x.pre + x.a + x.post; }
+    else { fb.className="fb"; fb.textContent = (inp.value.trim()===""?"Nimic scris. ":"Nu e corect. ") + "Corect: " + x.pre + x.a + x.post; }
+  });
+  showScore(s, S.length);
+};
+
+  $(".breset").onclick = () => { RES[N]=null; updateTotal(); render(); };
+  render();
+})();
+</script>
+</body>
+</html>
