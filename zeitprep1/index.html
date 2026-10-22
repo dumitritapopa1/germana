@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Temporale Präpositionen</title>
+<style>
+
+:root{--bg:#f4f5f7;--card:#fff;--ink:#1f2430;--muted:#5d6472;--line:#e3e6eb;--accent:#3b5bdb;--accent-soft:#e8edff;--ok:#1f8a5b;--ok-soft:#e6f5ee;--bad:#c92a2a;--bad-soft:#fdecec}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;font-size:16px;line-height:1.55;display:flex;flex-direction:column}
+header{padding:10px 24px;border-bottom:1px solid var(--line);background:var(--card);display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+header h1{margin:0;font-size:20px}
+.tabs{display:flex;gap:6px}
+.tab{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:7px 16px;font-size:15px;font-weight:700;cursor:pointer;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.tab .dn{display:none;margin-left:4px}.tab.done .dn{display:inline}
+.total{margin-left:auto;font-size:14px;font-weight:700;color:var(--muted)}
+section.ex{display:none;flex:1;min-height:0;flex-direction:column}
+section.ex.on{display:flex}
+.wrap{flex:1;padding:16px 24px;min-height:0;display:flex;gap:16px;justify-content:center}
+.pane{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow-y:auto;min-height:0}
+.wrap.split .pane{flex:1}
+.wrap.one .pane{width:100%;max-width:780px}
+.pi{padding:20px 26px}
+.instr{margin:0 0 14px;padding:12px 16px;background:var(--accent-soft);border-left:4px solid var(--accent);border-radius:6px;font-weight:600}
+.instr small{display:block;font-weight:400;color:var(--muted);margin-top:2px}
+.txt h2{margin:0 0 12px;font-size:20px}
+.txt p{margin:0 0 14px;font-size:17px;line-height:1.7}
+.q{padding:16px 0;border-top:1px solid var(--line)}
+.q:first-of-type{border-top:none}
+.q h3{margin:0 0 10px;font-size:17px}
+.opt{display:flex;align-items:center;gap:12px;padding:9px 13px;border:1.5px solid var(--line);border-radius:10px;margin-bottom:7px;cursor:pointer;font-size:16px}
+.opt:hover{border-color:#aeb6c8}
+.opt{position:relative}.opt input{position:absolute;opacity:0;pointer-events:none}
+.dot{flex:0 0 22px;height:22px;border-radius:50%;border:2px solid #b7bfce;background:#fff;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:800}
+.opt.on{border-color:var(--accent);background:var(--accent-soft)}
+.opt.on .dot{border-color:var(--accent);background:var(--accent);box-shadow:inset 0 0 0 4px #fff,inset 0 0 0 12px var(--accent)}
+.opt.locked{cursor:default}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}.opt.right .dot{border-color:var(--ok);background:var(--ok);box-shadow:none}.opt.right .dot::after{content:"✓"}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}.opt.wrong .dot{border-color:var(--bad);background:var(--bad);box-shadow:none}.opt.wrong .dot::after{content:"✕"}
+.opt.missed{border-color:var(--ok);border-style:dashed}
+.opt .tag{margin-left:auto;font-size:13px;font-weight:700;white-space:nowrap}
+.opt.right .tag,.opt.missed .tag{color:var(--ok)}.opt.wrong .tag{color:var(--bad)}
+.gaps p{font-size:18px;line-height:2.3;margin:0 0 14px}
+.g{display:inline-flex;align-items:baseline;white-space:nowrap}
+.g .pre{font-weight:600}
+.g input{font:inherit;font-size:17px;border:none;border-bottom:2px solid #9aa3b5;background:var(--accent-soft);padding:0 3px;margin:0 1px;border-radius:3px 3px 0 0;color:var(--ink);text-align:left}
+.g input:focus{outline:none;border-bottom-color:var(--accent);background:#dbe3ff}
+.g sup{font-size:11px;color:var(--muted);margin-left:1px}
+.g.ok input{background:var(--ok-soft);border-bottom-color:var(--ok);color:var(--ok);font-weight:600}
+.g.no input{background:var(--bad-soft);border-bottom-color:var(--bad);color:var(--bad);text-decoration:line-through}
+.fix{color:var(--ok);font-weight:700;font-size:15px;margin-left:4px}
+audio{width:100%;height:40px}
+.audio{position:sticky;top:0;background:var(--card);padding-bottom:10px;z-index:2}
+.s{padding:14px 0;border-top:1px solid var(--line)}
+.s:first-of-type{border-top:none}
+.s .st{font-size:17px;margin-bottom:8px}
+.rf{display:flex;gap:8px}
+.rf button{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:8px 20px;font-size:15px;font-weight:700;cursor:pointer;color:var(--ink)}
+.rf button.on{border-color:var(--accent);background:var(--accent-soft)}
+.rf button.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+.rf button.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.rf button.missed{border-color:var(--ok);border-style:dashed;color:var(--ok)}
+.fb{font-size:14px;font-weight:700;margin-top:6px}.fb.ok{color:var(--ok)}.fb.no{color:var(--bad)}
+.bar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:12px 24px;background:var(--card);border-top:1px solid var(--line)}
+.btn{border:none;border-radius:8px;padding:10px 22px;font-size:15px;font-weight:700;cursor:pointer}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:disabled{opacity:.45;cursor:not-allowed}
+.btn-ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line)}
+.msg{font-size:15px;color:var(--muted)}
+.score{font-size:16px;font-weight:700}.score.good{color:var(--ok)}.score.mid{color:#b06a00}.score.low{color:var(--bad)}
+.hidden{display:none!important}
+@media (max-width:820px){
+ body{height:auto;min-height:100%}
+ header{padding:10px 14px}
+ .wrap{padding:10px;flex-direction:column}
+ .pane{overflow:visible}
+ .pi{padding:16px}
+ .total{margin-left:0;width:100%}
+ .bar{position:sticky;bottom:0;padding:10px 14px;z-index:5}
+ .audio{top:0}
+}
+
+.sent{width:100%;font:inherit;font-size:17px;border:1.5px solid var(--line);border-radius:8px;padding:9px 12px;background:var(--accent-soft);color:var(--ink)}
+.sent:focus{outline:none;border-color:var(--accent);background:#dbe3ff}
+.sent.ok{background:var(--ok-soft);border-color:var(--ok);color:var(--ok);font-weight:600}
+.sent.no{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.cue{font-weight:600}
+.bank{display:flex;flex-wrap:wrap;gap:8px;padding:12px;background:#eef1f6;border-radius:10px;margin-bottom:18px;min-height:56px}
+.chip{border:1.5px solid #cfd5e1;background:#fff;border-radius:8px;padding:6px 14px;font-size:16px;cursor:grab;user-select:none;display:inline-block}
+.chip.sel{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 2px rgba(59,91,219,.25)}
+.slot{display:inline-block;min-width:8ch;min-height:36px;vertical-align:middle;border:1.5px dashed #9aa3b5;border-radius:8px;padding:2px 4px;margin:0 3px;background:#fff;text-align:center;line-height:1.6}
+.slot.over{border-color:var(--accent);background:var(--accent-soft)}
+.slot .chip{padding:1px 10px;font-size:17px}
+.slot.ok{border-style:solid;border-color:var(--ok);background:var(--ok-soft)}
+.slot.ok .chip{color:var(--ok);border-color:var(--ok);background:transparent;font-weight:600}
+.slot.no{border-style:solid;border-color:var(--bad);background:var(--bad-soft)}
+.slot.no .chip{color:var(--bad);border-color:var(--bad);background:transparent;text-decoration:line-through}
+.bank.over{background:var(--accent-soft)}
+.img img{width:100%;height:auto;display:block;border-radius:8px}
+.sl .g{margin:0 2px}
+.sl p{margin:0 0 6px;font-size:18px;line-height:2.4}
+
+.audiorow{background:var(--card);border-bottom:1px solid var(--line);padding:8px 24px;position:sticky;top:0;z-index:6}
+.audiorow audio{max-width:900px;display:block;margin:0 auto}
+.wordlist{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}
+.wordlist span{background:#eef1f6;border-radius:8px;padding:5px 12px;font-style:italic;font-weight:600}
+.s audio{margin:4px 0 10px}
+.sg p{margin:0 0 4px;font-size:18px;line-height:2.4}
+@media (max-width:820px){.audiorow{padding:8px 12px}}
+
+.tabs{flex-wrap:wrap}
+.tab{padding:7px 12px}
+.row{display:flex;align-items:baseline;gap:8px;padding:6px 0;font-size:18px;line-height:2.2}
+.row .n{color:var(--muted);min-width:1.8em}
+.row .base{font-weight:600;min-width:6.5em}
+.row.ex{color:var(--muted)}
+.row.ex .ans{font-weight:700;color:var(--ok)}
+.hint{color:var(--muted);font-size:14px}
+.convs{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:6px}
+.conv{border:2px dashed var(--line);border-radius:12px;padding:10px;background:#fafbfc;min-height:150px}
+.conv.over,.pool.over{border-color:var(--accent);background:var(--accent-soft)}
+.conv h3{margin:0 0 6px;text-align:center;font-size:16px}
+.conv audio{height:36px;margin-bottom:8px}
+.pool{display:flex;flex-wrap:wrap;gap:8px;padding:10px;border:2px dashed var(--line);border-radius:12px;min-height:54px;margin-bottom:14px}
+.pool .chip{margin:0}
+.conv .chip{display:block;margin:0 0 7px;text-align:left}
+.chip small{display:block;font-weight:700;font-size:12px;margin-top:2px}
+.chip.ok{border-color:var(--ok);background:var(--ok-soft);color:var(--ok);cursor:default}
+.chip.no{border-color:var(--bad);background:var(--bad-soft);color:var(--bad);cursor:default}
+.aw{display:inline-flex;gap:4px;vertical-align:middle;margin:0 3px}
+.aw button{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:2px 14px;font-size:16px;font-weight:700;cursor:pointer;color:var(--ink)}
+.aw button.on{border-color:var(--accent);background:var(--accent-soft)}
+.aw button.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+.aw button.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.aw button.missed{border-color:var(--ok);border-style:dashed;color:var(--ok)}
+.forum p{margin:0 0 4px;font-size:17px;line-height:2.3}
+.forum .gap{height:10px}
+@media (max-width:820px){.convs{grid-template-columns:1fr}}
+
+.qrow{display:grid;grid-template-columns:1fr 1.15fr;gap:10px;margin-bottom:10px;align-items:stretch}
+.qbox{border:1.5px solid var(--line);border-radius:10px;padding:10px 14px;background:#fff;font-weight:600;display:flex;align-items:center}
+.aslot{border:2px dashed #b7bfce;border-radius:10px;min-height:56px;padding:4px;background:#fafbfc;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:14px;text-align:center}
+.aslot.over{border-color:var(--accent);background:var(--accent-soft)}
+.aslot .chip{display:block;width:100%;margin:0;text-align:left}
+.aslot.ok{border-style:solid;border-color:var(--ok);background:var(--ok-soft)}
+.aslot.no{border-style:solid;border-color:var(--bad);background:var(--bad-soft)}
+.aslot .chip.ok{border-color:var(--ok);background:transparent;color:var(--ok)}
+.aslot .chip.no{border-color:var(--bad);background:transparent;color:var(--bad);text-decoration:line-through}
+.aslot .fixt{display:block;color:var(--ok);font-size:13px;font-weight:700;margin-top:3px;text-decoration:none}
+.abank{display:flex;flex-direction:column;gap:8px;padding:12px;background:#eef1f6;border-radius:10px;margin-bottom:18px;min-height:56px}
+.abank .chip{margin:0;text-align:left;display:block}
+.abank.over{background:var(--accent-soft)}
+.fqitem{margin-bottom:12px;padding:10px 12px;background:#f7f8fb;border-radius:10px}
+.fqbuilt{min-height:48px;padding:6px;border:2px dashed #b7bfce;border-radius:10px;background:#fff;display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:4px 0 8px}
+.fqbuilt.ok{border-style:solid;border-color:var(--ok);background:var(--ok-soft)}
+.fqbuilt.no{border-style:solid;border-color:var(--bad);background:var(--bad-soft)}
+.fqtiles{display:flex;flex-wrap:wrap;gap:8px}
+.fqitem .chip{margin:0;cursor:pointer}
+.cmpd{font-size:19px;line-height:2.4;padding:4px 0}
+.cmpd .n{color:var(--muted);display:inline-block;min-width:1.8em}
+@media (min-width:821px){.abank{display:grid;grid-template-columns:1fr 1fr}}
+@media (max-width:820px){.qrow{grid-template-columns:1fr}}
+
+.txt .title{font-weight:700;font-size:18px;margin:0 0 6px}
+.txt p{margin:0 0 12px;font-size:17px;line-height:1.7}
+.rfs{padding:14px 0;border-top:1px solid var(--line)}
+.rfs:first-of-type{border-top:none}
+.rfs .st{font-size:17px;margin-bottom:8px}
+.rf{display:flex;gap:8px}
+.rf button{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:8px 20px;font-size:15px;font-weight:700;cursor:pointer;color:var(--ink)}
+.rf button.on{border-color:var(--accent);background:var(--accent-soft)}
+.rf button.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+.rf button.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.rf button.missed{border-color:var(--ok);border-style:dashed;color:var(--ok)}
+.corr{display:none;margin-top:10px}
+.corr.show{display:block}
+.corr label{display:block;font-size:13px;color:var(--muted);margin-bottom:4px}
+.sug{margin-top:8px;font-size:14px;color:var(--ok);font-weight:700}
+.film{padding:14px 0;border-top:1px solid var(--line)}
+.film:first-of-type{border-top:none}
+.film h3{margin:0 0 6px;font-size:17px}
+.film audio{margin-bottom:10px}
+
+.drow{padding:12px 0;border-top:1px solid var(--line)}
+.drow:first-of-type{border-top:none}
+.drow .st{font-size:17px;margin-bottom:6px}
+.dline{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dline .pre{font-weight:700;white-space:nowrap;font-size:17px}
+.dline input{flex:1;min-width:220px}
+.drow.ex{background:#f3f7f4;border-radius:10px;padding:12px 14px;margin-bottom:6px;border:1px solid var(--ok)}
+.drow.ex .ans{color:var(--ok);font-weight:700;font-size:17px}
+.tip{background:#fff8e6;border-left:4px solid #e0a100;border-radius:6px;padding:10px 14px;margin:0 0 14px;font-size:15px}
+.tip b{color:#8a5a00}
+.convs.four{grid-template-columns:1fr 1fr}
+
+.mbank{display:flex;flex-wrap:wrap;gap:8px;padding:12px;background:#eef1f6;border-radius:10px;margin-bottom:18px;min-height:56px}
+.mbank.over{background:var(--accent-soft)}
+.mbank .chip{margin:0}
+.pgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.pcell{text-align:center}
+.pcell img{width:100%;height:auto;display:block;border-radius:6px}
+.pcell .slot{display:block;margin:6px auto 0;width:76px;min-width:0;min-height:38px;font-size:18px}
+.pcell .slot .chip{padding:1px 10px;font-size:18px;font-weight:700}
+.msl .slot .chip{font-size:16px}
+.sl2 p{margin:0 0 4px;font-size:18px;line-height:2.5}
+.post{margin-bottom:14px}
+.post .nm{font-weight:700}
+.post p{margin:4px 0 0;font-size:17px;line-height:1.75}
+.post .ttl{display:inline-block;vertical-align:middle}
+.exchip{display:inline-block;border:1.5px solid var(--ok);background:var(--ok-soft);color:var(--ok);border-radius:8px;padding:2px 10px;font-size:16px;font-weight:600}
+.fixs{color:var(--ok);font-weight:700;font-size:13px;display:block}
+@media (max-width:820px){.pgrid{grid-template-columns:repeat(2,1fr)}}
+
+.nb2{background:#f3f8fc;border-left:4px solid #29a8e0;border-radius:10px;padding:10px 16px;margin:0 0 14px;font-size:15px}
+.nb2 summary{cursor:pointer;font-weight:700}
+.voc{border-collapse:collapse;width:100%;font-size:15px;margin-top:8px}
+.voc th{text-align:left;font-size:13px;color:var(--muted);border-bottom:1.5px solid var(--line);padding:3px 6px}
+.voc td{padding:4px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+.item{padding:10px 0;border-top:1px solid var(--line)}.item:first-child{border-top:none}
+.cline{font-size:18px;line-height:2.2}
+.sl{font:inherit;font-size:17px;padding:3px 6px;border:1.5px solid var(--line);border-radius:6px;background:#fff;margin:0 3px;max-width:100%}
+.sl.ok{border-color:var(--ok);background:var(--ok-soft);color:var(--ok);font-weight:700}
+.sl.no{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.tag{font-size:13px;color:var(--ok);font-weight:700;margin:0 4px}
+.pk{display:inline-flex;gap:5px;vertical-align:middle;margin:0 3px;flex-wrap:wrap}
+.cw{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:2px 12px;font:inherit;font-size:17px;cursor:pointer;color:var(--ink)}
+.cw:hover{border-color:#aeb6c8}.cw.on{border-color:var(--accent);background:var(--accent-soft);font-weight:700}
+.cw.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok);font-weight:700}
+.cw.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad);text-decoration:line-through}
+.cw.missed{border-color:var(--ok);border-style:dashed;color:var(--ok);font-weight:700}
+.cw:disabled{cursor:default}
+.q2 .qq{font-weight:700;font-size:17px;color:var(--muted)}
+.hotel{border:1.5px solid var(--line);border-radius:10px;padding:12px 16px;background:#fff;font-size:18px;line-height:2.3}
+.expl{font-weight:400;margin:6px 0 0;padding:8px 12px;background:var(--bad-soft);border-left:4px solid var(--bad);border-radius:6px;font-size:15px;line-height:1.5}
+.expl.ok{background:var(--ok-soft);border-left-color:var(--ok)}
+.expl b.t{display:block;margin-bottom:2px;font-weight:700}
+.expl.ok b.t{color:var(--ok)}.expl:not(.ok) b.t{color:var(--bad)}
+</style></head><body>
+<header><h1>Temporale Präpositionen</h1><div class="tabs"><button class="tab on" data-ex="0">Übung 1<span class="dn"> ✓</span></button><button class="tab" data-ex="1">Übung 2<span class="dn"> ✓</span></button><button class="tab" data-ex="2">Übung 3<span class="dn"> ✓</span></button><button class="tab" data-ex="3">Übung 4<span class="dn"> ✓</span></button></div><span class="total" id="total"></span></header>
+<section class="ex on" id="ex0">
+ <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
+  <p class="instr">1.1 Welche Präposition passt?<small>Ce prepoziție de timp se potrivește? Alege din listă varianta corectă pentru fiecare propoziție (folosește tabelul de mai sus). Dacă greșești, vezi explicația.</small></p>
+  <details class="nb2" open><summary>✅ Temporale Präpositionen – Übersicht (apasă ca să închizi)</summary><table class="voc"><tr><th>Prepoziție</th><th>+ Kasus</th><th>Semnificație</th><th>Exemplu rapid</th></tr><tr><td><b style="color:#2f7fc4">ab</b></td><td style="color:#2f7fc4"><b>+ Dativ</b></td><td><i>de la (start)</i></td><td><i>Ab Montag, ab sofort</i></td></tr><tr><td><b style="color:#2f7fc4">an</b></td><td style="color:#2f7fc4"><b>+ Dativ</b></td><td><i>la (zi specifică)</i></td><td><i>am Montag, an Ostern</i></td></tr><tr><td><b style="color:#2f7fc4">seit</b></td><td style="color:#2f7fc4"><b>+ Dativ</b></td><td><i>de când (Präsens!)</i></td><td><i>seit einer Stunde ★</i></td></tr><tr><td><b style="color:#2f7fc4">vor</b></td><td style="color:#2f7fc4"><b>+ Dativ</b></td><td><i>acum X timp; înainte de</i></td><td><i>vor drei Tagen</i></td></tr><tr><td><b style="color:#2f7fc4">nach</b></td><td style="color:#2f7fc4"><b>+ Dativ</b></td><td><i>după</i></td><td><i>nach der Arbeit</i></td></tr><tr><td><b style="color:#d9682a">bis</b></td><td style="color:#d9682a"><b>+ Akkusativ</b></td><td><i>până</i></td><td><i>bis Montag, bis Ende</i></td></tr><tr><td><b style="color:#d9682a">über</b></td><td style="color:#d9682a"><b>+ Akkusativ</b></td><td><i>timp de, peste</i></td><td><i>über Nacht, über das WE</i></td></tr><tr><td><b style="color:#d9682a">um</b></td><td style="color:#d9682a"><b>+ Akkusativ</b></td><td><i>la (ora exactă)</i></td><td><i>um 8 Uhr ★</i></td></tr></table></details><div id="c0"></div>
+ </div></div></div>
+ <div class="bar" data-bar="0">
+  <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
+  <span class="msg"></span><span class="score hidden"></span>
+ </div>
+</section>
+<section class="ex" id="ex1">
+ <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
+  <p class="instr">1.2 Zeitangaben: Was ist richtig?<small>Ce e corect? Alege varianta potrivită (a, b sau c) pentru fiecare propoziție. Dacă greșești, vezi explicația.</small></p>
+  <div id="c1"></div>
+ </div></div></div>
+ <div class="bar" data-bar="1">
+  <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
+  <span class="msg"></span><span class="score hidden"></span>
+ </div>
+</section>
+<section class="ex" id="ex2">
+ <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
+  <p class="instr">1.3 Dativ oder Akkusativ?<small>Ce articol se potrivește? Prepozițiile seit, vor, nach, ab, an cer Dativ; bis, über, um cer Akkusativ. Alege articolul corect.</small></p>
+  <div class="nb2 open2"><b>Reminder:</b> <span style="color:#2f7fc4"><b>Dativ</b>: masculin/neutru → dem (einem), feminin → der (einer)</span> · <span style="color:#d9682a"><b>Akkusativ</b>: masculin → den, neutru → das, feminin → die</span></div><div id="c2"></div>
+ </div></div></div>
+ <div class="bar" data-bar="2">
+  <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
+  <span class="msg"></span><span class="score hidden"></span>
+ </div>
+</section>
+<section class="ex" id="ex3">
+ <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
+  <p class="instr">1.4 Ergänzen Sie die Zeitangaben.<small>Completează cu prepoziția potrivită (un singur cuvânt pentru fiecare gol; „von … bis” se scrie în două goluri). Dacă greșești, vezi explicația.</small></p>
+  <div id="c3"></div>
+ </div></div></div>
+ <div class="bar" data-bar="3">
+  <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
+  <span class="msg"></span><span class="score hidden"></span>
+ </div>
+</section>
+
+<script>
+var PASS_PERCENT=50;
+var S1=[["{} Montag arbeite ich in der neuen Firma.", ["um", "ab", "über", "nach"], 1, "ab = de la (start): «ab Montag» = de luni încolo. um se folosește doar cu ora exactă, über = timp de/peste, nach = după."], ["{} Ostern besuche ich meine Eltern.", ["bis", "vor", "an", "seit"], 2, "an + zi specifică / sărbătoare: «an Ostern», «am Montag». seit cere o acțiune care continuă (Präsens), bis = până, vor = înainte de/acum X timp."], ["Ich lerne Deutsch {} einem Jahr.", ["seit", "vor", "nach", "bis"], 0, "seit + Dativ = de când, cu verb la Präsens (acțiune care continuă): «seit einem Jahr». vor einem Jahr ar însemna «acum un an» și cere trecutul."], ["{} zwei Wochen war ich im Urlaub.", ["seit", "nach", "bis", "vor"], 3, "vor + Dativ = acum X timp (în trecut): «vor zwei Wochen war ich…». seit se folosește cu Präsens, nu cu «war»."], ["Der Kurs ist um 17 Uhr zu Ende. {} dem Kurs gehe ich nach Hause.", ["vor", "seit", "nach", "über"], 2, "nach + Dativ = după: după curs merg acasă. vor ar însemna «înainte de curs», ceea ce nu are sens aici."], ["Das Geschäft ist {} 18 Uhr geöffnet. Dann macht es zu.", ["an", "bis", "ab", "vor"], 1, "bis = până la: magazinul e deschis până la 18:00 și apoi se închide. ab ar însemna «de la 18:00»."], ["Wir bleiben {} Nacht im Hotel.", ["um", "an", "seit", "über"], 3, "über + Akkusativ = peste/timp de: «über Nacht» = peste noapte. um e doar pentru ora exactă."], ["Der Film beginnt {} 20 Uhr.", ["ab", "um", "über", "an"], 1, "um + Akkusativ = la (ora exactă): «um 20 Uhr». ab ar însemna «de la», an se folosește cu zile, nu cu ore."]], S2=[["Wie lange arbeitest du heute?", "Nicht so lang, nur", ["nach", "um", "bis"], 2, "halb fünf.", "bis halb fünf = până la 16:30; întrebarea e «cât timp», deci o limită de timp. nach (după) și um (la ora…) nu răspund la «cât de mult»."], ["Wie ist die neue Arbeit?", "Es geht, ich muss leider auch", ["um", "an", "ab"], 1, "Samstagen arbeiten.", "an Samstagen = sâmbăta (în zile specifice, repetat). um se folosește cu ora, ab Samstagen nu se spune."], ["Wann hast du Urlaub?", "Schon bald,", ["bis", "über", "ab"], 2, "dem 27. August.", "ab dem 27. August = de la 27 august (începutul concediului). bis ar însemna «până la», iar über = peste/timp de."], ["Wann kommst du nach Hause?", "Gleich nach der Arbeit,", ["über", "um", "an"], 1, "halb fünf.", "um halb fünf = la 16:30 (ora exactă). an se folosește cu zile (am Montag), über cu durate."], ["Wie lange dauert die Fahrt?", "Ziemlich lang,", ["nach", "vor", "über"], 2, "vier Stunden.", "über vier Stunden = mai mult de patru ore (durată). nach și vor se referă la momente, nu la durată."], ["Wann sehen wir uns?", "Heute Abend, gleich", ["nach", "ab", "an"], 0, "der Arbeit.", "gleich nach der Arbeit = imediat după muncă. ab și an nu se potrivesc cu «der Arbeit»."], ["Wann ist die Arbeit fertig?", "Ich denke,", ["bis", "vor", "über"], 1, "dem Wochenende.", "vor dem Wochenende = înainte de weekend. «bis dem» e greșit (corect: bis zum), iar «über dem Wochenende» nu are sens aici."]], S3=[["Ich arbeite seit {} Jahr hier.", ["einem", "einer", "einen"], 0, "seit + Dativ; das Jahr = neutru → Dativ neutru: einem Jahr."], ["Nach {} Arbeit gehe ich einkaufen.", ["die", "der", "dem"], 1, "nach + Dativ; die Arbeit = feminin → Dativ feminin: der Arbeit."], ["Vor {} Frühstück dusche ich.", ["das", "der", "dem"], 2, "vor + Dativ; das Frühstück = neutru → Dativ neutru: dem Frühstück."], ["Ab {} ersten Mai habe ich Urlaub.", ["dem", "den", "der"], 0, "ab + Dativ; der Mai = masculin → Dativ masculin: dem ersten Mai."], ["Wir fahren über {} Wochenende nach Wien.", ["dem", "das", "der"], 1, "über (timp de) + Akkusativ; das Wochenende = neutru → Akkusativ neutru: das Wochenende."], ["Ich warte seit {} Stunde auf dich.", ["eine", "einem", "einer"], 2, "seit + Dativ; die Stunde = feminin → Dativ feminin: einer Stunde."], ["Das Hotel ist über {} Winter geschlossen.", ["dem", "den", "der"], 1, "über (timp de) + Akkusativ; der Winter = masculin → Akkusativ masculin: den Winter."], ["Wir sind über {} Feiertage zu Hause.", ["den", "der", "die"], 2, "über + Akkusativ; die Feiertage = plural → Akkusativ plural: die Feiertage."]], HT="{0} zwei Jahren habe ich meine Ausbildung als Hotelfachfrau abgeschlossen. {1} sechs Monaten arbeite ich jetzt hier im Hotel. Ich arbeite an der Rezeption. Da ist es gut, dass ich so viele Sprachen spreche. Ich fange meistens {2} 7 Uhr an und arbeite {3} 16 Uhr. Das ist super, denn {4} der Arbeit gehe ich gern noch zum Sport. Ich bin oft {5} zwei Stunden im Fitnessstudio. {6} manchen Tagen habe ich auch Spätschicht. Dann arbeite ich {7} 16 Uhr {8} 24 Uhr. Das finde ich nicht so gut.", HK=["vor", "seit", "um", "bis", "nach", "über", "an", "von", "bis"], HOPT=["an", "bis", "nach", "seit", "über", "um", "von", "vor"], HW=["Vor (exemplu) – vor zwei Jahren = acum doi ani (trecut, moment fix).", "seit sechs Monaten arbeite ich… = lucrez de șase luni (Präsens, acțiunea continuă). «vor» ar cere trecutul.", "um 7 Uhr = la ora 7 (ora exactă): um + oră.", "bis 16 Uhr = până la ora 16 (sfârșitul programului).", "nach der Arbeit = după muncă (nach + Dativ).", "über zwei Stunden = mai mult de două ore (durată): über + Akkusativ.", "an manchen Tagen = în unele zile (an + Dativ, zile specifice).", "von 16 Uhr … = de la ora 16 (începutul intervalului): von … bis.", "… bis 24 Uhr = până la ora 24 (sfârșitul intervalului): von … bis."];
+var scorm=(function(){var api=null,active=false;
+ function find(w){var n=0;while(w&&n<10){try{if(w.API)return w.API;}catch(e){}if(w.parent&&w.parent!==w){w=w.parent;n++;}else break;}return null;}
+ function init(){api=find(window);if(!api){try{if(window.opener)api=find(window.opener);}catch(e){}}
+  if(api){try{active=String(api.LMSInitialize(""))==="true";if(active){var st=api.LMSGetValue("cmi.core.lesson_status");if(st==="not attempted"||st==="")api.LMSSetValue("cmi.core.lesson_status","incomplete");api.LMSCommit("");}}catch(e){active=false;}}}
+ function report(c,t){if(!active)return;var p=Math.round(c/t*100);try{api.LMSSetValue("cmi.core.score.min","0");api.LMSSetValue("cmi.core.score.max","100");api.LMSSetValue("cmi.core.score.raw",String(p));api.LMSSetValue("cmi.core.lesson_status",p>=PASS_PERCENT?"passed":"failed");api.LMSCommit("");}catch(e){}}
+ function finish(){if(!active)return;try{api.LMSFinish("");}catch(e){}active=false;}
+ return{init:init,report:report,finish:finish};})();
+
+
+
+
+
+
+
+
+
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function ex(ok,txt){return '<div class="expl'+(ok?' ok':'')+'"><b class="t">'+(ok?'Corect':'Greșit')+'</b>'+txt+'</div>';}
+function sel(opts,key){return '<select class="sl" data-a="'+esc(key)+'"><option value="">…</option>'+opts.map(function(o){return '<option>'+esc(o)+'</option>';}).join("")+'</select>';}
+function selEx(id,S){$(id).innerHTML=S.map(function(s,i){return '<div class="item"><div class="cline">'+(i+1)+'. '+esc(s[0]).replace("{}",sel(s[1],s[1][s[2]]))+'</div><div class="fb"></div></div>';}).join("");}
+selEx("c0",S1);selEx("c2",S3);
+$("c1").innerHTML=S2.map(function(s,i){return '<div class="item q2" data-i="'+i+'"><div class="qq">'+(i+1)+'. '+esc(s[0])+'</div><div class="cline">– '+esc(s[1])+' <span class="pk">'+s[2].map(function(o,j){return '<button type="button" class="cw" data-j="'+j+'"><b>'+"abc".charAt(j)+')</b> '+esc(o)+'</button>';}).join("")+'</span> '+esc(s[4])+'</div><div class="fb"></div></div>';}).join("");
+$("c3").innerHTML='<div class="hotel">'+esc(HT).replace(/\{(\d+)\}/g,function(_,n){return +n===0?"<b><u>Vor</u></b>":sel(HOPT,HK[+n]);})+'</div><div id="hfb"></div>';
+var TOT=[S1.length,S2.length,S3.length,HK.length-1];
+var EX=TOT.map(function(t){return {res:null,total:t};});
+var chosen={};
+function bar(k){return document.querySelector('.bar[data-bar="'+k+'"]');}
+function selsOf(k){return Array.prototype.slice.call(document.querySelectorAll("#c"+k+" .sl"));}
+function answered(k){if(k===1)return Object.keys(chosen).length;return selsOf(k).filter(function(x){return x.value!=="";}).length;}
+function upd(k){if(EX[k].res!==null)return;var b=bar(k),n=answered(k),t=EX[k].total;
+ b.querySelector(".chk").disabled=n<t;b.querySelector(".msg").textContent=n<t?"Ai completat "+n+" din "+t+".":"Gata! Apasă „Verifică răspunsurile”.";}
+function updTotal(){var c=0,t=0,any=false;EX.forEach(function(e,k){document.querySelector('.tab[data-ex="'+k+'"]').classList.toggle("done",e.res!==null);if(e.res!==null){c+=e.res;t+=e.total;any=true;}});
+ $("total").textContent=any?"Gesamt: "+c+" / "+t:"";if(any)scorm.report(c,t);}
+[0,2,3].forEach(function(k){$("c"+k).addEventListener("change",function(){upd(k);});});
+$("c1").addEventListener("click",function(e){var bt=e.target.closest(".cw");if(!bt||EX[1].res!==null)return;var it=bt.closest("[data-i]"),i=+it.dataset.i,j=+bt.dataset.j;
+ it.querySelectorAll(".cw").forEach(function(x){x.classList.remove("on");});
+ if(chosen[i]===j)delete chosen[i];else{chosen[i]=j;bt.classList.add("on");}upd(1);});
+function markSel(x,ok){x.disabled=true;x.classList.add(ok?"ok":"no");if(!ok)x.insertAdjacentHTML("afterend",'<span class="tag">→ '+esc(x.dataset.a)+'</span>');}
+function check(k){var c=0;
+ if(k===0||k===2){var S=k===0?S1:S3;selsOf(k).forEach(function(x,i){var ok=x.value===x.dataset.a;if(ok)c++;markSel(x,ok);document.querySelectorAll("#c"+k+" .fb")[i].innerHTML=ex(ok,esc(S[i][3]));});}
+ else if(k===1){document.querySelectorAll("#c1 [data-i]").forEach(function(box){var i=+box.dataset.i,key=S2[i][3],on=chosen[i],ok=on===key;if(ok)c++;
+   box.querySelectorAll(".cw").forEach(function(b){var j=+b.dataset.j;b.disabled=true;b.classList.remove("on");if(j===on&&ok)b.classList.add("right");else if(j===on)b.classList.add("wrong");else if(j===key)b.classList.add("missed");});
+   box.querySelector(".fb").innerHTML=ex(ok,esc(S2[i][5]));});}
+ else{var h="";selsOf(3).forEach(function(x,i){var ok=x.value===x.dataset.a;if(ok)c++;markSel(x,ok);h+=ex(ok,'<b>('+(i+2)+')</b> '+esc(HW[i+1]));});$("hfb").innerHTML=h;}
+ EX[k].res=c;
+ var t=EX[k].total,p=Math.round(c/t*100),b=bar(k),s=b.querySelector(".score");
+ s.textContent="Rezultat: "+c+" / "+t+" ("+p+"%)";s.className="score "+(p>=80?"good":p>=PASS_PERCENT?"mid":"low");
+ b.querySelector(".msg").classList.add("hidden");b.querySelector(".chk").classList.add("hidden");b.querySelector(".rty").classList.remove("hidden");updTotal();}
+function retry(k){EX[k].res=null;
+ if(k===1){chosen={};document.querySelectorAll("#c1 .cw").forEach(function(b){b.disabled=false;b.className="cw";});document.querySelectorAll("#c1 .fb").forEach(function(f){f.innerHTML="";});}
+ else{selsOf(k).forEach(function(x){x.disabled=false;x.className="sl";x.value="";});document.querySelectorAll("#c"+k+" .tag").forEach(function(x){x.parentNode.removeChild(x);});
+  document.querySelectorAll("#c"+k+" .fb").forEach(function(f){f.innerHTML="";});if(k===3)$("hfb").innerHTML="";}
+ var b=bar(k);b.querySelector(".score").className="score hidden";b.querySelector(".msg").classList.remove("hidden");b.querySelector(".chk").classList.remove("hidden");b.querySelector(".rty").classList.add("hidden");upd(k);updTotal();}
+EX.forEach(function(_,k){var b=bar(k);b.querySelector(".chk").addEventListener("click",function(){check(k);});b.querySelector(".rty").addEventListener("click",function(){retry(k);});});
+document.querySelectorAll(".tab").forEach(function(t){t.addEventListener("click",function(){
+ document.querySelectorAll(".tab").forEach(function(x){x.classList.toggle("on",x===t);});
+ document.querySelectorAll("section.ex").forEach(function(s,i){s.classList.toggle("on",i===+t.dataset.ex);});window.scrollTo(0,0);});});
+EX.forEach(function(_,k){upd(k);});
+scorm.init();window.addEventListener("pagehide",scorm.finish);
+</script></body></html>
