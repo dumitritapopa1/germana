@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verkehr und Mobilität</title>
+<style>
+
+:root{--bg:#f4f5f7;--card:#fff;--ink:#1f2430;--muted:#5d6472;--line:#e3e6eb;--accent:#3b5bdb;--accent-soft:#e8edff;--ok:#1f8a5b;--ok-soft:#e6f5ee;--bad:#c92a2a;--bad-soft:#fdecec}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;font-size:16px;line-height:1.55;display:flex;flex-direction:column}
+header{padding:10px 24px;border-bottom:1px solid var(--line);background:var(--card);display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+header h1{margin:0;font-size:20px}
+.tabs{display:flex;gap:6px}
+.tab{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:7px 16px;font-size:15px;font-weight:700;cursor:pointer;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.tab .dn{display:none;margin-left:4px}.tab.done .dn{display:inline}
+.total{margin-left:auto;font-size:14px;font-weight:700;color:var(--muted)}
+section.ex{display:none;flex:1;min-height:0;flex-direction:column}
+section.ex.on{display:flex}
+.wrap{flex:1;padding:16px 24px;min-height:0;display:flex;gap:16px;justify-content:center}
+.pane{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow-y:auto;min-height:0}
+.wrap.split .pane{flex:1}
+.wrap.one .pane{width:100%;max-width:780px}
+.pi{padding:20px 26px}
+.instr{margin:0 0 14px;padding:12px 16px;background:var(--accent-soft);border-left:4px solid var(--accent);border-radius:6px;font-weight:600}
+.instr small{display:block;font-weight:400;color:var(--muted);margin-top:2px}
+.txt h2{margin:0 0 12px;font-size:20px}
+.txt p{margin:0 0 14px;font-size:17px;line-height:1.7}
+.q{padding:16px 0;border-top:1px solid var(--line)}
+.q:first-of-type{border-top:none}
+.q h3{margin:0 0 10px;font-size:17px}
+.opt{display:flex;align-items:center;gap:12px;padding:9px 13px;border:1.5px solid var(--line);border-radius:10px;margin-bottom:7px;cursor:pointer;font-size:16px}
+.opt:hover{border-color:#aeb6c8}
+.opt{position:relative}.opt input{position:absolute;opacity:0;pointer-events:none}
+.dot{flex:0 0 22px;height:22px;border-radius:50%;border:2px solid #b7bfce;background:#fff;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:800}
+.opt.on{border-color:var(--accent);background:var(--accent-soft)}
+.opt.on .dot{border-color:var(--accent);background:var(--accent);box-shadow:inset 0 0 0 4px #fff,inset 0 0 0 12px var(--accent)}
+.opt.locked{cursor:default}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}.opt.right .dot{border-color:var(--ok);background:var(--ok);box-shadow:none}.opt.right .dot::after{content:"✓"}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}.opt.wrong .dot{border-color:var(--bad);background:var(--bad);box-shadow:none}.opt.wrong .dot::after{content:"✕"}
+.opt.missed{border-color:var(--ok);border-style:dashed}
+.opt .tag{margin-left:auto;font-size:13px;font-weight:700;white-space:nowrap}
+.opt.right .tag,.opt.missed .tag{color:var(--ok)}.opt.wrong .tag{color:var(--bad)}
+.gaps p{font-size:18px;line-height:2.3;margin:0 0 14px}
+.g{display:inline-flex;align-items:baseline;white-space:nowrap}
+.g .pre{font-weight:600}
+.g input{font:inherit;font-size:17px;border:none;border-bottom:2px solid #9aa3b5;background:var(--accent-soft);padding:0 3px;margin:0 1px;border-radius:3px 3px 0 0;color:var(--ink);text-align:left}
+.g input:focus{outline:none;border-bottom-color:var(--accent);background:#dbe3ff}
+.g sup{font-size:11px;color:var(--muted);margin-left:1px}
+.g.ok input{background:var(--ok-soft);border-bottom-color:var(--ok);color:var(--ok);font-weight:600}
+.g.no input{background:var(--bad-soft);border-bottom-color:var(--bad);color:var(--bad);text-decoration:line-through}
+.fix{color:var(--ok);font-weight:700;font-size:15px;margin-left:4px}
+audio{width:100%;height:40px}
+.audio{position:sticky;top:0;background:var(--card);padding-bottom:10px;z-index:2}
+.s{padding:14px 0;border-top:1px solid var(--line)}
+.s:first-of-type{border-top:none}
+.s .st{font-size:17px;margin-bottom:8px}
+.rf{display:flex;gap:8px}
+.rf button{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:8px 20px;font-size:15px;font-weight:700;cursor:pointer;color:var(--ink)}
+.rf button.on{border-color:var(--accent);background:var(--accent-soft)}
+.rf button.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+.rf button.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.rf button.missed{border-color:var(--ok);border-style:dashed;color:var(--ok)}
+.fb{font-size:14px;font-weight:700;margin-top:6px}.fb.ok{color:var(--ok)}.fb.no{color:var(--bad)}
+.bar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:12px 24px;background:var(--card);border-top:1px solid var(--line)}
+.btn{border:none;border-radius:8px;padding:10px 22px;font-size:15px;font-weight:700;cursor:pointer}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:disabled{opacity:.45;cursor:not-allowed}
+.btn-ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line)}
+.msg{font-size:15px;color:var(--muted)}
+.score{font-size:16px;font-weight:700}.score.good{color:var(--ok)}.score.mid{color:#b06a00}.score.low{color:var(--bad)}
+.hidden{display:none!important}
+@media (max-width:820px){
+ body{height:auto;min-height:100%}
+ header{padding:10px 14px}
+ .wrap{padding:10px;flex-direction:column}
+ .pane{overflow:visible}
+ .pi{padding:16px}
+ .total{margin-left:0;width:100%}
+ .bar{position:sticky;bottom:0;padding:10px 14px;z-index:5}
+ .audio{top:0}
+}
+
+.sent{width:100%;font:inherit;font-size:17px;border:1.5px solid var(--line);border-radius:8px;padding:9px 12px;background:var(--accent-soft);color:var(--ink)}
+.sent:focus{outline:none;border-color:var(--accent);background:#dbe3ff}
+.sent.ok{background:var(--ok-soft);border-color:var(--ok);color:var(--ok);font-weight:600}
+.sent.no{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.cue{font-weight:600}
+.bank{display:flex;flex-wrap:wrap;gap:8px;padding:12px;background:#eef1f6;border-radius:10px;margin-bottom:18px;min-height:56px}
+.chip{border:1.5px solid #cfd5e1;background:#fff;border-radius:8px;padding:6px 14px;font-size:16px;cursor:grab;user-select:none;display:inline-block}
+.chip.sel{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 2px rgba(59,91,219,.25)}
+.slot{display:inline-block;min-width:8ch;min-height:36px;vertical-align:middle;border:1.5px dashed #9aa3b5;border-radius:8px;padding:2px 4px;margin:0 3px;background:#fff;text-align:center;line-height:1.6}
+.slot.over{border-color:var(--accent);background:var(--accent-soft)}
+.slot .chip{padding:1px 10px;font-size:17px}
+.slot.ok{border-style:solid;border-color:var(--ok);background:var(--ok-soft)}
+.slot.ok .chip{color:var(--ok);border-color:var(--ok);background:transparent;font-weight:600}
+.slot.no{border-style:solid;border-color:var(--bad);background:var(--bad-soft)}
+.slot.no .chip{color:var(--bad);border-color:var(--bad);background:transparent;text-decoration:line-through}
+.bank.over{background:var(--accent-soft)}
+.img img{width:100%;height:auto;display:block;border-radius:8px}
+.sl .g{margin:0 2px}
+.sl p{margin:0 0 6px;font-size:18px;line-height:2.4}
+
+.audiorow{background:var(--card);border-bottom:1px solid var(--line);padding:8px 24px;position:sticky;top:0;z-index:6}
+.audiorow audio{max-width:900px;display:block;margin:0 auto}
+.wordlist{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}
+.wordlist span{background:#eef1f6;border-radius:8px;padding:5px 12px;font-style:italic;font-weight:600}
+.s audio{margin:4px 0 10px}
+.sg p{margin:0 0 4px;font-size:18px;line-height:2.4}
+@media (max-width:820px){.audiorow{padding:8px 12px}}
+
+.tabs{flex-wrap:wrap}
+.tab{padding:7px 12px}
+.row{display:flex;align-items:baseline;gap:8px;padding:6px 0;font-size:18px;line-height:2.2}
+.row .n{color:var(--muted);min-width:1.8em}
+.row .base{font-weight:600;min-width:6.5em}
+.row.ex{color:var(--muted)}
+.row.ex .ans{font-weight:700;color:var(--ok)}
+.hint{color:var(--muted);font-size:14px}
+.convs{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:6px}
+.conv{border:2px dashed var(--line);border-radius:12px;padding:10px;background:#fafbfc;min-height:150px}
+.conv.over,.pool.over{border-color:var(--accent);background:var(--accent-soft)}
+.conv h3{margin:0 0 6px;text-align:center;font-size:16px}
+.conv audio{height:36px;margin-bottom:8px}
+.pool{display:flex;flex-wrap:wrap;gap:8px;padding:10px;border:2px dashed var(--line);border-radius:12px;min-height:54px;margin-bottom:14px}
+.pool .chip{margin:0}
+.conv .chip{display:block;margin:0 0 7px;text-align:left}
+.chip small{display:block;font-weight:700;font-size:12px;margin-top:2px}
+.chip.ok{border-color:var(--ok);background:var(--ok-soft);color:var(--ok);cursor:default}
+.chip.no{border-color:var(--bad);background:var(--bad-soft);color:var(--bad);cursor:default}
+.aw{display:inline-flex;gap:4px;vertical-align:middle;margin:0 3px}
+.aw button{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:2px 14px;font-size:16px;font-weight:700;cursor:pointer;color:var(--ink)}
+.aw button.on{border-color:var(--accent);background:var(--accent-soft)}
+.aw button.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+.aw button.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.aw button.missed{border-color:var(--ok);border-style:dashed;color:var(--ok)}
+.forum p{margin:0 0 4px;font-size:17px;line-height:2.3}
+.forum .gap{height:10px}
+@media (max-width:820px){.convs{grid-template-columns:1fr}}
+
+.qrow{display:grid;grid-template-columns:1fr 1.15fr;gap:10px;margin-bottom:10px;align-items:stretch}
+.qbox{border:1.5px solid var(--line);border-radius:10px;padding:10px 14px;background:#fff;font-weight:600;display:flex;align-items:center}
+.aslot{border:2px dashed #b7bfce;border-radius:10px;min-height:56px;padding:4px;background:#fafbfc;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:14px;text-align:center}
+.aslot.over{border-color:var(--accent);background:var(--accent-soft)}
+.aslot .chip{display:block;width:100%;margin:0;text-align:left}
+.aslot.ok{border-style:solid;border-color:var(--ok);background:var(--ok-soft)}
+.aslot.no{border-style:solid;border-color:var(--bad);background:var(--bad-soft)}
+.aslot .chip.ok{border-color:var(--ok);background:transparent;color:var(--ok)}
+.aslot .chip.no{border-color:var(--bad);background:transparent;color:var(--bad);text-decoration:line-through}
+.aslot .fixt{display:block;color:var(--ok);font-size:13px;font-weight:700;margin-top:3px;text-decoration:none}
+.abank{display:flex;flex-direction:column;gap:8px;padding:12px;background:#eef1f6;border-radius:10px;margin-bottom:18px;min-height:56px}
+.abank .chip{margin:0;text-align:left;display:block}
+.abank.over{background:var(--accent-soft)}
+.fqitem{margin-bottom:12px;padding:10px 12px;background:#f7f8fb;border-radius:10px}
+.fqbuilt{min-height:48px;padding:6px;border:2px dashed #b7bfce;border-radius:10px;background:#fff;display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:4px 0 8px}
+.fqbuilt.ok{border-style:solid;border-color:var(--ok);background:var(--ok-soft)}
+.fqbuilt.no{border-style:solid;border-color:var(--bad);background:var(--bad-soft)}
+.fqtiles{display:flex;flex-wrap:wrap;gap:8px}
+.fqitem .chip{margin:0;cursor:pointer}
+.cmpd{font-size:19px;line-height:2.4;padding:4px 0}
+.cmpd .n{color:var(--muted);display:inline-block;min-width:1.8em}
+@media (min-width:821px){.abank{display:grid;grid-template-columns:1fr 1fr}}
+@media (max-width:820px){.qrow{grid-template-columns:1fr}}
+
+.txt .title{font-weight:700;font-size:18px;margin:0 0 6px}
+.txt p{margin:0 0 12px;font-size:17px;line-height:1.7}
+.rfs{padding:14px 0;border-top:1px solid var(--line)}
+.rfs:first-of-type{border-top:none}
+.rfs .st{font-size:17px;margin-bottom:8px}
+.rf{display:flex;gap:8px}
+.rf button{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:8px 20px;font-size:15px;font-weight:700;cursor:pointer;color:var(--ink)}
+.rf button.on{border-color:var(--accent);background:var(--accent-soft)}
+.rf button.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+.rf button.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.rf button.missed{border-color:var(--ok);border-style:dashed;color:var(--ok)}
+.corr{display:none;margin-top:10px}
+.corr.show{display:block}
+.corr label{display:block;font-size:13px;color:var(--muted);margin-bottom:4px}
+.sug{margin-top:8px;font-size:14px;color:var(--ok);font-weight:700}
+.film{padding:14px 0;border-top:1px solid var(--line)}
+.film:first-of-type{border-top:none}
+.film h3{margin:0 0 6px;font-size:17px}
+.film audio{margin-bottom:10px}
+
+.drow{padding:12px 0;border-top:1px solid var(--line)}
+.drow:first-of-type{border-top:none}
+.drow .st{font-size:17px;margin-bottom:6px}
+.dline{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dline .pre{font-weight:700;white-space:nowrap;font-size:17px}
+.dline input{flex:1;min-width:220px}
+.drow.ex{background:#f3f7f4;border-radius:10px;padding:12px 14px;margin-bottom:6px;border:1px solid var(--ok)}
+.drow.ex .ans{color:var(--ok);font-weight:700;font-size:17px}
+.tip{background:#fff8e6;border-left:4px solid #e0a100;border-radius:6px;padding:10px 14px;margin:0 0 14px;font-size:15px}
+.tip b{color:#8a5a00}
+.convs.four{grid-template-columns:1fr 1fr}
+
+.mbank{display:flex;flex-wrap:wrap;gap:8px;padding:12px;background:#eef1f6;border-radius:10px;margin-bottom:18px;min-height:56px}
+.mbank.over{background:var(--accent-soft)}
+.mbank .chip{margin:0}
+.pgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.pcell{text-align:center}
+.pcell img{width:100%;height:auto;display:block;border-radius:6px}
+.pcell .slot{display:block;margin:6px auto 0;width:76px;min-width:0;min-height:38px;font-size:18px}
+.pcell .slot .chip{padding:1px 10px;font-size:18px;font-weight:700}
+.msl .slot .chip{font-size:16px}
+.sl2 p{margin:0 0 4px;font-size:18px;line-height:2.5}
+.post{margin-bottom:14px}
+.post .nm{font-weight:700}
+.post p{margin:4px 0 0;font-size:17px;line-height:1.75}
+.post .ttl{display:inline-block;vertical-align:middle}
+.exchip{display:inline-block;border:1.5px solid var(--ok);background:var(--ok-soft);color:var(--ok);border-radius:8px;padding:2px 10px;font-size:16px;font-weight:600}
+.fixs{color:var(--ok);font-weight:700;font-size:13px;display:block}
+@media (max-width:820px){.pgrid{grid-template-columns:repeat(2,1fr)}}
+
+.nb2{background:#f3f8fc;border-left:4px solid #29a8e0;border-radius:10px;padding:10px 16px;margin:0 0 14px;font-size:15px}
+.nb2 summary{cursor:pointer;font-weight:700}
+.nb2 h4{margin:12px 0 4px;font-size:16px}
+.voc{border-collapse:collapse;width:100%;font-size:14.5px}
+.voc th{text-align:left;font-size:13px;color:var(--muted);border-bottom:1.5px solid var(--line);padding:2px 6px}
+.voc td{padding:3px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+.keyx{margin:4px 0;font-style:italic;font-size:16px;background:#e8f6fd;border-radius:6px;padding:6px 10px}
+.exm{background:#e8f6fd;border-left:4px solid #29a8e0;border-radius:10px;padding:10px 16px;margin:0 0 14px;font-size:16px}
+.item{padding:10px 0;border-top:1px solid var(--line)}.item:first-child{border-top:none}
+.cline{font-size:18px;line-height:2.3}
+.item .st{font-size:18px;line-height:1.7;margin-bottom:6px}
+#c0 .slot{display:inline-block;width:auto;min-width:112px;min-height:34px;margin:0 3px;padding:1px 6px;vertical-align:middle;text-align:center}
+#c0 .slot .chip,#c1 .slot .chip,#c5 .slot .chip{font-size:16px;white-space:normal}
+.mbank .chip{white-space:normal;text-align:left}
+.pics{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:0 0 4px}
+.pic{border:1.5px solid var(--line);border-radius:12px;padding:8px;background:#fff}
+.pic .pl2{font-weight:800;font-size:18px;color:var(--accent);margin-bottom:2px}
+.pic img{width:100%;height:auto;display:block;border-radius:8px}
+#c1 .pics .slot{display:block;width:auto;min-height:48px;margin:8px 0 4px;padding:4px 6px;text-align:center}
+@media (max-width:760px){.pics{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:430px){.pics{grid-template-columns:1fr}}
+.gap{display:inline-flex;flex-wrap:wrap;gap:4px;align-items:center;min-width:140px;min-height:40px;border:2px dashed #9aa3b5;border-radius:8px;padding:3px 6px;vertical-align:middle;background:#fafbfd;cursor:pointer}
+.gap.act{border-color:var(--accent);background:var(--accent-soft)}
+.gap.ok{border-style:solid;border-color:var(--ok);background:var(--ok-soft)}
+.gap.no{border-style:solid;border-color:var(--bad);background:var(--bad-soft)}
+.gap .chip,.pl3 .chip{cursor:pointer}
+.pl3{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 0;padding:12px;background:#f1f3f7;border-radius:10px;min-height:52px}
+.opts{display:flex;gap:8px;flex-wrap:wrap}
+.cw{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:6px 16px;font:inherit;font-size:17px;cursor:pointer;color:var(--ink);text-align:left}
+.cw:hover{border-color:#aeb6c8}.cw.on{border-color:var(--accent);background:var(--accent-soft);font-weight:700}
+.cw.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok);font-weight:700}
+.cw.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad);text-decoration:line-through}
+.cw.missed{border-color:var(--ok);border-style:dashed;color:var(--ok);font-weight:700}
+.cw.strike{text-decoration:line-through}
+.cw:disabled{cursor:default}
+.hq{border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;margin:0 0 14px;background:#fff}
+.hq audio{width:100%;margin:2px 0 8px}.hq h4{margin:6px 0 10px;font-size:18px}
+.hq .opts{flex-direction:column}
+.hq .cw{width:100%}
+.opts.col{flex-direction:column}.opts.col .cw{width:100%}
+.ads{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0 0 14px}
+.ad{border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:#fff;position:relative;font-size:14.5px}
+.ad .al{position:absolute;top:8px;right:10px;font-weight:800;font-size:20px;color:var(--accent)}
+.ad b{display:block;margin:0 24px 4px 0}.ad p{margin:0;line-height:1.45}
+@media (max-width:700px){.ads{grid-template-columns:1fr}}
+#c5 .slot{display:inline-block;width:auto;min-width:64px;min-height:34px;margin:0 6px;padding:1px 6px;vertical-align:middle;text-align:center}
+.txt{border:1.5px solid var(--line);border-radius:10px;padding:10px 16px;margin:0 0 14px;background:#fff}
+.txt h4{margin:0 0 6px}.txt p{margin:0 0 10px;font-size:17px;line-height:1.6}
+.ti{font:inherit;font-size:17px;width:100%;padding:7px 10px;border:1.5px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);margin-top:4px}
+.ti:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.ti.ok{border-color:var(--ok);background:var(--ok-soft);color:var(--ok);font-weight:700}
+.ti.no{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.expl{font-weight:400;margin:6px 0 0;padding:8px 12px;background:var(--bad-soft);border-left:4px solid var(--bad);border-radius:6px;font-size:15px;line-height:1.5}
+.expl.ok{background:var(--ok-soft);border-left-color:var(--ok)}
+.expl b.t{display:block;margin-bottom:2px;font-weight:700}
+.expl.ok b.t{color:var(--ok)}.expl:not(.ok) b.t{color:var(--bad)}
+</style></head><body>
+<header><h1>Verkehr · Mobilität</h1><div class="tabs"><button class="tab on" data-ex="0">Übung 1<span class="dn"> ✓</span></button><button class="tab" data-ex="1">Übung 2<span class="dn"> ✓</span></button><button class="tab" data-ex="3">Übung 3<span class="dn"> ✓</span></button><button class="tab" data-ex="4">Übung 4<span class="dn"> ✓</span></button><button class="tab" data-ex="5">Übung 5<span class="dn"> ✓</span></button><button class="tab" data-ex="6">Übung 6<span class="dn"> ✓</span></button></div><span class="total" id="total"></span></header>
+<section class="ex on" id="ex0">
+ <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
+  <p class="instr">1.1 Wortschatz: Ergänzen Sie.<small>Completează propozițiile cu cuvintele potrivite din vocabular (nivel A2.1). Trage cuvântul în locul liber sau atinge-l, apoi atinge locul din propoziție. Fiecare cuvânt se folosește o singură dată.</small></p>
+  <div class="mbank" id="bank0"></div><div id="c0"></div>
+ </div></div></div>
+ <div class="bar" data-bar="0">
+  <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
+  <span class="msg"></span><span class="score hidden"></span>
+ </div>
+</section>
+<section class="ex" id="ex1">
+ <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
+  <p class="instr">1.2 Was ist das Problem? Ordnen Sie die Sätze zu.<small>Care e problema? Potrivește fiecare propoziție cu imaginea potrivită. Trage propoziția sub imagine sau atinge-o, apoi atinge căsuța de sub imagine.</small></p>
+  <div class="mbank" id="bank1"></div><div id="c1"></div>
+ </div></div></div>
+ <div class="bar" data-bar="1">
+  <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
+  <span class="msg"></span><span class="score hidden"></span>
+ </div>
+</section>
+<section class="ex" id="ex3">
+ <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
+  <p class="instr">1.3 Welches Verb passt nicht?<small>Care verb nu se potrivește? Atinge verbul care NU merge cu expresia din stânga (el va fi tăiat). Dacă greșești, vezi explicația.</small></p>
+  <div class="exm"><b>Beispiel:</b> eine Kamera: leihen · einschalten · <s>verpassen</s></div><div id="c3"></div>
+ </div></div></div>
+ <div class="bar" data-bar="3">
+  <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
+  <span class="msg"></span><span class="score hidden"></span>
+ </div>
+</section>
+<section class="ex" id="ex4">
+ <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
+  <p class="instr">1.4 Hören Sie die Dialoge. Was ist richtig?<small>Ascultă dialogurile și alege varianta corectă (a, b sau c). Poți asculta de câte ori vrei.</small></p>
+  <div id="c4"></div>
+ </div></div></div>
+ <div class="bar" data-bar="4">
+  <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
+  <span class="msg"></span><span class="score hidden"></span>
+ </div>
+</section>
+<section class="ex" id="ex5">
+ <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
+  <p class="instr">1.5 Welche Anzeige ist für wen interessant?<small>Care anunț i se potrivește fiecărei persoane? Citește anunțurile A–F și alege litera potrivită pentru fiecare persoană. Un anunț rămâne în plus!</small></p>
+  <div class="ads"><div class="ad"><span class="al">A</span><b>Call a bike</b><p>Der schnelle Weg durch die Stadt – Sie möchten in der Stadt flexibel und mobil sein? Kein Problem: Die Räder von Call a Bike stehen 24 Stunden für Sie bereit. Einfach anmelden, ein Fahrrad ausleihen, losfahren. Wenn Sie das Rad nicht mehr brauchen, schließen Sie es ab und melden sich kurz übers Handy.</p></div><div class="ad"><span class="al">B</span><b>Pendlerzentrale</b><p>Fahren auch Sie jeden Tag mit dem Auto zu Ihrem Arbeitsplatz? Wollen Sie sich die immer höheren Kosten für die Fahrten mit anderen teilen? Dann ist die Pendlerzentrale das Richtige für Sie! Nutzen Sie die Pendlerzentrale und bieten Sie einen Mitfahrservice an – deutschlandweit und kostenlos!</p></div><div class="ad"><span class="al">C</span><b>Zusammen günstig in die Berge, in die Stadt</b><p>Mit dem Bayern-Ticket ab 29,– EUR können bis zu fünf Personen einen Tag lang durch ganz Bayern fahren. Das Ticket gilt montags bis freitags in der Zeit von 09.00 Uhr bis 03.00 Uhr am Folgetag; an Samstagen, Sonntagen und Feiertagen sowie am 15. August bereits ab 00.00 Uhr.</p></div><div class="ad"><span class="al">D</span><b>Mitfahrzentrale.de</b><p>hilft Ihnen seit über 15 Jahren bei der Suche nach Mitfahrgelegenheiten. Über 700.000 Kunden finden hier aktuelle Mitfahrgelegenheiten. Nutzen auch Sie den Service von Mitfahrzentrale.de und sparen Sie Geld!</p></div><div class="ad"><span class="al">E</span><b>Fahrradspaß für Sieben</b><p>Mieten Sie unser Conferencebike! Machen Sie zusammen mit sechs Freunden oder Kollegen einen Fahrradausflug auf einem Fahrrad. Sie sitzen im Kreis und radeln wie am Konferenztisch – ein Teamleiter lenkt und bremst das Rad.</p></div><div class="ad"><span class="al">F</span><b>Flinkster</b><p>Sie wohnen in der Stadt und brauchen eigentlich kein eigenes Auto? Sie wollen aber jederzeit günstig und flexibel ein Auto in Ihrer Nähe nutzen können? Wir haben die Lösung: Buchen Sie Fahrzeuge aller Art. Melden Sie sich an und fahren Sie mit Ihrer Kundenkarte einfach los.</p></div></div><div class="mbank" id="bank5"></div><div id="c5"></div>
+ </div></div></div>
+ <div class="bar" data-bar="5">
+  <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
+  <span class="msg"></span><span class="score hidden"></span>
+ </div>
+</section>
+<section class="ex" id="ex6">
+ <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
+  <p class="instr">1.6 Lesen Sie den Text über einen Pendler. Beantworten Sie die Fragen.<small>Citește textul despre un navetist și alege răspunsul corect la fiecare întrebare. Atenție la capcane: unele variante par corecte, dar nu corespund textului!</small></p>
+  <div class="txt"><h4>Pendler Hajo W.</h4><p>Im Sommer hat Hajo W. eine neue Arbeitsstelle gesucht. Er hatte ein sehr gutes Angebot in Frankfurt, 30 Minuten Fahrzeit von zu Hause zur Arbeit. Aber der interessantere und bessere Job war in einer Kleinstadt, in Neuwied, 130 km von seinem Wohnort entfernt. Er hat sich für diesen Job entschieden. Jetzt fährt er fünfmal in der Woche mit der Bahn von Frankfurt nach Neuwied und wieder zurück. Eine Fahrt dauert fast zwei Stunden.</p><p>„Das Problem ist nicht die Zeit, sondern der Zeitdruck. Ich muss pünktlich gehen, denn sonst verpasse ich meinen Zug und dann muss ich eine Stunde warten. Und im Winter sind die Züge oft nicht pünktlich. Ich stehe dann immer noch früher auf, aber oft komme ich trotzdem zu spät zur Arbeit.“</p><p>Aber Hajo W. und seine Familie möchten auf keinen Fall aus Frankfurt wegziehen. Sie haben dort ein eigenes Haus, die Kinder gehen in die Schule und haben dort ihre Freunde. Auch die Freunde von Hajo und seiner Frau wohnen hier.</p><p>Aber etwas Gutes hat das Pendeln schon: „Ich habe Zeit zum Lesen. Das finde ich gut – ich lese im Zug Zeitung und Bücher. Und manchmal nutze ich die Zeit im Zug auch für meine Arbeit.“</p></div><div id="c6"></div>
+ </div></div></div>
+ <div class="bar" data-bar="6">
+  <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
+  <span class="msg"></span><span class="score hidden"></span>
+ </div>
+</section>
+
+<script>
+var PASS_PERCENT=50;
+var S1=[["Ich sitze im {0} und komme zu spät.", "Stau", "Stau = ambuteiaj. «Ich sitze im Stau» = stau în trafic, de aceea întârzii."], ["Hier ist eine {0}, deshalb ist die Straße eng.", "Baustelle", "die Baustelle = șantier rutier; lucrările îngustează drumul."], ["Die Brücke ist {0}. Wir können nicht fahren.", "gesperrt", "gesperrt = blocat/închis (Part. II de la sperren). Dacă podul e închis, nu se poate trece."], ["Wir fahren eine {0} und kommen später an.", "Umleitung", "die Umleitung = devierea rutieră; o ocolești când drumul e blocat și ajungi mai târziu."], ["Ich muss noch {0}. Das Auto hat kein Benzin mehr.", "tanken", "tanken = a alimenta; nu mai ai benzină, deci trebuie să alimentezi."], ["An der {0} kaufe ich auch einen Kaffee.", "Tankstelle", "die Tankstelle = benzinăria; «an der Tankstelle» = la benzinărie."], ["Wir müssen den Zug um acht Uhr {0}.", "erreichen", "erreichen + Akk = a prinde (trenul/autobuzul): «den Zug erreichen»."], ["Ich möchte den Bus nicht {0}.", "verpassen", "verpassen + Akk = a pierde (trenul/autobuzul): «nicht verpassen» = să nu-l pierd."], ["In Köln müssen wir {0}.", "umsteigen", "umsteigen = a face schimb de tren/autobuz: «in Köln umsteigen»."], ["Der Zug hat 20 Minuten {0}.", "Verspätung", "die Verspätung = întârzierea; «Der Zug hat Verspätung» e o expresie cheie."], ["Fahren Sie {0} und dann nach links.", "geradeaus", "geradeaus = drept înainte; se folosește la indicații de drum."], ["An der {0} müssen Sie nach rechts abbiegen.", "Kreuzung", "die Kreuzung = intersecția; la intersecție se coteşte (abbiegen)."]], W1=["Stau", "Baustelle", "gesperrt", "Umleitung", "tanken", "Tankstelle", "erreichen", "verpassen", "umsteigen", "Verspätung", "geradeaus", "Kreuzung"], O1=[4, 3, 10, 8, 9, 11, 5, 2, 6, 1, 7, 0], PIC=[["a", "Lucas steht im Stau.", "Mașinile stau lipite una de alta: Stau = ambuteiaj."], ["b", "Lucas findet keinen Parkplatz.", "Parcarea e plină și semnul P e tăiat: nu există loc liber (keinen Parkplatz)."], ["c", "Der Motor macht Probleme.", "Capota e ridicată și iese fum: motorul are probleme."], ["d", "Der Reifen ist kaputt.", "Roata din față e dezumflată: der Reifen = cauciucul, kaputt = stricat."], ["e", "Die Polizei kontrolliert Lucas.", "Polițistul oprește mașina: kontrollieren = a controla."], ["f", "Lucas muss an der roten Ampel warten.", "Semaforul e roșu: die Ampel = semaforul, rot = roșu; trebuie să aștepte."]], O2=[4, 5, 0, 1, 2, 3], WORDS3=[["Führerscheinprüfung", ["führer", "schein", "prü", "fung"], "Und? Hast du deine {0} bestanden?", "Führer + schein + prü + fung = Führerscheinprüfung (examenul pentru permis). «Hast du … bestanden?» = ai luat examenul?"], ["Wohnungsschlüssel", ["woh", "nungs", "schlüs", "sel"], "Oh nein, ich habe meinen {1} vergessen!", "woh + nungs + schlüs + sel = Wohnungsschlüssel (cheia de la apartament). Ai uitat-o, deci un obiect: «meinen Schlüssel»."], ["Kinderspielplatz", ["kin", "der", "spiel", "platz"], "Lilly und Felix sind bestimmt auf dem {2}.", "kin + der + spiel + platz = Kinderspielplatz (locul de joacă pentru copii); «auf dem … » = pe locul de joacă."], ["Verkehrsmittel", ["ver", "kehrs", "mittel"], "Welches {3} ist am schnellsten?", "ver + kehrs + mittel = Verkehrsmittel (mijloc de transport): «Welches Verkehrsmittel ist am schnellsten?»"]], SYL=[{"t": "prü", "w": 0}, {"t": "fung", "w": 0}, {"t": "kehrs", "w": 3}, {"t": "ver", "w": 3}, {"t": "mittel", "w": 3}, {"t": "schein", "w": 0}, {"t": "schlüs", "w": 1}, {"t": "sel", "w": 1}, {"t": "führer", "w": 0}, {"t": "kin", "w": 2}, {"t": "spiel", "w": 2}, {"t": "nungs", "w": 1}, {"t": "platz", "w": 2}, {"t": "woh", "w": 1}, {"t": "der", "w": 2}], ODD=[["den Zug", ["abbiegen", "erreichen", "verpassen"], 0, "abbiegen = a coti; un tren nu «coteşte». Trenul îl prinzi (erreichen) sau îl pierzi (verpassen)."], ["die Ausfahrt", ["verpassen", "tanken", "finden"], 1, "tanken = a alimenta; ieșirea de pe autostradă o poți găsi (finden) sau rata (verpassen), nu o «alimentezi»."], ["das Auto", ["tanken", "reparieren", "umsteigen"], 2, "umsteigen = a face schimb (la transportul în comun); mașina o alimentezi (tanken) sau o repari (reparieren)."], ["nach rechts", ["fahren", "erreichen", "abbiegen"], 1, "nach rechts fahren / abbiegen = a merge/a coti la dreapta; erreichen = a prinde, a ajunge la ceva, nu se potrivește cu direcția."], ["eine Umleitung", ["tanken", "fahren", "nehmen"], 0, "o deviere o urmezi (fahren) sau o iei (nehmen); tanken nu are legătură cu ea."], ["im Stau", ["stehen", "umsteigen", "warten"], 1, "în ambuteiaj stai (stehen) sau aștepți (warten); umsteigen = a face schimb, la transportul în comun."]], HQ=[["dialog1.mp3", "Maria kommt zu spät, weil …", ["der Bus zu voll war.", "der Bus Verspätung hatte.", "in der Stadt ein Stau war."], 1, "Corect: b – Maria întârzie pentru că autobuzul a avut întârziere (Verspätung). Variantele a (autobuzul prea plin) și c (ambuteiaj în oraș) nu se potrivesc cu ce se spune în dialog."], ["dialog2.mp3", "Tom ist nicht pünktlich, weil …", ["er keinen Parkplatz gefunden hat.", "das Navi nicht funktioniert hat.", "so viel Verkehr war."], 2, "Corect: c – Tom nu e punctual pentru că a fost mult trafic (so viel Verkehr). Variantele a (nu a găsit loc de parcare) și b (naviul nu a funcționat) nu apar ca motiv în dialog."]], ADS=[["A", "Call a bike", "Der schnelle Weg durch die Stadt – Sie möchten in der Stadt flexibel und mobil sein? Kein Problem: Die Räder von Call a Bike stehen 24 Stunden für Sie bereit. Einfach anmelden, ein Fahrrad ausleihen, losfahren. Wenn Sie das Rad nicht mehr brauchen, schließen Sie es ab und melden sich kurz übers Handy."], ["B", "Pendlerzentrale", "Fahren auch Sie jeden Tag mit dem Auto zu Ihrem Arbeitsplatz? Wollen Sie sich die immer höheren Kosten für die Fahrten mit anderen teilen? Dann ist die Pendlerzentrale das Richtige für Sie! Nutzen Sie die Pendlerzentrale und bieten Sie einen Mitfahrservice an – deutschlandweit und kostenlos!"], ["C", "Zusammen günstig in die Berge, in die Stadt", "Mit dem Bayern-Ticket ab 29,– EUR können bis zu fünf Personen einen Tag lang durch ganz Bayern fahren. Das Ticket gilt montags bis freitags in der Zeit von 09.00 Uhr bis 03.00 Uhr am Folgetag; an Samstagen, Sonntagen und Feiertagen sowie am 15. August bereits ab 00.00 Uhr."], ["D", "Mitfahrzentrale.de", "hilft Ihnen seit über 15 Jahren bei der Suche nach Mitfahrgelegenheiten. Über 700.000 Kunden finden hier aktuelle Mitfahrgelegenheiten. Nutzen auch Sie den Service von Mitfahrzentrale.de und sparen Sie Geld!"], ["E", "Fahrradspaß für Sieben", "Mieten Sie unser Conferencebike! Machen Sie zusammen mit sechs Freunden oder Kollegen einen Fahrradausflug auf einem Fahrrad. Sie sitzen im Kreis und radeln wie am Konferenztisch – ein Teamleiter lenkt und bremst das Rad."], ["F", "Flinkster", "Sie wohnen in der Stadt und brauchen eigentlich kein eigenes Auto? Sie wollen aber jederzeit günstig und flexibel ein Auto in Ihrer Nähe nutzen können? Wir haben die Lösung: Buchen Sie Fahrzeuge aller Art. Melden Sie sich an und fahren Sie mit Ihrer Kundenkarte einfach los."]], PERS=[["Mira will ein Wochenende in Berlin verbringen. Die Reise mit dem Zug ist ihr zu teuer, aber sie hat kein Auto.", 3, "D – Mira nu are mașină și trenul e prea scump; la Mitfahrzentrale.de găsește o ocazie de a merge cu altcineva în mașină (mai ieftin)."], ["Eine Freundin hat Geburtstag und Sie möchten sie überraschen. Sie ist gern mit Freunden draußen und sie fährt gern Rad.", 4, "E – prietena iubește bicicleta și să fie afară cu prietenii; Conferencebike = o bicicletă pentru 7 persoane, ideală pentru o surpriză de ziua ei."], ["Nina aus Berlin macht ein Praktikum in München. In Berlin macht sie alles mit dem Fahrrad. Auch in München will sie mobil sein.", 0, "A – Nina vrea să fie mobilă cu bicicleta și în München; Call a bike = închiriezi o bicicletă în oraș."], ["Roland und seine Freundin Paula fahren gerne U-Bahn und Bus, aber manchmal brauchen sie ein Auto – z. B. für Ausflüge am Wochenende oder für große Einkäufe.", 5, "F – Roland și Paula n-au nevoie de mașină proprie, dar uneori da; Flinkster = car sharing, iei o mașină când ai nevoie."], ["Vier Freunde wollen am Wochenende zusammen einen Ausflug in die Berge machen.", 2, "C – patru prieteni merg împreună în munți; Bayern-Ticket = până la 5 persoane, o zi întreagă, ieftin."]], O6=[3, 0, 4, 1, 5, 2], MC=[["Wie viele Kilometer fährt Hajo W. jeden Tag?", ["30 Kilometer", "130 Kilometer", "260 Kilometer", "650 Kilometer"], 2, "130 km e distanța doar într-o direcție (Frankfurt–Neuwied); el face dus-întors, deci 130 + 130 = 260 km pe zi. Capcane: 30 = minutele din oferta de la Frankfurt (nu kilometri); 650 = 5 × 130, adică o singură direcție pe toată săptămâna."], ["Wie lange braucht er dafür?", ["Eine Stunde.", "Fast zwei Stunden (pro Fahrt).", "30 Minuten.", "Fünf Stunden."], 1, "Textul spune: «Eine Fahrt dauert fast zwei Stunden». Capcane: «eine Stunde» e timpul de așteptare dacă pierde trenul; «30 Minuten» e drumul la jobul din Frankfurt, pe care nu l-a ales; «fünf» e de câte ori pe săptămână face naveta."], ["Warum wohnt er so weit weg von seiner Arbeit?", ["Er möchte im Zug lesen.", "Das Angebot in Frankfurt war schlecht.", "Die Familie hat in Frankfurt ein Haus, die Kinder gehen dort in die Schule und die Freunde wohnen dort.", "In Neuwied gibt es keine Wohnungen."], 2, "Familia nu vrea să se mute din Frankfurt: au casă proprie, copiii merg la școală acolo și prietenii locuiesc acolo. Capcane: cititul în tren e un avantaj, nu motivul; oferta din Frankfurt era «sehr gut», nu proastă; despre lipsa locuințelor din Neuwied nu se spune nimic."], ["Welche Probleme gibt es?", ["Er hat zu wenig Geld.", "Er hat keine Freunde in Frankfurt.", "Die Fahrt dauert nur 30 Minuten.", "Er hat Zeitdruck, verpasst sonst den Zug und im Winter sind die Züge oft nicht pünktlich."], 3, "Problemele din text: Zeitdruck, trenul pierdut → o oră de așteptare, iarna trenurile întârzie. Capcane: despre bani nu se vorbește; prietenii lui sunt în Frankfurt (de aceea nu se mută); «30 Minuten» era oferta din Frankfurt, nu drumul lui."], ["Was findet er an der Situation gut?", ["Er hat Zeit zum Lesen im Zug.", "Er hat mehr Zeit für seine Freunde.", "Er kommt immer pünktlich zur Arbeit.", "Er kann im Winter länger schlafen."], 0, "Partea bună: are timp să citească în tren (ziar și cărți) și uneori folosește timpul pentru munca lui. Capcane: de fapt are puțin timp pentru prieteni; adesea întârzie; iarna se trezește chiar mai devreme."]];
+var scorm=(function(){var api=null,active=false;
+ function find(w){var n=0;while(w&&n<10){try{if(w.API)return w.API;}catch(e){}if(w.parent&&w.parent!==w){w=w.parent;n++;}else break;}return null;}
+ function init(){api=find(window);if(!api){try{if(window.opener)api=find(window.opener);}catch(e){}}
+  if(api){try{active=String(api.LMSInitialize(""))==="true";if(active){var st=api.LMSGetValue("cmi.core.lesson_status");if(st==="not attempted"||st==="")api.LMSSetValue("cmi.core.lesson_status","incomplete");api.LMSCommit("");}}catch(e){active=false;}}}
+ function report(c,t){if(!active)return;var p=Math.round(c/t*100);try{api.LMSSetValue("cmi.core.score.min","0");api.LMSSetValue("cmi.core.score.max","100");api.LMSSetValue("cmi.core.score.raw",String(p));api.LMSSetValue("cmi.core.lesson_status",p>=PASS_PERCENT?"passed":"failed");api.LMSCommit("");}catch(e){}}
+ function finish(){if(!active)return;try{api.LMSFinish("");}catch(e){}active=false;}
+ return{init:init,report:report,finish:finish};})();
+
+
+
+
+
+
+
+
+
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function normS(s){return String(s).toLowerCase().replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss").replace(/[^a-z0-9 ]/g," ").replace(/\s+/g," ").trim();}
+function ex(ok,txt){return '<div class="expl'+(ok?' ok':'')+'"><b class="t">'+(ok?'Corect':'Greșit')+'</b>'+txt+'</div>';}
+/* render */
+$("c0").innerHTML=S1.map(function(s,i){return '<div class="item"><div class="cline">'+(i+1)+'. '+esc(s[0]).replace("{0}",'<span class="slot" data-s="'+i+'"></span>')+'</div><div class="fb" data-i="'+i+'"></div></div>';}).join("");
+$("c1").innerHTML='<div class="pics">'+PIC.map(function(p,i){return '<div class="pic"><div class="pl2">'+"ABCDEF".charAt(i)+'</div><img src="'+p[0]+'.svg" alt="Bild '+"ABCDEF".charAt(i)+'"><div class="slot" data-s="'+i+'"></div><div class="fb" data-i="'+i+'"></div></div>';}).join("")+'</div>';
+$("c3").innerHTML=ODD.map(function(r,i){return '<div class="item" data-i="'+i+'"><div class="st"><b>'+(i+1)+'.</b> '+esc(r[0])+'</div><div class="opts">'+r[1].map(function(o,j){return '<button type="button" class="cw" data-j="'+j+'">'+esc(o)+'</button>';}).join("")+'</div><div class="fb"></div></div>';}).join("");
+$("c4").innerHTML=HQ.map(function(q,i){return '<div class="hq" data-i="'+i+'"><b>'+(i+1)+'.</b><audio controls preload="metadata" src="'+q[0]+'"></audio><h4>'+esc(q[1])+'</h4><div class="opts">'+q[2].map(function(o,j){return '<button type="button" class="cw" data-j="'+j+'"><b>'+"abc".charAt(j)+')</b> '+esc(o)+'</button>';}).join("")+'</div><div class="fb"></div></div>';}).join("");
+$("c5").innerHTML=PERS.map(function(p,i){return '<div class="item"><div class="st"><b>'+(i+1)+'.</b> '+esc(p[0])+' <span class="slot" data-s="'+i+'"></span></div><div class="fb" data-i="'+i+'"></div></div>';}).join("");
+$("c6").innerHTML=MC.map(function(q,i){return '<div class="item" data-i="'+i+'"><div class="st"><b>'+(i+1)+'.</b> '+esc(q[0])+'</div><div class="opts col">'+q[1].map(function(o,j){return '<button type="button" class="cw" data-j="'+j+'"><b>'+"abcd".charAt(j)+')</b> '+esc(o)+'</button>';}).join("")+'</div><div class="fb"></div></div>';}).join("");
+/* matchers */
+/* ---------- generic matcher ---------- */
+var CUR=null,MS=[];
+function Matcher(cfg){
+ var root=$(cfg.root),bank=$(cfg.bank),M={chipSlot:{},sel:null,done:false,cfg:cfg,root:root};
+ function occ(s){for(var c in M.chipSlot)if(M.chipSlot[c]===s)return +c;return null;}
+ function chipH(c,cls){return '<span class="chip '+(cls||"")+'" draggable="'+(M.done?"false":"true")+'" data-c="'+c+'">'+esc(cfg.label(c))+'</span>';}
+ M.render=function(){var b="";
+  cfg.order.forEach(function(c){if(M.chipSlot[c]===undefined)b+=chipH(c,M.sel===c?"sel":"");});
+  bank.innerHTML=b||'<span class="hint">Toate au fost plasate.</span>';
+  root.querySelectorAll(".slot").forEach(function(sp){var s=+sp.dataset.s,c=occ(s);
+   if(c===null){sp.className="slot";sp.innerHTML="&nbsp;&nbsp;&nbsp;&nbsp;";return;}
+   if(M.done){var ok=cfg.isOk?cfg.isOk(s,c):cfg.correct[s]===c;sp.className="slot "+(ok?"ok":"no");sp.innerHTML=chipH(c,ok?"ok":"no")+(ok?"":'<span class="fixs">→ '+esc(cfg.fix?cfg.fix(s,c):cfg.label(cfg.correct[s]))+'</span>');}
+   else{sp.className="slot";sp.innerHTML=chipH(c,M.sel===c?"sel":"");}});
+  cfg.onChange();};
+ M.put=function(c,s){if(M.done)return;if(s!==null){var o=occ(s);if(o!==null)delete M.chipSlot[o];}
+  if(s===null)delete M.chipSlot[c];else M.chipSlot[c]=s;M.sel=null;M.render();};
+ M.count=function(){return Object.keys(M.chipSlot).length;};
+ M.check=function(){var c=0;cfg.correct.forEach(function(cc,s){var o=occ(s);if(o!==null&&(cfg.isOk?cfg.isOk(s,o):o===cc))c++;});M.done=true;M.sel=null;M.render();return c;};
+ M.reset=function(){M.chipSlot={};M.sel=null;M.done=false;M.render();};
+ root.parentNode.addEventListener("click",function(e){if(M.done||e.target.closest("audio")||!root.parentNode.contains(e.target))return;
+  var ch=e.target.closest(".chip"),sl=e.target.closest(".slot"),bk=e.target.closest(".mbank");
+  if(!root.contains(e.target)&&!bank.contains(e.target))return;
+  if(ch&&!sl){var c=+ch.dataset.c;M.sel=M.sel===c?null:c;M.render();return;}
+  if(ch&&sl){var c2=+ch.dataset.c;if(M.sel!==null&&M.sel!==c2)M.put(M.sel,+sl.dataset.s);else M.put(c2,null);return;}
+  if(sl&&M.sel!==null){M.put(M.sel,+sl.dataset.s);return;}
+  if(bk&&M.sel!==null&&M.chipSlot[M.sel]!==undefined)M.put(M.sel,null);});
+ MS.push(M);return M;}
+/* drag & drop (delegated) */
+function mOf(el){for(var i=0;i<MS.length;i++){if(MS[i].root.contains(el)||$(MS[i].cfg.bank).contains(el))return MS[i];}return null;}
+document.addEventListener("dragstart",function(e){var ch=e.target.closest&&e.target.closest(".chip");if(!ch)return;var m=mOf(ch);if(!m||m.done)return;CUR={m:m,c:+ch.dataset.c};try{e.dataTransfer.setData("text/plain","x");}catch(x){}});
+function zoneOf(e){if(!CUR)return null;var z=e.target.closest&&e.target.closest(".slot,.mbank");if(!z)return null;return mOf(z)===CUR.m?z:null;}
+document.addEventListener("dragover",function(e){var z=zoneOf(e);if(z){e.preventDefault();z.classList.add("over");}});
+document.addEventListener("dragleave",function(e){var z=zoneOf(e);if(z)z.classList.remove("over");});
+document.addEventListener("drop",function(e){var z=zoneOf(e);document.querySelectorAll(".over").forEach(function(x){x.classList.remove("over");});
+ if(!z)return;e.preventDefault();var d=CUR;CUR=null;d.m.put(d.c,z.classList.contains("slot")?+z.dataset.s:null);});
+document.addEventListener("dragend",function(){CUR=null;document.querySelectorAll(".over").forEach(function(x){x.classList.remove("over");});});
+
+
+var M0=Matcher({root:"c0",bank:"bank0",order:O1,label:function(c){return W1[c];},correct:W1.map(function(_,i){return i;}),onChange:function(){upd(0);}});
+var M1=Matcher({root:"c1",bank:"bank1",order:O2,label:function(c){return PIC[c][1];},correct:PIC.map(function(_,i){return i;}),onChange:function(){upd(1);}});
+var M5=Matcher({root:"c5",bank:"bank5",order:O6,label:function(c){return ADS[c][0];},correct:PERS.map(function(p){return p[1];}),onChange:function(){upd(5);}});
+var TOT=[S1.length,PIC.length,0,ODD.length,HQ.length,PERS.length,MC.length];
+var EX=TOT.map(function(t){return {res:null,total:t};});
+var chosen={3:{},4:{},6:{}};
+function bar(k){return document.querySelector('.bar[data-bar="'+k+'"]');}
+function answered(k){
+ if(k===0)return M0.count();if(k===1)return M1.count();if(k===5)return M5.count();
+ if(k===2)return SYL.length-poolIds().length;
+ return Object.keys(chosen[k]).length;}
+function need(k){return k===2?SYL.length:TOT[k];}
+function upd(k){if(EX[k].res!==null)return;var b=bar(k);if(!b)return;var n=answered(k),t=need(k);
+ b.querySelector(".chk").disabled=n<t;b.querySelector(".msg").textContent=k===2?(n<t?"Ai pus "+n+" din "+t+" silabe.":"Gata! Apasă „Verifică răspunsurile”."):(n<t?"Ai completat "+n+" din "+t+".":"Gata! Apasă „Verifică răspunsurile”.");}
+function updTotal(){var c=0,t=0,any=false;EX.forEach(function(e,k){var tb=document.querySelector('.tab[data-ex="'+k+'"]');if(tb)tb.classList.toggle("done",e.res!==null);if(e.res!==null){c+=e.res;t+=e.total;any=true;}});
+ $("total").textContent=any?"Gesamt: "+c+" / "+t:"";if(any)scorm.report(c,t);}
+function pickOne(k,id){$(id).addEventListener("click",function(e){var bt=e.target.closest(".cw");if(!bt||EX[k].res!==null)return;var it=bt.closest("[data-i]"),i=+it.dataset.i,j=+bt.dataset.j;
+ it.querySelectorAll(".cw").forEach(function(x){x.classList.remove("on");});
+ if(chosen[k][i]===j)delete chosen[k][i];else{chosen[k][i]=j;bt.classList.add("on");}upd(k);});}
+pickOne(3,"c3");pickOne(4,"c4");
+pickOne(6,"c6");
+function fbOf(root,i){return document.querySelector(root+' .fb[data-i="'+i+'"]');}
+function check(k){var c=0;document.querySelectorAll("audio").forEach(function(a){a.pause();});
+ if(k===0){c=M0.check();document.querySelectorAll("#c0 .slot").forEach(function(sl,i){fbOf("#c0",i).innerHTML=ex(sl.classList.contains("ok"),esc(S1[i][2]));});}
+ else if(k===1){c=M1.check();document.querySelectorAll("#c1 .slot").forEach(function(sl,i){fbOf("#c1",i).innerHTML=ex(sl.classList.contains("ok"),esc(PIC[i][2]));});}
+ else if(k===5){c=M5.check();document.querySelectorAll("#c5 .slot").forEach(function(sl,i){fbOf("#c5",i).innerHTML=ex(sl.classList.contains("ok"),esc(PERS[i][2])+(i===PERS.length-1?'<br><b>Anunțul B (Pendlerzentrale)</b> rămâne în plus: e pentru cei care merg zilnic cu mașina la muncă și își împart costurile.':''));});}
+ else if(k===2){d3=true;R3=WORDS3.map(function(w,i){var got=L[i].map(function(q){return SYL[q].t;}).join("").toLowerCase(),ok=got===w[0].toLowerCase();if(ok)c++;
+   return {ok:ok,fb:ex(ok,(ok?"":"Cuvântul corect: <b>"+esc(w[0])+"</b>. ")+esc(w[3]))};});r3();}
+ else{document.querySelectorAll("#c"+k+" [data-i]").forEach(function(box){var i=+box.dataset.i,key=k===3?ODD[i][2]:(k===4?HQ[i][3]:MC[i][2]),on=chosen[k][i],ok=on===key;if(ok)c++;
+   box.querySelectorAll(".cw").forEach(function(b){var j=+b.dataset.j;b.disabled=true;b.classList.remove("on");
+    if(j===on&&ok)b.classList.add("right");else if(j===on)b.classList.add("wrong");else if(j===key)b.classList.add("missed");
+    if(k===3&&(j===key))b.classList.add("strike");});
+   box.querySelector(".fb").innerHTML=ex(ok,esc(k===3?ODD[i][3]:(k===4?HQ[i][4]:MC[i][3])));});}
+ EX[k].res=c;
+ var t=EX[k].total,p=Math.round(c/t*100),b=bar(k),s=b.querySelector(".score");
+ s.textContent="Rezultat: "+c+" / "+t+" ("+p+"%)";s.className="score "+(p>=80?"good":p>=PASS_PERCENT?"mid":"low");
+ b.querySelector(".msg").classList.add("hidden");b.querySelector(".chk").classList.add("hidden");b.querySelector(".rty").classList.remove("hidden");updTotal();}
+function clearFb(sel){document.querySelectorAll(sel+" .fb").forEach(function(f){f.innerHTML="";});}
+function retry(k){EX[k].res=null;
+ if(k===0){M0.reset();clearFb("#c0");}else if(k===1){M1.reset();clearFb("#c1");}else if(k===5){M5.reset();clearFb("#c5");}
+ else if(k===2){L=[[],[],[],[]];act=0;d3=false;r3();}
+ else{chosen[k]={};document.querySelectorAll("#c"+k+" .cw").forEach(function(b){b.disabled=false;b.className="cw";});clearFb("#c"+k);}
+ var b=bar(k);b.querySelector(".score").className="score hidden";b.querySelector(".msg").classList.remove("hidden");b.querySelector(".chk").classList.remove("hidden");b.querySelector(".rty").classList.add("hidden");upd(k);updTotal();}
+EX.forEach(function(_,k){var b=bar(k);if(!b)return;b.querySelector(".chk").addEventListener("click",function(){check(k);});b.querySelector(".rty").addEventListener("click",function(){retry(k);});});
+document.addEventListener("play",function(e){document.querySelectorAll("audio").forEach(function(a){if(a!==e.target)a.pause();});},true);
+document.querySelectorAll(".tab").forEach(function(t){t.addEventListener("click",function(){
+ document.querySelectorAll("audio").forEach(function(a){a.pause();});
+ document.querySelectorAll(".tab").forEach(function(x){x.classList.toggle("on",x===t);});
+ document.querySelectorAll("section.ex").forEach(function(s){s.classList.toggle("on",s.id==="ex"+t.dataset.ex);});window.scrollTo(0,0);});});
+M0.render();M1.render();M5.render();EX.forEach(function(_,k){upd(k);});
+scorm.init();window.addEventListener("pagehide",scorm.finish);
+</script></body></html>
