@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Indirekte Fragen</title>
+<style>
+
+:root{--bg:#f4f5f7;--card:#fff;--ink:#1f2430;--muted:#5d6472;--line:#e3e6eb;--accent:#3b5bdb;--accent-soft:#e8edff;--ok:#1f8a5b;--ok-soft:#e6f5ee;--bad:#c92a2a;--bad-soft:#fdecec}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;font-size:16px;line-height:1.55;display:flex;flex-direction:column}
+header{padding:10px 24px;border-bottom:1px solid var(--line);background:var(--card);display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+header h1{margin:0;font-size:20px}
+.tabs{display:flex;gap:6px}
+.tab{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:7px 16px;font-size:15px;font-weight:700;cursor:pointer;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.tab .dn{display:none;margin-left:4px}.tab.done .dn{display:inline}
+.total{margin-left:auto;font-size:14px;font-weight:700;color:var(--muted)}
+section.ex{display:none;flex:1;min-height:0;flex-direction:column}
+section.ex.on{display:flex}
+.wrap{flex:1;padding:16px 24px;min-height:0;display:flex;gap:16px;justify-content:center}
+.pane{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow-y:auto;min-height:0}
+.wrap.split .pane{flex:1}
+.wrap.one .pane{width:100%;max-width:780px}
+.pi{padding:20px 26px}
+.instr{margin:0 0 14px;padding:12px 16px;background:var(--accent-soft);border-left:4px solid var(--accent);border-radius:6px;font-weight:600}
+.instr small{display:block;font-weight:400;color:var(--muted);margin-top:2px}
+.txt h2{margin:0 0 12px;font-size:20px}
+.txt p{margin:0 0 14px;font-size:17px;line-height:1.7}
+.q{padding:16px 0;border-top:1px solid var(--line)}
+.q:first-of-type{border-top:none}
+.q h3{margin:0 0 10px;font-size:17px}
+.opt{display:flex;align-items:center;gap:12px;padding:9px 13px;border:1.5px solid var(--line);border-radius:10px;margin-bottom:7px;cursor:pointer;font-size:16px}
+.opt:hover{border-color:#aeb6c8}
+.opt{position:relative}.opt input{position:absolute;opacity:0;pointer-events:none}
+.dot{flex:0 0 22px;height:22px;border-radius:50%;border:2px solid #b7bfce;background:#fff;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:800}
+.opt.on{border-color:var(--accent);background:var(--accent-soft)}
+.opt.on .dot{border-color:var(--accent);background:var(--accent);box-shadow:inset 0 0 0 4px #fff,inset 0 0 0 12px var(--accent)}
+.opt.locked{cursor:default}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}.opt.right .dot{border-color:var(--ok);background:var(--ok);box-shadow:none}.opt.right .dot::after{content:"✓"}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}.opt.wrong .dot{border-color:var(--bad);background:var(--bad);box-shadow:none}.opt.wrong .dot::after{content:"✕"}
+.opt.missed{border-color:var(--ok);border-style:dashed}
+.opt .tag{margin-left:auto;font-size:13px;font-weight:700;white-space:nowrap}
+.opt.right .tag,.opt.missed .tag{color:var(--ok)}.opt.wrong .tag{color:var(--bad)}
+.gaps p{font-size:18px;line-height:2.3;margin:0 0 14px}
+.g{display:inline-flex;align-items:baseline;white-space:nowrap}
+.g .pre{font-weight:600}
+.g input{font:inherit;font-size:17px;border:none;border-bottom:2px solid #9aa3b5;background:var(--accent-soft);padding:0 3px;margin:0 1px;border-radius:3px 3px 0 0;color:var(--ink);text-align:left}
+.g input:focus{outline:none;border-bottom-color:var(--accent);background:#dbe3ff}
+.g sup{font-size:11px;color:var(--muted);margin-left:1px}
+.g.ok input{background:var(--ok-soft);border-bottom-color:var(--ok);color:var(--ok);font-weight:600}
+.g.no input{background:var(--bad-soft);border-bottom-color:var(--bad);color:var(--bad);text-decoration:line-through}
+.fix{color:var(--ok);font-weight:700;font-size:15px;margin-left:4px}
+audio{width:100%;height:40px}
+.audio{position:sticky;top:0;background:var(--card);padding-bottom:10px;z-index:2}
+.s{padding:14px 0;border-top:1px solid var(--line)}
+.s:first-of-type{border-top:none}
+.s .st{font-size:17px;margin-bottom:8px}
+.rf{display:flex;gap:8px}
+.rf button{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:8px 20px;font-size:15px;font-weight:700;cursor:pointer;color:var(--ink)}
+.rf button.on{border-color:var(--accent);background:var(--accent-soft)}
+.rf button.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+.rf button.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.rf button.missed{border-color:var(--ok);border-style:dashed;color:var(--ok)}
+.fb{font-size:14px;font-weight:700;margin-top:6px}.fb.ok{color:var(--ok)}.fb.no{color:var(--bad)}
+.bar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:12px 24px;background:var(--card);border-top:1px solid var(--line)}
+.btn{border:none;border-radius:8px;padding:10px 22px;font-size:15px;font-weight:700;cursor:pointer}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:disabled{opacity:.45;cursor:not-allowed}
+.btn-ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line)}
+.msg{font-size:15px;color:var(--muted)}
+.score{font-size:16px;font-weight:700}.score.good{color:var(--ok)}.score.mid{color:#b06a00}.score.low{color:var(--bad)}
+.hidden{display:none!important}
+@media (max-width:820px){
+ body{height:auto;min-height:100%}
+ header{padding:10px 14px}
+ .wrap{padding:10px;flex-direction:column}
+ .pane{overflow:visible}
+ .pi{padding:16px}
+ .total{margin-left:0;width:100%}
+ .bar{position:sticky;bottom:0;padding:10px 14px;z-index:5}
+ .audio{top:0}
+}
+
+.sent{width:100%;font:inherit;font-size:17px;border:1.5px solid var(--line);border-radius:8px;padding:9px 12px;background:var(--accent-soft);color:var(--ink)}
+.sent:focus{outline:none;border-color:var(--accent);background:#dbe3ff}
+.sent.ok{background:var(--ok-soft);border-color:var(--ok);color:var(--ok);font-weight:600}
+.sent.no{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.cue{font-weight:600}
+.bank{display:flex;flex-wrap:wrap;gap:8px;padding:12px;background:#eef1f6;border-radius:10px;margin-bottom:18px;min-height:56px}
+.chip{border:1.5px solid #cfd5e1;background:#fff;border-radius:8px;padding:6px 14px;font-size:16px;cursor:grab;user-select:none;display:inline-block}
+.chip.sel{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 2px rgba(59,91,219,.25)}
+.slot{display:inline-block;min-width:8ch;min-height:36px;vertical-align:middle;border:1.5px dashed #9aa3b5;border-radius:8px;padding:2px 4px;margin:0 3px;background:#fff;text-align:center;line-height:1.6}
+.slot.over{border-color:var(--accent);background:var(--accent-soft)}
+.slot .chip{padding:1px 10px;font-size:17px}
+.slot.ok{border-style:solid;border-color:var(--ok);background:var(--ok-soft)}
+.slot.ok .chip{color:var(--ok);border-color:var(--ok);background:transparent;font-weight:600}
+.slot.no{border-style:solid;border-color:var(--bad);background:var(--bad-soft)}
+.slot.no .chip{color:var(--bad);border-color:var(--bad);background:transparent;text-decoration:line-through}
+.bank.over{background:var(--accent-soft)}
+.img img{width:100%;height:auto;display:block;border-radius:8px}
+.sl .g{margin:0 2px}
+.sl p{margin:0 0 6px;font-size:18px;line-height:2.4}
+
+.audiorow{background:var(--card);border-bottom:1px solid var(--line);padding:8px 24px;position:sticky;top:0;z-index:6}
+.audiorow audio{max-width:900px;display:block;margin:0 auto}
+.wordlist{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}
+.wordlist span{background:#eef1f6;border-radius:8px;padding:5px 12px;font-style:italic;font-weight:600}
+.s audio{margin:4px 0 10px}
+.sg p{margin:0 0 4px;font-size:18px;line-height:2.4}
+@media (max-width:820px){.audiorow{padding:8px 12px}}
+
+.tabs{flex-wrap:wrap}
+.tab{padding:7px 12px}
+.row{display:flex;align-items:baseline;gap:8px;padding:6px 0;font-size:18px;line-height:2.2}
+.row .n{color:var(--muted);min-width:1.8em}
+.row .base{font-weight:600;min-width:6.5em}
+.row.ex{color:var(--muted)}
+.row.ex .ans{font-weight:700;color:var(--ok)}
+.hint{color:var(--muted);font-size:14px}
+.convs{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:6px}
+.conv{border:2px dashed var(--line);border-radius:12px;padding:10px;background:#fafbfc;min-height:150px}
+.conv.over,.pool.over{border-color:var(--accent);background:var(--accent-soft)}
+.conv h3{margin:0 0 6px;text-align:center;font-size:16px}
+.conv audio{height:36px;margin-bottom:8px}
+.pool{display:flex;flex-wrap:wrap;gap:8px;padding:10px;border:2px dashed var(--line);border-radius:12px;min-height:54px;margin-bottom:14px}
+.pool .chip{margin:0}
+.conv .chip{display:block;margin:0 0 7px;text-align:left}
+.chip small{display:block;font-weight:700;font-size:12px;margin-top:2px}
+.chip.ok{border-color:var(--ok);background:var(--ok-soft);color:var(--ok);cursor:default}
+.chip.no{border-color:var(--bad);background:var(--bad-soft);color:var(--bad);cursor:default}
+.aw{display:inline-flex;gap:4px;vertical-align:middle;margin:0 3px}
+.aw button{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:2px 14px;font-size:16px;font-weight:700;cursor:pointer;color:var(--ink)}
+.aw button.on{border-color:var(--accent);background:var(--accent-soft)}
+.aw button.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+.aw button.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.aw button.missed{border-color:var(--ok);border-style:dashed;color:var(--ok)}
+.forum p{margin:0 0 4px;font-size:17px;line-height:2.3}
+.forum .gap{height:10px}
+@media (max-width:820px){.convs{grid-template-columns:1fr}}
+
+.qrow{display:grid;grid-template-columns:1fr 1.15fr;gap:10px;margin-bottom:10px;align-items:stretch}
+.qbox{border:1.5px solid var(--line);border-radius:10px;padding:10px 14px;background:#fff;font-weight:600;display:flex;align-items:center}
+.aslot{border:2px dashed #b7bfce;border-radius:10px;min-height:56px;padding:4px;background:#fafbfc;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:14px;text-align:center}
+.aslot.over{border-color:var(--accent);background:var(--accent-soft)}
+.aslot .chip{display:block;width:100%;margin:0;text-align:left}
+.aslot.ok{border-style:solid;border-color:var(--ok);background:var(--ok-soft)}
+.aslot.no{border-style:solid;border-color:var(--bad);background:var(--bad-soft)}
+.aslot .chip.ok{border-color:var(--ok);background:transparent;color:var(--ok)}
+.aslot .chip.no{border-color:var(--bad);background:transparent;color:var(--bad);text-decoration:line-through}
+.aslot .fixt{display:block;color:var(--ok);font-size:13px;font-weight:700;margin-top:3px;text-decoration:none}
+.abank{display:flex;flex-direction:column;gap:8px;padding:12px;background:#eef1f6;border-radius:10px;margin-bottom:18px;min-height:56px}
+.abank .chip{margin:0;text-align:left;display:block}
+.abank.over{background:var(--accent-soft)}
+.fqitem{margin-bottom:12px;padding:10px 12px;background:#f7f8fb;border-radius:10px}
+.fqbuilt{min-height:48px;padding:6px;border:2px dashed #b7bfce;border-radius:10px;background:#fff;display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:4px 0 8px}
+.fqbuilt.ok{border-style:solid;border-color:var(--ok);background:var(--ok-soft)}
+.fqbuilt.no{border-style:solid;border-color:var(--bad);background:var(--bad-soft)}
+.fqtiles{display:flex;flex-wrap:wrap;gap:8px}
+.fqitem .chip{margin:0;cursor:pointer}
+.cmpd{font-size:19px;line-height:2.4;padding:4px 0}
+.cmpd .n{color:var(--muted);display:inline-block;min-width:1.8em}
+@media (min-width:821px){.abank{display:grid;grid-template-columns:1fr 1fr}}
+@media (max-width:820px){.qrow{grid-template-columns:1fr}}
+
+.txt .title{font-weight:700;font-size:18px;margin:0 0 6px}
+.txt p{margin:0 0 12px;font-size:17px;line-height:1.7}
+.rfs{padding:14px 0;border-top:1px solid var(--line)}
+.rfs:first-of-type{border-top:none}
+.rfs .st{font-size:17px;margin-bottom:8px}
+.rf{display:flex;gap:8px}
+.rf button{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:8px 20px;font-size:15px;font-weight:700;cursor:pointer;color:var(--ink)}
+.rf button.on{border-color:var(--accent);background:var(--accent-soft)}
+.rf button.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+.rf button.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.rf button.missed{border-color:var(--ok);border-style:dashed;color:var(--ok)}
+.corr{display:none;margin-top:10px}
+.corr.show{display:block}
+.corr label{display:block;font-size:13px;color:var(--muted);margin-bottom:4px}
+.sug{margin-top:8px;font-size:14px;color:var(--ok);font-weight:700}
+.film{padding:14px 0;border-top:1px solid var(--line)}
+.film:first-of-type{border-top:none}
+.film h3{margin:0 0 6px;font-size:17px}
+.film audio{margin-bottom:10px}
+
+.drow{padding:12px 0;border-top:1px solid var(--line)}
+.drow:first-of-type{border-top:none}
+.drow .st{font-size:17px;margin-bottom:6px}
+.dline{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dline .pre{font-weight:700;white-space:nowrap;font-size:17px}
+.dline input{flex:1;min-width:220px}
+.drow.ex{background:#f3f7f4;border-radius:10px;padding:12px 14px;margin-bottom:6px;border:1px solid var(--ok)}
+.drow.ex .ans{color:var(--ok);font-weight:700;font-size:17px}
+.tip{background:#fff8e6;border-left:4px solid #e0a100;border-radius:6px;padding:10px 14px;margin:0 0 14px;font-size:15px}
+.tip b{color:#8a5a00}
+.convs.four{grid-template-columns:1fr 1fr}
+
+.mbank{display:flex;flex-wrap:wrap;gap:8px;padding:12px;background:#eef1f6;border-radius:10px;margin-bottom:18px;min-height:56px}
+.mbank.over{background:var(--accent-soft)}
+.mbank .chip{margin:0}
+.pgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.pcell{text-align:center}
+.pcell img{width:100%;height:auto;display:block;border-radius:6px}
+.pcell .slot{display:block;margin:6px auto 0;width:76px;min-width:0;min-height:38px;font-size:18px}
+.pcell .slot .chip{padding:1px 10px;font-size:18px;font-weight:700}
+.msl .slot .chip{font-size:16px}
+.sl2 p{margin:0 0 4px;font-size:18px;line-height:2.5}
+.post{margin-bottom:14px}
+.post .nm{font-weight:700}
+.post p{margin:4px 0 0;font-size:17px;line-height:1.75}
+.post .ttl{display:inline-block;vertical-align:middle}
+.exchip{display:inline-block;border:1.5px solid var(--ok);background:var(--ok-soft);color:var(--ok);border-radius:8px;padding:2px 10px;font-size:16px;font-weight:600}
+.fixs{color:var(--ok);font-weight:700;font-size:13px;display:block}
+@media (max-width:820px){.pgrid{grid-template-columns:repeat(2,1fr)}}
+
+.bld{padding:14px 0;border-top:1px solid var(--line)}
+.bld:first-child{border-top:none}
+.bld .ro{font-size:15px;color:var(--muted);font-weight:700}
+.line{min-height:50px;border:1.5px dashed #9aa3b5;border-radius:10px;padding:6px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;background:#fff;margin:8px 0}
+.line .chip,.pl .chip{cursor:pointer}
+.pl{display:flex;flex-wrap:wrap;gap:6px}
+.line.ok{border-style:solid;border-color:var(--ok);background:var(--ok-soft)}
+.line.no{border-style:solid;border-color:var(--bad);background:var(--bad-soft)}
+.line.ok .chip{color:var(--ok);border-color:var(--ok);background:transparent;font-weight:600}
+.line.no .chip{color:var(--bad);border-color:var(--bad);background:transparent}
+.clr{border:none;background:none;color:var(--muted);font-size:13px;cursor:pointer;text-decoration:underline;padding:2px 0}
+.fbk{font-size:15px;margin-top:6px}.fbk.ok{color:var(--ok);font-weight:700}.fbk.no{color:var(--bad)}.fbk .cr{color:var(--ok);font-weight:700;display:block}
+.pk{display:inline-flex;gap:5px;vertical-align:middle;margin:0 3px;flex-wrap:wrap}
+.cw{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:2px 12px;font:inherit;font-size:17px;cursor:pointer;color:var(--ink)}
+.cw:hover{border-color:#aeb6c8}
+.cw.on{border-color:var(--accent);background:var(--accent-soft);font-weight:700}
+.cw.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok);font-weight:700}
+.cw.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad);text-decoration:line-through}
+.cw.missed{border-color:var(--ok);border-style:dashed;color:var(--ok);font-weight:700}
+.cw:disabled{cursor:default}
+.item{padding:14px 0;border-top:1px solid var(--line)}
+.item:first-child{border-top:none}
+.item .st{font-size:18px;line-height:2.3}
+.item .an{color:var(--muted);font-size:17px}
+.expl{margin:8px 0 0;padding:9px 13px;background:var(--bad-soft);border-left:4px solid var(--bad);border-radius:6px;font-size:15px;line-height:1.5}
+.expl.ok{background:var(--ok-soft);border-left-color:var(--ok);color:var(--ok);font-weight:700}
+.item{padding:12px 0;border-top:1px solid var(--line)}.item:first-child{border-top:none}
+.qq{font-size:18px;font-weight:700;margin:0 0 6px}
+.cline{font-size:18px;line-height:2.2}
+.sl{font:inherit;font-size:17px;padding:3px 6px;border:1.5px solid var(--line);border-radius:6px;background:#fff;margin:0 3px;max-width:100%}
+.sl.ok{border-color:var(--ok);background:var(--ok-soft);color:var(--ok);font-weight:700}
+.sl.no{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.opt{display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.cw{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:5px 14px;font:inherit;font-size:17px;cursor:pointer;color:var(--ink);text-align:left}
+.cw:hover{border-color:#aeb6c8}.cw.on{border-color:var(--accent);background:var(--accent-soft);font-weight:700}
+.cw.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok);font-weight:700}
+.cw.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad);text-decoration:line-through}
+.cw.missed{border-color:var(--ok);border-style:dashed;color:var(--ok);font-weight:700}
+.cw:disabled{cursor:default}
+.vbox{border:2px dotted #c0415a;border-radius:10px;padding:10px 14px;margin:0 0 14px;text-align:center;font-size:17px;line-height:1.8}
+.vbox s{color:var(--muted)}
+.exm{background:#e8f6fd;border-left:4px solid #29a8e0;border-radius:10px;padding:10px 16px;margin:0 0 14px;font-size:16px}
+.nb2{background:#f3f8fc;border-left:4px solid #29a8e0;border-radius:10px;padding:10px 16px;margin:0 0 14px;font-size:15px}
+.nb2 summary{cursor:pointer;font-weight:700}.nb2 p{margin:6px 0}
+.pre{font-size:17px;font-weight:700;margin:2px 0 4px}.hq{font-size:14px;color:var(--muted);margin:0 0 4px}.post{font-size:15px;color:var(--muted);margin:4px 0 0}
+.ti{font:inherit;font-size:17px;width:100%;padding:6px 10px;border:1.5px solid var(--line);border-radius:8px;margin:2px 0}.ti:focus{outline:none;border-color:var(--accent)}.ti.ok{border-color:var(--ok);background:var(--ok-soft);color:var(--ok);font-weight:700}.ti.no{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.tag{font-size:13px;color:var(--ok);font-weight:700;margin:0 4px}
+.expl{font-weight:400;margin:6px 0 0;padding:8px 12px;background:var(--bad-soft);border-left:4px solid var(--bad);border-radius:6px;font-size:15px;line-height:1.5}
+.expl.ok{background:var(--ok-soft);border-left-color:var(--ok)}
+.expl b.t{display:block;margin-bottom:2px;font-weight:700}
+.expl.ok b.t{color:var(--ok)}.expl:not(.ok) b.t{color:var(--bad)}
+</style></head><body>
+<header><h1>Indirekte Fragen</h1><div class="tabs"><button class="tab on" data-ex="0">Übung 1<span class="dn"> ✓</span></button><button class="tab" data-ex="1">Übung 2<span class="dn"> ✓</span></button><button class="tab" data-ex="2">Übung 3<span class="dn"> ✓</span></button><button class="tab" data-ex="3">Übung 4<span class="dn"> ✓</span></button><button class="tab" data-ex="4">Übung 5<span class="dn"> ✓</span></button></div><span class="total" id="total"></span></header>
+<section class="ex on" id="ex0">
+ <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
+  <p class="instr">1.1 Ergänzen Sie die Fragewörter.<small>Completează cu cuvântul întrebare potrivit din casetă (fiecare cuvânt se folosește o singură dată; «wann» e deja folosit la exemplu). Dacă greșești, vezi explicația.</small></p>
+  <details class="nb2" open><summary>✅ Reminder – Nebensatz cu „ob” / cuvânt întrebare (apasă ca să închizi)</summary>
+<p><b>Întrebare da/nu</b> → <b>ob</b>: «Kommt der Zug?» → Ich weiß nicht, <b>ob</b> der Zug kommt.</p>
+<p><b>Întrebare cu cuvânt întrebare</b> → același cuvânt: «Wann kommt der Zug?» → Ich weiß nicht, <b>wann</b> der Zug kommt.</p>
+<p><b>Verbul conjugat merge la final.</b> Cu modal: infinitiv + modal («… finden <b>kann</b>»). Verbele separabile nu se despart («… <b>ankommen</b>»). Perfekt: participiu + auxiliar («… gefunden <b>habe</b>»).</p></details><div class="vbox"><s>wann</s> · wo · warum · wohin · wie viel · wie lange</div><div class="exm"><b>Beispiel:</b> 0. Papa möchte wissen, <b><u>wann</u></b> du mal wieder nach Hause kommst.</div><div id="c0"></div>
+ </div></div></div>
+ <div class="bar" data-bar="0">
+  <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
+  <span class="msg"></span><span class="score hidden"></span>
+ </div>
+</section>
+<section class="ex" id="ex1">
+ <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
+  <p class="instr">1.2 Was möchten die Leute wissen? Welche Frage ist richtig?<small>Alege varianta corectă (a sau b): atenție la poziția verbului în propoziția cu „ob”. Dacă greșești, vezi explicația.</small></p>
+  <div id="c1"></div>
+ </div></div></div>
+ <div class="bar" data-bar="1">
+  <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
+  <span class="msg"></span><span class="score hidden"></span>
+ </div>
+</section>
+<section class="ex" id="ex2">
+ <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
+  <p class="instr">1.3 Schreiben Sie Sätze mit „ob” oder Fragewort.<small>Transformă întrebarea din paranteză într-o întrebare indirectă. Atinge blocurile în ordinea corectă (ca în carte, separate prin „/”): verbul conjugat merge la <b>final</b>. Exemplu: 0. Ich möchte gern wissen, <b>ob der Zug pünktlich kommt</b>. (Kommt der Zug pünktlich?)</small></p>
+  <div id="c2"></div>
+ </div></div></div>
+ <div class="bar" data-bar="2">
+  <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
+  <span class="msg"></span><span class="score hidden"></span>
+ </div>
+</section>
+<section class="ex" id="ex3">
+ <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
+  <p class="instr">1.4 Was fragen die Leute? Ergänzen Sie die Dialoge.<small>Alege dintre întrebările din casetă și transformă-o în Nebensatz: <b>scrie tu</b> restul propoziției (verbul conjugat la final). La nr. 1, „ob” e deja dat. Majusculele, punctuația și ä/ae nu contează.</small></p>
+  <div class="vbox">Kommen wir rechtzeitig an? · War das da eine Radarkamera?<br>Gibt es hier in der Nähe eine Tankstelle? · Ist das der richtige Weg?</div><div id="c3"></div>
+ </div></div></div>
+ <div class="bar" data-bar="3">
+  <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
+  <span class="msg"></span><span class="score hidden"></span>
+ </div>
+</section>
+<section class="ex" id="ex4">
+ <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
+  <p class="instr">1.5 Mama möchte wissen …<small>Mama pune întrebări prin telefon (vezi balloanele). Transformă-le în întrebări indirecte: <b>scrie tu</b> restul propoziției (verbul la final). Atenție: <b>sie → du</b> (vorbești cu Maja).</small></p>
+  <div class="vbox" style="text-align:left"><b>Mamas Fragen:</b><br>• Wann kommt sie?<br>• Bleibt sie das ganze Wochenende?<br>• Was möchte sie essen?<br>• Fährt sie mit dem Auto?<br>• Hat sie eine warme Jacke eingepackt?</div><div id="c4"></div>
+ </div></div></div>
+ <div class="bar" data-bar="4">
+  <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
+  <span class="msg"></span><span class="score hidden"></span>
+ </div>
+</section>
+
+<script>
+var PASS_PERCENT=50;
+var A=[["Können Sie mir sagen, {} eine Nacht im Gloria-Hotel kostet?", "wie viel", "Întrebi despre <b>preț</b> → <b>wie viel</b> (cât). «wann» = când, «wo» = unde nu se potrivesc cu «kostet»."], ["Weißt du, {} mein Autoschlüssel ist?", "wo", "Întrebi despre <b>loc</b> (unde se află cheia) → <b>wo</b>. «wohin» ar însemna «încotro» (cu mișcare), dar «ist» arată locul, nu direcția."], ["Wissen Sie, {} dieser Zug fährt?", "wohin", "«fährt» = mișcare spre o destinație → <b>wohin</b> (încotro). «wo» s-ar potrivi doar cu o poziție fixă."], ["Ich frage mich, {} man mit dem Auto nach Berlin braucht.", "wie lange", "«braucht» (a avea nevoie de timp) → durata → <b>wie lange</b> (cât timp)."], ["Mich interessiert, {} Leon allein nach München gereist ist.", "warum", "Se întreabă despre <b>motiv</b> → <b>warum</b> (de ce). Atenție la ordine: după cuvântul întrebare verbul conjugat «ist» e la final."]], AO=["wo", "wie viel", "warum", "wie lange", "wohin"], Bq=[["1. Können Sie mir sagen,", ["ob wir rechtzeitig in Stuttgart ankommen?", "ob wir rechtzeitig in Stuttgart kommen an?"], 0, "După «ob» verbul conjugat stă la <b>final</b>. «ankommen» e separabil, dar în Nebensatz <b>nu se desparte</b>: «ob wir … ankommen». Varianta b desparte verbul – greșit."], ["2. Ich weiß nicht,", ["ob ich kann bei dir in der Nähe einen Parkplatz finden.", "ob ich bei dir in der Nähe einen Parkplatz finden kann."], 1, "În Nebensatz cu modal: <b>infinitivul + modalul conjugat la final</b>: «… finden kann». Varianta a pune «kann» prea devreme."], ["3. Ich bin nicht sicher,", ["ob ich einen Sitzplatz muss reservieren.", "ob ich einen Sitzplatz reservieren muss."], 1, "Modalul conjugat stă pe ultimul loc: «… reservieren <b>muss</b>». În a, «muss» e înaintea infinitivului – greșit."], ["4. Mich interessiert besonders,", ["ob wir mit dem Navigationssystem schneller sind.", "ob mit dem Navigationssystem wir schneller sind."], 0, "După «ob» urmează <b>subiectul</b> («wir»), apoi restul, iar verbul («sind») la final. În b, «mit dem Navigationssystem» e pus între «ob» și subiect – ordine greșită."], ["5. Ich mache mir Sorgen,", ["ob ich den nächsten Zug erreichen kann.", "ob kann ich den nächsten Zug erreichen."], 0, "În Nebensatz verbul <b>nu</b> mai e pe poziția 2: «… erreichen kann» la final. Varianta b («ob kann ich») e ordinea unei întrebări directe."], ["6. Ich möchte gern wissen,", ["ob an der nächsten Haltestelle muss ich aussteigen.", "ob ich an der nächsten Haltestelle aussteigen muss."], 1, "După «ob» → subiect «ich», apoi complementele, iar «aussteigen muss» la final. În a, «muss ich» are ordine de propoziție principală – greșit."]], BL={"c2": [{"pre": "Kannst du mir sagen,", "t": ["wo", "ich", "einen Parkplatz", "finden", "kann"], "o": [2, 0, 1, 4, 3], "v": ["wo ich einen Parkplatz finden kann"], "q": "Wo kann ich einen Parkplatz finden?", "post": [], "why": "Întrebare cu cuvânt întrebare (<b>wo</b>) → Nebensatz introdus de «wo». Subiectul «ich» urmează imediat, iar la final: <b>infinitiv + modal</b> («finden kann»)."}, {"pre": "Wissen Sie,", "t": ["wie weit", "es", "noch", "bis Köln", "ist"], "o": [0, 1, 4, 2, 3], "v": ["wie weit es noch bis Köln ist", "wie weit es bis Köln noch ist"], "q": "Wie weit ist es noch bis Köln?", "post": [], "why": "Cuvântul întrebare <b>wie weit</b> rămâne la început, iar verbul «ist» se mută la <b>final</b>: «… bis Köln ist»."}, {"pre": "Herr Schneider fragt mich,", "t": ["ob", "ich", "schon", "ein Hotel", "gefunden", "habe"], "o": [3, 0, 4, 1, 5, 2], "v": ["ob ich schon ein Hotel gefunden habe", "ob ich ein Hotel schon gefunden habe"], "q": "Haben Sie schon ein Hotel gefunden?", "post": [], "why": "Întrebare da/nu → <b>ob</b>. «Sie» (mie mi se adresează) → <b>ich</b>. Perfekt: participiul «gefunden» + auxiliarul <b>habe</b> la final."}, {"pre": "Ich weiß noch nicht,", "t": ["ob", "wir", "mit dem Zug", "oder", "mit dem Auto", "fahren"], "o": [5, 2, 3, 1, 4, 0], "v": ["ob wir mit dem Zug oder mit dem Auto fahren"], "q": "Fahrt ihr mit dem Zug oder mit dem Auto?", "post": [], "why": "Întrebare da/nu → <b>ob</b>. «ihr» → <b>wir</b> (vorbitorul răspunde în numele grupului). Verbul «fahren» la final."}], "c3": [{"pre": "Ich bin gespannt, ob", "t": ["wir", "rechtzeitig", "ankommen"], "o": [2, 1, 0], "v": ["wir rechtzeitig ankommen"], "q": "", "post": ["– Ich glaube nicht. Es ist schon kurz vor zwei.", "– Dann kommen wir ja viel zu spät!"], "why": "Fraza din casetă: «Kommen wir rechtzeitig an?» → «ob» (dat deja) + <b>wir rechtzeitig ankommen</b>. Verbul separabil «ankommen» se scrie <b>întreg, la final</b>."}, {"pre": "Mist! Ich frage mich,", "t": ["ob", "das", "da", "eine Radarkamera", "war"], "o": [2, 3, 0, 4, 1], "v": ["ob das da eine Radarkamera war", "ob das eine Radarkamera da war"], "q": "", "post": ["– Natürlich! Das wird teuer! Warum musst du auch immer so schnell fahren!"], "why": "Fraza din casetă: «War das da eine Radarkamera?» → <b>ob das da eine Radarkamera war</b>. «war» (Präteritum) se mută la final."}, {"pre": "Weißt du,", "t": ["ob", "es", "hier in der Nähe", "eine Tankstelle", "gibt"], "o": [4, 1, 3, 0, 2], "v": ["ob es hier in der Nähe eine Tankstelle gibt", "ob es eine Tankstelle hier in der Nähe gibt"], "q": "", "post": ["– Oh, nein! Hast du wieder nicht getankt?", "– Ich habe es vergessen."], "why": "Fraza din casetă: «Gibt es hier in der Nähe eine Tankstelle?» → <b>ob es … gibt</b>. «gibt» (es gibt = există) ajunge la final."}, {"pre": "Weißt du,", "t": ["ob", "das", "der richtige Weg", "ist"], "o": [1, 0, 2, 3], "v": ["ob das der richtige Weg ist"], "q": "", "post": ["– Ich glaube nicht. Mach doch mal das Navi an."], "why": "Fraza din casetă: «Ist das der richtige Weg?» → <b>ob das der richtige Weg ist</b>. Verbul «ist» trece la final."}], "c4": [{"pre": "Du, Maja, Mama möchte wissen,", "t": ["wann", "du", "kommst"], "o": [2, 1, 0], "v": ["wann du kommst"], "q": "", "post": ["– Am Freitag."], "why": "Balonul «Wann kommt sie?» → cuvânt întrebare <b>wann</b>. «sie» (Maja) → <b>du</b>, pentru că i te adresezi ei. Verbul «kommst» la final."}, {"pre": "Mama fragt auch,", "t": ["ob", "du", "mit dem Auto", "fährst"], "o": [1, 2, 3, 0], "v": ["ob du mit dem Auto fährst"], "q": "", "post": ["– Nein, mit dem Zug. Ich komme um 18.09 Uhr an."], "why": "Balonul «Fährt sie mit dem Auto?» → întrebare da/nu → <b>ob</b>. sie → du → «fährst» (cu umlaut, 2 sg.), la final."}, {"pre": "Gut. Am Wochenende wird es kalt sein. Mama macht sich Sorgen,", "t": ["ob", "du", "eine warme Jacke", "eingepackt", "hast"], "o": [3, 0, 2, 1, 4], "v": ["ob du eine warme Jacke eingepackt hast"], "q": "", "post": ["– Ja, habe ich. Ist doch klar."], "why": "Balonul «Hat sie eine warme Jacke eingepackt?» → <b>ob</b>. Perfekt în Nebensatz: participiul «eingepackt» + <b>hast</b> (du) la final."}, {"pre": "Es interessiert Mama,", "t": ["was", "du", "essen", "möchtest"], "o": [1, 0, 3, 2], "v": ["was du essen möchtest"], "q": "", "post": ["– Am liebsten ihre gute Gemüsesuppe."], "why": "Balonul «Was möchte sie essen?» → cuvântul întrebare <b>was</b>. Infinitiv + modal la final: «essen möchtest». (În carte propoziția începe „Mama interessiert,” – am corectat în «Es interessiert Mama,».)"}, {"pre": "Mama fragt,", "t": ["ob", "du", "das ganze Wochenende", "bleibst"], "o": [3, 1, 0, 2], "v": ["ob du das ganze Wochenende bleibst"], "q": "", "post": ["– Ja, ich fahre erst am Montag wieder zurück."], "why": "Balonul «Bleibt sie das ganze Wochenende?» → întrebare da/nu → <b>ob</b>. sie → du → «bleibst» la final."}]};
+var scorm=(function(){var api=null,active=false;
+ function find(w){var n=0;while(w&&n<10){try{if(w.API)return w.API;}catch(e){}if(w.parent&&w.parent!==w){w=w.parent;n++;}else break;}return null;}
+ function init(){api=find(window);if(!api){try{if(window.opener)api=find(window.opener);}catch(e){}}
+  if(api){try{active=String(api.LMSInitialize(""))==="true";if(active){var st=api.LMSGetValue("cmi.core.lesson_status");if(st==="not attempted"||st==="")api.LMSSetValue("cmi.core.lesson_status","incomplete");api.LMSCommit("");}}catch(e){active=false;}}}
+ function report(c,t){if(!active)return;var p=Math.round(c/t*100);try{api.LMSSetValue("cmi.core.score.min","0");api.LMSSetValue("cmi.core.score.max","100");api.LMSSetValue("cmi.core.score.raw",String(p));api.LMSSetValue("cmi.core.lesson_status",p>=PASS_PERCENT?"passed":"failed");api.LMSCommit("");}catch(e){}}
+ function finish(){if(!active)return;try{api.LMSFinish("");}catch(e){}active=false;}
+ return{init:init,report:report,finish:finish};})();
+
+
+
+
+
+
+
+
+
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function normS(s){return String(s).toLowerCase().replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss").replace(/[^a-z0-9 ]/g," ").replace(/\s+/g," ").trim();}
+function ex(ok,txt){return '<div class="expl'+(ok?' ok':'')+'"><b class="t">'+(ok?'Corect':'Greșit')+'</b>'+txt+'</div>';}
+function sel(opts,key){return '<select class="sl" data-a="'+esc(key)+'"><option value="">…</option>'+opts.map(function(o){return '<option>'+esc(o)+'</option>';}).join("")+'</select>';}
+$("c0").innerHTML=A.map(function(s,i){return '<div class="item"><div class="cline">'+(i+1)+'. '+esc(s[0]).replace("{}",sel(AO,s[1]))+'</div><div class="fb"></div></div>';}).join("");
+$("c1").innerHTML=Bq.map(function(s,i){return '<div class="item" data-i="'+i+'"><div class="qq">'+esc(s[0])+'</div><div class="opt">'+s[1].map(function(o,j){return '<button type="button" class="cw" data-j="'+j+'"><b>'+"ab".charAt(j)+')</b> '+esc(o)+'</button>';}).join("")+'</div><div class="fb"></div></div>';}).join("");
+var EX=[{res:null,total:A.length},{res:null,total:Bq.length},{res:null,total:BL.c2.length},{res:null,total:BL.c3.length},{res:null,total:BL.c4.length}];
+var chosen={},ST={};
+function renderItem(id,i){var s=ST[id][i],it=BL[id][i],t=it.t,el=$(id+"_"+i);
+ var line=s.line.map(function(k){return '<span class="chip" data-k="'+k+'">'+esc(t[k])+'</span>';}).join("");
+ if(!s.line.length)line='<span class="hint">Atinge blocurile în ordinea corectă…</span>';
+ var pool=s.pool.map(function(k){return '<span class="chip" data-k="'+k+'">'+esc(t[k])+'</span>';}).join("");
+ var cls="line",fb="";
+ if(s.done){cls+=s.ok?" ok":" no";if(!s.ok)fb='<div class="fbk no">Varianta corectă:'+it.v.slice(0,2).map(function(v){return '<span class="cr">'+esc(v)+'.</span>';}).join("")+'</div>';fb+=ex(s.ok,it.why);}
+ el.innerHTML='<div class="ro">'+(i+1)+' / '+BL[id].length+'</div>'+(it.q?'<div class="hq">('+esc(it.q)+')</div>':'')+'<div class="pre">'+esc(it.pre)+'</div><div class="'+cls+'">'+line+'</div>'+
+  (s.done?"":'<div class="pl" data-w="pool">'+pool+'</div><button type="button" class="clr">șterge tot</button>')+(it.post.length?'<div class="post">'+it.post.map(esc).join("<br>")+'</div>':'')+fb;}
+function initT(id){ST[id]=BL[id].map(function(){return {done:false};});$(id).innerHTML=BL[id].map(function(it,i){return '<div class="bld" id="'+id+'_'+i+'"><div class="ro">'+(i+1)+' / '+BL[id].length+'</div><div class="pre">'+esc(it.pre)+'</div><input class="ti" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="scrie aici…">'+(it.post.length?'<div class="post">'+it.post.map(esc).join("<br>")+'</div>':'')+'<div class="fb"></div></div>';}).join("");}
+function initB(id){if(id!=="c2")return initT(id);ST[id]=BL[id].map(function(it){return {pool:it.o.slice(),line:[],done:false};});$(id).innerHTML=BL[id].map(function(_,i){return '<div class="bld" id="'+id+'_'+i+'"></div>';}).join("");BL[id].forEach(function(_,i){renderItem(id,i);});}
+["c2"].forEach(function(id,n){var k=2;
+ $(id).addEventListener("click",function(e){if(EX[k].res!==null)return;
+  var box=e.target.closest(".bld");if(!box)return;var i=+box.id.split("_")[1],s=ST[id][i];
+  if(e.target.closest(".clr")){s.pool=s.pool.concat(s.line);s.line=[];renderItem(id,i);upd(k);return;}
+  var ch=e.target.closest(".chip");if(!ch)return;var q=+ch.dataset.k;
+  if(ch.parentNode.dataset.w==="pool"){s.pool.splice(s.pool.indexOf(q),1);s.line.push(q);}
+  else{s.line.splice(s.line.indexOf(q),1);s.pool.push(q);}
+  renderItem(id,i);upd(k);});});
+function bar(k){return document.querySelector('.bar[data-bar="'+k+'"]');}
+function selsOf(){return Array.prototype.slice.call(document.querySelectorAll("#c0 .sl"));}
+function answered(k){if(k===0)return selsOf().filter(function(x){return x.value!=="";}).length;if(k===1)return Object.keys(chosen).length;if(k>2)return Array.prototype.filter.call(document.querySelectorAll("#c"+k+" .ti"),function(x){return x.value.trim()!=="";}).length;return ST["c"+k].filter(function(s){return s.pool.length===0;}).length;}
+function upd(k){if(EX[k].res!==null)return;var b=bar(k),n=answered(k),t=EX[k].total;
+ b.querySelector(".chk").disabled=n<t;b.querySelector(".msg").textContent=n<t?"Ai completat "+n+" din "+t+".":"Gata! Apasă „Verifică răspunsurile”.";}
+function updTotal(){var c=0,t=0,any=false;EX.forEach(function(e,k){document.querySelector('.tab[data-ex="'+k+'"]').classList.toggle("done",e.res!==null);if(e.res!==null){c+=e.res;t+=e.total;any=true;}});
+ $("total").textContent=any?"Gesamt: "+c+" / "+t:"";if(any)scorm.report(c,t);}
+$("c0").addEventListener("change",function(){upd(0);});$("c3").addEventListener("input",function(){upd(3);});$("c4").addEventListener("input",function(){upd(4);});
+$("c1").addEventListener("click",function(e){var bt=e.target.closest(".cw");if(!bt||EX[1].res!==null)return;var it=bt.closest("[data-i]"),i=+it.dataset.i,j=+bt.dataset.j;
+ it.querySelectorAll(".cw").forEach(function(x){x.classList.remove("on");});
+ if(chosen[i]===j)delete chosen[i];else{chosen[i]=j;bt.classList.add("on");}upd(1);});
+function check(k){var c=0;
+ if(k===0){selsOf().forEach(function(x,i){var ok=x.value===x.dataset.a;if(ok)c++;x.disabled=true;x.classList.add(ok?"ok":"no");if(!ok)x.insertAdjacentHTML("afterend",'<span class="tag">→ '+esc(x.dataset.a)+'</span>');document.querySelectorAll("#c0 .fb")[i].innerHTML=ex(ok,A[i][2]);});}
+ else if(k===1){document.querySelectorAll("#c1 [data-i]").forEach(function(box){var i=+box.dataset.i,key=Bq[i][2],on=chosen[i],ok=on===key;if(ok)c++;
+   box.querySelectorAll(".cw").forEach(function(b){var j=+b.dataset.j;b.disabled=true;b.classList.remove("on");if(j===on&&ok)b.classList.add("right");else if(j===on)b.classList.add("wrong");else if(j===key)b.classList.add("missed");});
+   box.querySelector(".fb").innerHTML=ex(ok,Bq[i][3]);});}
+ else if(k>2){var id="c"+k;BL[id].forEach(function(it,i){var x=$(id+"_"+i).querySelector(".ti"),w=normS(x.value),vs=it.v.map(normS);if(/ob$/.test(it.pre))vs=vs.concat(vs.map(function(v){return "ob "+v;}));
+   var ok=vs.indexOf(w)>-1;if(ok)c++;x.disabled=true;x.classList.add(ok?"ok":"no");
+   $(id+"_"+i).querySelector(".fb").innerHTML=(ok?'':'<div class="fbk no">Varianta corectă:'+it.v.slice(0,2).map(function(v){return '<span class="cr">'+esc(v)+'.</span>';}).join("")+'</div>')+ex(ok,it.why);});}
+ else{var id="c"+k;BL[id].forEach(function(it,i){var s=ST[id][i],w=normS(s.line.map(function(q){return it.t[q];}).join(" "));
+   s.done=true;s.ok=it.v.map(normS).indexOf(w)>-1;if(s.ok)c++;renderItem(id,i);});}
+ EX[k].res=c;
+ var t=EX[k].total,p=Math.round(c/t*100),b=bar(k),s=b.querySelector(".score");
+ s.textContent="Rezultat: "+c+" / "+t+" ("+p+"%)";s.className="score "+(p>=80?"good":p>=PASS_PERCENT?"mid":"low");
+ b.querySelector(".msg").classList.add("hidden");b.querySelector(".chk").classList.add("hidden");b.querySelector(".rty").classList.remove("hidden");updTotal();}
+function retry(k){EX[k].res=null;
+ if(k===0){selsOf().forEach(function(x){x.disabled=false;x.className="sl";x.value="";});document.querySelectorAll("#c0 .tag").forEach(function(x){x.parentNode.removeChild(x);});document.querySelectorAll("#c0 .fb").forEach(function(f){f.innerHTML="";});}
+ else if(k===1){chosen={};document.querySelectorAll("#c1 .cw").forEach(function(b){b.disabled=false;b.className="cw";});document.querySelectorAll("#c1 .fb").forEach(function(f){f.innerHTML="";});}
+ else initB("c"+k);
+ var b=bar(k);b.querySelector(".score").className="score hidden";b.querySelector(".msg").classList.remove("hidden");b.querySelector(".chk").classList.remove("hidden");b.querySelector(".rty").classList.add("hidden");upd(k);updTotal();}
+EX.forEach(function(_,k){var b=bar(k);b.querySelector(".chk").addEventListener("click",function(){check(k);});b.querySelector(".rty").addEventListener("click",function(){retry(k);});});
+document.querySelectorAll(".tab").forEach(function(t){t.addEventListener("click",function(){
+ document.querySelectorAll(".tab").forEach(function(x){x.classList.toggle("on",x===t);});
+ document.querySelectorAll("section.ex").forEach(function(s,i){s.classList.toggle("on",i===+t.dataset.ex);});window.scrollTo(0,0);});});
+["c2","c3","c4"].forEach(initB);EX.forEach(function(_,k){upd(k);});
+scorm.init();window.addEventListener("pagehide",scorm.finish);
+</script></body></html>
