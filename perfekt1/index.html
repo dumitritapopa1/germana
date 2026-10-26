@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Perfekt</title>
+<style>
+
+:root{--bg:#f4f5f7;--card:#fff;--ink:#1f2430;--muted:#5d6472;--line:#e3e6eb;--accent:#3b5bdb;--accent-soft:#e8edff;--ok:#1f8a5b;--ok-soft:#e6f5ee;--bad:#c92a2a;--bad-soft:#fdecec}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;font-size:16px;line-height:1.55;display:flex;flex-direction:column}
+header{padding:10px 24px;border-bottom:1px solid var(--line);background:var(--card);display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+header h1{margin:0;font-size:20px}
+.tabs{display:flex;gap:6px}
+.tab{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:7px 16px;font-size:15px;font-weight:700;cursor:pointer;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.tab .dn{display:none;margin-left:4px}.tab.done .dn{display:inline}
+.total{margin-left:auto;font-size:14px;font-weight:700;color:var(--muted)}
+section.ex{display:none;flex:1;min-height:0;flex-direction:column}
+section.ex.on{display:flex}
+.wrap{flex:1;padding:16px 24px;min-height:0;display:flex;gap:16px;justify-content:center}
+.pane{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow-y:auto;min-height:0}
+.wrap.split .pane{flex:1}
+.wrap.one .pane{width:100%;max-width:780px}
+.pi{padding:20px 26px}
+.instr{margin:0 0 14px;padding:12px 16px;background:var(--accent-soft);border-left:4px solid var(--accent);border-radius:6px;font-weight:600}
+.instr small{display:block;font-weight:400;color:var(--muted);margin-top:2px}
+.txt h2{margin:0 0 12px;font-size:20px}
+.txt p{margin:0 0 14px;font-size:17px;line-height:1.7}
+.q{padding:16px 0;border-top:1px solid var(--line)}
+.q:first-of-type{border-top:none}
+.q h3{margin:0 0 10px;font-size:17px}
+.opt{display:flex;align-items:center;gap:12px;padding:9px 13px;border:1.5px solid var(--line);border-radius:10px;margin-bottom:7px;cursor:pointer;font-size:16px}
+.opt:hover{border-color:#aeb6c8}
+.opt{position:relative}.opt input{position:absolute;opacity:0;pointer-events:none}
+.dot{flex:0 0 22px;height:22px;border-radius:50%;border:2px solid #b7bfce;background:#fff;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:800}
+.opt.on{border-color:var(--accent);background:var(--accent-soft)}
+.opt.on .dot{border-color:var(--accent);background:var(--accent);box-shadow:inset 0 0 0 4px #fff,inset 0 0 0 12px var(--accent)}
+.opt.locked{cursor:default}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}.opt.right .dot{border-color:var(--ok);background:var(--ok);box-shadow:none}.opt.right .dot::after{content:"✓"}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}.opt.wrong .dot{border-color:var(--bad);background:var(--bad);box-shadow:none}.opt.wrong .dot::after{content:"✕"}
+.opt.missed{border-color:var(--ok);border-style:dashed}
+.opt .tag{margin-left:auto;font-size:13px;font-weight:700;white-space:nowrap}
+.opt.right .tag,.opt.missed .tag{color:var(--ok)}.opt.wrong .tag{color:var(--bad)}
+.gaps p{font-size:18px;line-height:2.3;margin:0 0 14px}
+.g{display:inline-flex;align-items:baseline;white-space:nowrap}
+.g .pre{font-weight:600}
+.g input{font:inherit;font-size:17px;border:none;border-bottom:2px solid #9aa3b5;background:var(--accent-soft);padding:0 3px;margin:0 1px;border-radius:3px 3px 0 0;color:var(--ink);text-align:left}
+.g input:focus{outline:none;border-bottom-color:var(--accent);background:#dbe3ff}
+.g sup{font-size:11px;color:var(--muted);margin-left:1px}
+.g.ok input{background:var(--ok-soft);border-bottom-color:var(--ok);color:var(--ok);font-weight:600}
+.g.no input{background:var(--bad-soft);border-bottom-color:var(--bad);color:var(--bad);text-decoration:line-through}
+.fix{color:var(--ok);font-weight:700;font-size:15px;margin-left:4px}
+audio{width:100%;height:40px}
+.audio{position:sticky;top:0;background:var(--card);padding-bottom:10px;z-index:2}
+.s{padding:14px 0;border-top:1px solid var(--line)}
+.s:first-of-type{border-top:none}
+.s .st{font-size:17px;margin-bottom:8px}
+.rf{display:flex;gap:8px}
+.rf button{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:8px 20px;font-size:15px;font-weight:700;cursor:pointer;color:var(--ink)}
+.rf button.on{border-color:var(--accent);background:var(--accent-soft)}
+.rf button.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+.rf button.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.rf button.missed{border-color:var(--ok);border-style:dashed;color:var(--ok)}
+.fb{font-size:14px;font-weight:700;margin-top:6px}.fb.ok{color:var(--ok)}.fb.no{color:var(--bad)}
+.bar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:12px 24px;background:var(--card);border-top:1px solid var(--line)}
+.btn{border:none;border-radius:8px;padding:10px 22px;font-size:15px;font-weight:700;cursor:pointer}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:disabled{opacity:.45;cursor:not-allowed}
+.btn-ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line)}
+.msg{font-size:15px;color:var(--muted)}
+.score{font-size:16px;font-weight:700}.score.good{color:var(--ok)}.score.mid{color:#b06a00}.score.low{color:var(--bad)}
+.hidden{display:none!important}
+@media (max-width:820px){
+ body{height:auto;min-height:100%}
+ header{padding:10px 14px}
+ .wrap{padding:10px;flex-direction:column}
+ .pane{overflow:visible}
+ .pi{padding:16px}
+ .total{margin-left:0;width:100%}
+ .bar{position:sticky;bottom:0;padding:10px 14px;z-index:5}
+ .audio{top:0}
+}
+
+.sent{width:100%;font:inherit;font-size:17px;border:1.5px solid var(--line);border-radius:8px;padding:9px 12px;background:var(--accent-soft);color:var(--ink)}
+.sent:focus{outline:none;border-color:var(--accent);background:#dbe3ff}
+.sent.ok{background:var(--ok-soft);border-color:var(--ok);color:var(--ok);font-weight:600}
+.sent.no{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.cue{font-weight:600}
+.bank{display:flex;flex-wrap:wrap;gap:8px;padding:12px;background:#eef1f6;border-radius:10px;margin-bottom:18px;min-height:56px}
+.chip{border:1.5px solid #cfd5e1;background:#fff;border-radius:8px;padding:6px 14px;font-size:16px;cursor:grab;user-select:none;display:inline-block}
+.chip.sel{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 2px rgba(59,91,219,.25)}
+.slot{display:inline-block;min-width:8ch;min-height:36px;vertical-align:middle;border:1.5px dashed #9aa3b5;border-radius:8px;padding:2px 4px;margin:0 3px;background:#fff;text-align:center;line-height:1.6}
+.slot.over{border-color:var(--accent);background:var(--accent-soft)}
+.slot .chip{padding:1px 10px;font-size:17px}
+.slot.ok{border-style:solid;border-color:var(--ok);background:var(--ok-soft)}
+.slot.ok .chip{color:var(--ok);border-color:var(--ok);background:transparent;font-weight:600}
+.slot.no{border-style:solid;border-color:var(--bad);background:var(--bad-soft)}
+.slot.no .chip{color:var(--bad);border-color:var(--bad);background:transparent;text-decoration:line-through}
+.bank.over{background:var(--accent-soft)}
+.img img{width:100%;height:auto;display:block;border-radius:8px}
+.sl .g{margin:0 2px}
+.sl p{margin:0 0 6px;font-size:18px;line-height:2.4}
+
+.audiorow{background:var(--card);border-bottom:1px solid var(--line);padding:8px 24px;position:sticky;top:0;z-index:6}
+.audiorow audio{max-width:900px;display:block;margin:0 auto}
+.wordlist{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}
+.wordlist span{background:#eef1f6;border-radius:8px;padding:5px 12px;font-style:italic;font-weight:600}
+.s audio{margin:4px 0 10px}
+.sg p{margin:0 0 4px;font-size:18px;line-height:2.4}
+@media (max-width:820px){.audiorow{padding:8px 12px}}
+
+.tabs{flex-wrap:wrap}
+.tab{padding:7px 12px}
+.row{display:flex;align-items:baseline;gap:8px;padding:6px 0;font-size:18px;line-height:2.2}
+.row .n{color:var(--muted);min-width:1.8em}
+.row .base{font-weight:600;min-width:6.5em}
+.row.ex{color:var(--muted)}
+.row.ex .ans{font-weight:700;color:var(--ok)}
+.hint{color:var(--muted);font-size:14px}
+.convs{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:6px}
+.conv{border:2px dashed var(--line);border-radius:12px;padding:10px;background:#fafbfc;min-height:150px}
+.conv.over,.pool.over{border-color:var(--accent);background:var(--accent-soft)}
+.conv h3{margin:0 0 6px;text-align:center;font-size:16px}
+.conv audio{height:36px;margin-bottom:8px}
+.pool{display:flex;flex-wrap:wrap;gap:8px;padding:10px;border:2px dashed var(--line);border-radius:12px;min-height:54px;margin-bottom:14px}
+.pool .chip{margin:0}
+.conv .chip{display:block;margin:0 0 7px;text-align:left}
+.chip small{display:block;font-weight:700;font-size:12px;margin-top:2px}
+.chip.ok{border-color:var(--ok);background:var(--ok-soft);color:var(--ok);cursor:default}
+.chip.no{border-color:var(--bad);background:var(--bad-soft);color:var(--bad);cursor:default}
+.aw{display:inline-flex;gap:4px;vertical-align:middle;margin:0 3px}
+.aw button{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:2px 14px;font-size:16px;font-weight:700;cursor:pointer;color:var(--ink)}
+.aw button.on{border-color:var(--accent);background:var(--accent-soft)}
+.aw button.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+.aw button.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.aw button.missed{border-color:var(--ok);border-style:dashed;color:var(--ok)}
+.forum p{margin:0 0 4px;font-size:17px;line-height:2.3}
+.forum .gap{height:10px}
+@media (max-width:820px){.convs{grid-template-columns:1fr}}
+
+.qrow{display:grid;grid-template-columns:1fr 1.15fr;gap:10px;margin-bottom:10px;align-items:stretch}
+.qbox{border:1.5px solid var(--line);border-radius:10px;padding:10px 14px;background:#fff;font-weight:600;display:flex;align-items:center}
+.aslot{border:2px dashed #b7bfce;border-radius:10px;min-height:56px;padding:4px;background:#fafbfc;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:14px;text-align:center}
+.aslot.over{border-color:var(--accent);background:var(--accent-soft)}
+.aslot .chip{display:block;width:100%;margin:0;text-align:left}
+.aslot.ok{border-style:solid;border-color:var(--ok);background:var(--ok-soft)}
+.aslot.no{border-style:solid;border-color:var(--bad);background:var(--bad-soft)}
+.aslot .chip.ok{border-color:var(--ok);background:transparent;color:var(--ok)}
+.aslot .chip.no{border-color:var(--bad);background:transparent;color:var(--bad);text-decoration:line-through}
+.aslot .fixt{display:block;color:var(--ok);font-size:13px;font-weight:700;margin-top:3px;text-decoration:none}
+.abank{display:flex;flex-direction:column;gap:8px;padding:12px;background:#eef1f6;border-radius:10px;margin-bottom:18px;min-height:56px}
+.abank .chip{margin:0;text-align:left;display:block}
+.abank.over{background:var(--accent-soft)}
+.fqitem{margin-bottom:12px;padding:10px 12px;background:#f7f8fb;border-radius:10px}
+.fqbuilt{min-height:48px;padding:6px;border:2px dashed #b7bfce;border-radius:10px;background:#fff;display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:4px 0 8px}
+.fqbuilt.ok{border-style:solid;border-color:var(--ok);background:var(--ok-soft)}
+.fqbuilt.no{border-style:solid;border-color:var(--bad);background:var(--bad-soft)}
+.fqtiles{display:flex;flex-wrap:wrap;gap:8px}
+.fqitem .chip{margin:0;cursor:pointer}
+.cmpd{font-size:19px;line-height:2.4;padding:4px 0}
+.cmpd .n{color:var(--muted);display:inline-block;min-width:1.8em}
+@media (min-width:821px){.abank{display:grid;grid-template-columns:1fr 1fr}}
+@media (max-width:820px){.qrow{grid-template-columns:1fr}}
+
+.txt .title{font-weight:700;font-size:18px;margin:0 0 6px}
+.txt p{margin:0 0 12px;font-size:17px;line-height:1.7}
+.rfs{padding:14px 0;border-top:1px solid var(--line)}
+.rfs:first-of-type{border-top:none}
+.rfs .st{font-size:17px;margin-bottom:8px}
+.rf{display:flex;gap:8px}
+.rf button{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:8px 20px;font-size:15px;font-weight:700;cursor:pointer;color:var(--ink)}
+.rf button.on{border-color:var(--accent);background:var(--accent-soft)}
+.rf button.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+.rf button.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.rf button.missed{border-color:var(--ok);border-style:dashed;color:var(--ok)}
+.corr{display:none;margin-top:10px}
+.corr.show{display:block}
+.corr label{display:block;font-size:13px;color:var(--muted);margin-bottom:4px}
+.sug{margin-top:8px;font-size:14px;color:var(--ok);font-weight:700}
+.film{padding:14px 0;border-top:1px solid var(--line)}
+.film:first-of-type{border-top:none}
+.film h3{margin:0 0 6px;font-size:17px}
+.film audio{margin-bottom:10px}
+
+.drow{padding:12px 0;border-top:1px solid var(--line)}
+.drow:first-of-type{border-top:none}
+.drow .st{font-size:17px;margin-bottom:6px}
+.dline{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dline .pre{font-weight:700;white-space:nowrap;font-size:17px}
+.dline input{flex:1;min-width:220px}
+.drow.ex{background:#f3f7f4;border-radius:10px;padding:12px 14px;margin-bottom:6px;border:1px solid var(--ok)}
+.drow.ex .ans{color:var(--ok);font-weight:700;font-size:17px}
+.tip{background:#fff8e6;border-left:4px solid #e0a100;border-radius:6px;padding:10px 14px;margin:0 0 14px;font-size:15px}
+.tip b{color:#8a5a00}
+.convs.four{grid-template-columns:1fr 1fr}
+
+.mbank{display:flex;flex-wrap:wrap;gap:8px;padding:12px;background:#eef1f6;border-radius:10px;margin-bottom:18px;min-height:56px}
+.mbank.over{background:var(--accent-soft)}
+.mbank .chip{margin:0}
+.pgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.pcell{text-align:center}
+.pcell img{width:100%;height:auto;display:block;border-radius:6px}
+.pcell .slot{display:block;margin:6px auto 0;width:76px;min-width:0;min-height:38px;font-size:18px}
+.pcell .slot .chip{padding:1px 10px;font-size:18px;font-weight:700}
+.msl .slot .chip{font-size:16px}
+.sl2 p{margin:0 0 4px;font-size:18px;line-height:2.5}
+.post{margin-bottom:14px}
+.post .nm{font-weight:700}
+.post p{margin:4px 0 0;font-size:17px;line-height:1.75}
+.post .ttl{display:inline-block;vertical-align:middle}
+.exchip{display:inline-block;border:1.5px solid var(--ok);background:var(--ok-soft);color:var(--ok);border-radius:8px;padding:2px 10px;font-size:16px;font-weight:600}
+.fixs{color:var(--ok);font-weight:700;font-size:13px;display:block}
+@media (max-width:820px){.pgrid{grid-template-columns:repeat(2,1fr)}}
+
+.nb2{background:#f3f8fc;border-left:4px solid #29a8e0;border-radius:10px;padding:10px 16px;margin:0 0 14px;font-size:15px}
+.nb2 summary{cursor:pointer;font-weight:700}.nb2 p{margin:6px 0}
+.pics{display:none}.pics{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin:0 0 14px}
+.pics figure{margin:0;border:1.5px solid var(--line);border-radius:10px;padding:6px;background:#fff;text-align:center}
+.pics img{width:100%;height:auto;display:block}.pics figcaption{font-weight:700;font-size:18px;margin-top:2px}
+.sent{display:flex;gap:14px;align-items:center;padding:12px 0;border-top:1px solid var(--line);flex-wrap:wrap}.sent img{width:260px;max-width:100%;border-radius:10px;border:1.5px solid var(--line);background:#fff}.sent .sb{flex:1 1 260px}.sent .sel{margin:8px 0}
+.sent:first-child{border-top:none}.sent .L{display:inline-block;background:var(--accent);color:#fff;border-radius:6px;font-weight:700;font-size:16px;padding:0 8px;margin-right:4px}
+.sent .tx{font-size:17px;flex:1}.sl{font:inherit;font-size:17px;padding:3px 8px;border:1.5px solid var(--line);border-radius:6px;background:#fff}
+.sl.ok{border-color:var(--ok);background:var(--ok-soft);color:var(--ok);font-weight:700}
+.sl.no{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.sl:disabled{opacity:1}
+.tag{font-size:13px;color:var(--ok);font-weight:700;margin:0 4px}
+.item{padding:10px 0;border-top:1px solid var(--line)}.item:first-child{border-top:none}
+.hint{font-size:16px;color:var(--muted);margin:0 0 4px}.hint b{color:var(--ink)}
+.ti{font:inherit;font-size:17px;padding:6px 10px;border:1.5px solid var(--line);border-radius:8px;width:100%;max-width:620px}
+.ti:focus{outline:none;border-color:var(--accent)}
+.ti.ok{border-color:var(--ok);background:var(--ok-soft);color:var(--ok);font-weight:700}
+.ti.no{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.exm{background:#e8f6fd;border-left:4px solid #29a8e0;border-radius:10px;padding:8px 14px;margin:0 0 10px;font-size:16px}
+.vt{border-collapse:collapse;width:100%}.vt th{text-align:left;font-size:13px;color:var(--muted);border-bottom:1.5px solid var(--line);padding:4px 6px}
+.vt td{padding:6px;border-bottom:1px solid var(--line);vertical-align:middle}.vt .ti{max-width:200px;padding:4px 8px}
+.vt .fbr td{border-bottom:1px solid var(--line);padding:0 6px 6px}
+.mail{border:1.5px solid var(--line);border-radius:10px;background:#fff;padding:12px 18px;font-size:17px;line-height:2;margin:0 0 12px}
+.mail u{text-decoration-thickness:2px;text-underline-offset:3px}.mail sup{font-weight:700;color:var(--accent)}
+.mrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:4px 0}.mrow .n{font-weight:700;width:24px}.mrow .o{color:var(--muted);min-width:90px}
+.expl{font-weight:400;margin:6px 0 0;padding:8px 12px;background:var(--bad-soft);border-left:4px solid var(--bad);border-radius:6px;font-size:15px;line-height:1.5}
+.expl.ok{background:var(--ok-soft);border-left-color:var(--ok)}
+.expl b.t{display:block;margin-bottom:2px;font-weight:700}
+.expl.ok b.t{color:var(--ok)}.expl:not(.ok) b.t{color:var(--bad)}
+</style></head><body>
+<header><h1>Perfekt</h1><div class="tabs"><button class="tab on" data-ex="0">Übung 1<span class="dn"> ✓</span></button><button class="tab" data-ex="1">Übung 2<span class="dn"> ✓</span></button><button class="tab" data-ex="2">Übung 3<span class="dn"> ✓</span></button><button class="tab" data-ex="3">Übung 4<span class="dn"> ✓</span></button></div><span class="total" id="total"></span></header>
+<section class="ex on" id="ex0">
+ <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
+  <p class="instr">1.1 Was hat Andreas gemacht? Ordnen Sie die Sätze.<small>Fiecare imagine ilustrează o propoziție (A–D). Pune-le în ordinea corectă a poveștii (1–4). Propoziția C e dată ca exemplu. Dacă greșești, vezi explicația.</small></p>
+  <div id="c0"></div>
+ </div></div></div>
+ <div class="bar" data-bar="0">
+  <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
+  <span class="msg"></span><span class="score hidden"></span>
+ </div>
+</section>
+<section class="ex" id="ex1">
+ <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
+  <p class="instr">1.2 Was hat Clara gemacht? Schreiben Sie Sätze im Perfekt.<small>Scrie propozițiile în Perfekt cu cuvintele date. Exemplul e dat. Majusculele, punctuația și ue/ü nu contează; accept mai multe variante de ordine. Dacă greșești, vezi explicația.</small></p>
+  <details class="nb2" open><summary>✅ Reminder – Perfekt (apasă ca să închizi)</summary><p><b>haben / sein</b> (poziția 2) + <b>Partizip II</b> (la final): Clara <b>hat</b> ein Kleid <b>gesehen</b>.</p><p><b>sein</b> se folosește cu verbe de mișcare / schimbare de loc sau stare: gehen, fahren, ankommen, aufstehen → «Ich <b>bin</b> zur Post <b>gefahren</b>». Restul folosesc <b>haben</b>.</p><p><b>ge-… -t / ge-… -en</b> (regulat / neregulat): kaufen → <b>ge</b>kauft, sehen → <b>ge</b>sehen.</p><p><b>Verbe separabile</b>: ge- se pune între prefix și rădăcină: <b>an</b>rufen → <b>an</b>ge<b>rufen</b>. <b>Verbe neseparabile</b> (be-, emp-, ent-, er-, ver-, zer-) și verbele în <b>-ieren</b>: <b>fără ge-</b>: bestellen → bestellt, bekommen → bekommen, probieren → probiert.</p></details><div id="c1"></div>
+ </div></div></div>
+ <div class="bar" data-bar="1">
+  <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
+  <span class="msg"></span><span class="score hidden"></span>
+ </div>
+</section>
+<section class="ex" id="ex2">
+ <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
+  <p class="instr">1.3 Trennbare Verben, nicht trennbare Verben.<small>Pentru fiecare verb alege tipul (<b>trennbar</b> = separabil, <b>nicht trennbar</b> = neseparabil) și scrie <b>Partizip II</b>. Exemple: anrufen (trennbar) → angerufen; bestellen (nicht trennbar) → bestellt. Dacă greșești, vezi explicația.</small></p>
+  <div id="c2"></div>
+ </div></div></div>
+ <div class="bar" data-bar="2">
+  <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
+  <span class="msg"></span><span class="score hidden"></span>
+ </div>
+</section>
+<section class="ex" id="ex3">
+ <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
+  <p class="instr">1.4 Korrigieren Sie die Fehler in der Mail.<small>Cuvintele subliniate (1–5) conțin greșeli. Scrie forma corectă pentru 2–5 (la nr. 1 e dat exemplul). Dacă greșești, vezi explicația.</small></p>
+  <div id="c3"></div>
+ </div></div></div>
+ <div class="bar" data-bar="3">
+  <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
+  <span class="msg"></span><span class="score hidden"></span>
+ </div>
+</section>
+
+<script>
+var PASS_PERCENT=50;
+var SENT=[["A", "Aber die Jacke ist viel zu groß. Im Internet hat sie toll ausgesehen, aber jetzt gefällt sie ihm nicht mehr.", "3", "A = 3: Andreas a primit pachetul și a îmbrăcat jacheta (D) – abia <b>după aceea</b> vede că e prea mare și că nu-i mai place.", "szene3.svg"], ["B", "Andreas ist zur Post gefahren und hat das Paket zurückgeschickt.", "4", "B = 4: «zurückgeschickt» e <b>ultimul pas</b> al poveștii – jacheta e prea mare, deci o trimite înapoi (imaginea de la poștă).", "szene4.svg"], ["C", "Andreas hat eine Jacke im Internet bestellt.", "1", "Exemplu: C = 1 – povestea începe cu <b>comanda</b> din internet.", "szene1.svg"], ["D", "Heute ist das Paket angekommen und Andreas hat die Jacke gleich angezogen.", "2", "D = 2: după comandă (C) sosește pachetul și Andreas probează imediat jacheta; abia apoi (A) observă că e prea mare.", "szene2.svg"]], B=[["Clara / im Internet / ein Kleid / sehen", ["Clara hat im Internet ein Kleid gesehen"], "EXAMPLE"], ["es / sehr gut / aussehen", ["Es hat sehr gut ausgesehen", "Sehr gut hat es ausgesehen"], "<b>aussehen</b> e separabil: aus + sehen → Partizip II <b>ausgesehen</b> (ge- între prefix și rădăcină). Auxiliar: <b>hat</b> (poziția 2), participiul la final."], ["sie / es / gleich / bestellen", ["Sie hat es gleich bestellt", "Gleich hat sie es bestellt"], "<b>bestellen</b> începe cu prefixul neseparabil <b>be-</b> → Partizip II <b>bestellt</b>, <b>fără ge-</b>."], ["gestern / sie / das Paket / bekommen", ["Gestern hat sie das Paket bekommen", "Sie hat gestern das Paket bekommen", "Sie hat das Paket gestern bekommen", "Das Paket hat sie gestern bekommen"], "<b>bekommen</b>: prefix neseparabil be- → Partizip II <b>bekommen</b> (identic cu infinitivul, fără ge-). Verbul conjugat <b>hat</b> stă pe poziția 2, deci «Gestern hat sie …»."], ["sie / das Kleid / gleich / anprobieren", ["Sie hat das Kleid gleich anprobiert", "Sie hat gleich das Kleid anprobiert", "Gleich hat sie das Kleid anprobiert", "Das Kleid hat sie gleich anprobiert"], "<b>anprobieren</b> = verb în <b>-ieren</b> (fără ge-) și separabil (an-): Partizip II <b>anprobiert</b>."], ["leider / nicht / passen / es", ["Leider hat es nicht gepasst", "Es hat leider nicht gepasst"], "<b>passen</b> → regulat, <b>gepasst</b> (ge- + pass + t). «nicht» stă înaintea participiului, la final."], ["sie / das Kleid / zurückschicken", ["Sie hat das Kleid zurückgeschickt", "Das Kleid hat sie zurückgeschickt"], "<b>zurückschicken</b> e separabil (zurück + schicken) → <b>zurückgeschickt</b> (ge- între prefix și rădăcină)."]], V=[["aufstehen", "trennbar", "aufgestanden", "<b>auf-</b> e prefix <b>separabil</b> (ich stehe … auf). Partizip II: <b>auf·ge·standen</b> (ge- între prefix și rădăcină; stehen e neregulat). Auxiliar: sein."], ["besuchen", "nicht trennbar", "besucht", "<b>be-</b> e prefix <b>neseparabil</b> → Partizip II <b>fără ge-</b>: besucht."], ["bezahlen", "nicht trennbar", "bezahlt", "<b>be-</b> = neseparabil → <b>bezahlt</b>, fără ge-."], ["einkaufen", "trennbar", "eingekauft", "<b>ein-</b> e <b>separabil</b> (ich kaufe … ein) → <b>ein·ge·kauft</b>."], ["einladen", "trennbar", "eingeladen", "<b>ein-</b> = separabil (ich lade … ein) → <b>ein·ge·laden</b> (laden e neregulat)."], ["empfehlen", "nicht trennbar", "empfohlen", "<b>emp-</b> = prefix <b>neseparabil</b> → <b>fără ge-</b>; verb neregulat: empfohlen."], ["umtauschen", "trennbar", "umgetauscht", "<b>um-</b> e <b>separabil</b> (ich tausche … um) → <b>um·ge·tauscht</b>."], ["verkaufen", "nicht trennbar", "verkauft", "<b>ver-</b> = neseparabil → <b>verkauft</b>, fără ge-."]], M=[["2.", "geprobiert", "anprobiert", "Verbul din magazin e <b>anprobieren</b> (a proba haine) – separabil (an-) și în -ieren → Partizip II <b>anprobiert</b> (fără ge-). «geprobiert» e greșit."], ["3.", "hat", "habe", "Subiectul e <b>ich</b> → <b>habe</b> (haben: ich habe, er hat). «Gestern habe ich … besucht»."], ["4.", "besuchen", "besucht", "În Perfekt verbul principal stă la final ca <b>Partizip II</b>: «habe … <b>besucht</b>» (be- → fără ge-). Infinitivul «besuchen» e greșit."], ["5.", "habe", "bin", "<b>gehen</b> = verb de mișcare → Perfekt cu <b>sein</b>: «Ich <b>bin</b> zum Geschäft <b>gegangen</b>»."]];
+var scorm=(function(){var api=null,active=false;
+ function find(w){var n=0;while(w&&n<10){try{if(w.API)return w.API;}catch(e){}if(w.parent&&w.parent!==w){w=w.parent;n++;}else break;}return null;}
+ function init(){api=find(window);if(!api){try{if(window.opener)api=find(window.opener);}catch(e){}}
+  if(api){try{active=String(api.LMSInitialize(""))==="true";if(active){var st=api.LMSGetValue("cmi.core.lesson_status");if(st==="not attempted"||st==="")api.LMSSetValue("cmi.core.lesson_status","incomplete");api.LMSCommit("");}}catch(e){active=false;}}}
+ function report(c,t){if(!active)return;var p=Math.round(c/t*100);try{api.LMSSetValue("cmi.core.score.min","0");api.LMSSetValue("cmi.core.score.max","100");api.LMSSetValue("cmi.core.score.raw",String(p));api.LMSSetValue("cmi.core.lesson_status",p>=PASS_PERCENT?"passed":"failed");api.LMSCommit("");}catch(e){}}
+ function finish(){if(!active)return;try{api.LMSFinish("");}catch(e){}active=false;}
+ return{init:init,report:report,finish:finish};})();
+
+
+
+
+
+
+
+
+
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function normS(s){return String(s).toLowerCase().replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss").replace(/[^a-z0-9 ]/g," ").replace(/\s+/g," ").trim();}
+function ex(ok,txt){return '<div class="expl'+(ok?' ok':'')+'"><b class="t">'+(ok?'Corect':'Greșit')+'</b>'+txt+'</div>';}
+function nopt(sel){return '<option value="">–</option>'+[1,2,3,4].map(function(n){return '<option'+(sel===String(n)?' selected':'')+'>'+n+'</option>';}).join("");}
+$("c0").innerHTML=SENT.map(function(s,i){var ex0=s[0]==="C";return '<div class="sent" data-i="'+i+'"><img src="'+s[4]+'" alt="Bild '+s[0]+'"><div class="sb"><div class="tx"><span class="L">'+s[0]+'</span> '+esc(s[1])+'</div><div class="sel"><b>Reihenfolge:</b> <select class="sl" data-a="'+s[2]+'"'+(ex0?' disabled':'')+'>'+nopt(ex0?"1":"")+'</select>'+(ex0?' <small>(exemplu)</small>':'')+'</div><div class="fb"></div></div></div>';}).join("");
+$("c1").innerHTML='<div class="exm"><b>1.</b> Clara / im Internet / ein Kleid / sehen → <b>Clara hat im Internet ein Kleid gesehen.</b></div>'+B.slice(1).map(function(b,i){return '<div class="item" data-i="'+(i+1)+'"><div class="hint"><b>'+(i+2)+'.</b> '+esc(b[0])+'</div><input class="ti" type="text" placeholder="scrie propoziția…" autocomplete="off" autocapitalize="off" spellcheck="false"><div class="fb"></div></div>';}).join("");
+$("c2").innerHTML='<table class="vt"><tr><th>Infinitiv</th><th>Tip</th><th>Partizip II</th></tr>'+V.map(function(v,i){return '<tr data-i="'+i+'"><td><b>'+v[0]+'</b></td><td><select class="sl" data-a="'+v[1]+'"><option value="">–</option><option>trennbar</option><option>nicht trennbar</option></select></td><td><input class="ti" type="text" data-k="'+v[2]+'" autocomplete="off" autocapitalize="off" spellcheck="false"></td></tr><tr class="fbr"><td colspan="3"><div class="fb"></div></td></tr>';}).join("")+'</table>';
+$("c3").innerHTML='<div class="mail">Hallo Ines,<br>so ein Glück! Letzte Woche <u>ich habe</u><sup>1</sup> bei Trapp in der Siebererstraße Schuhe gesehen. Wahnsinn, echt super. Ich habe sie auch gleich <u>geprobiert</u><sup>2</sup>, aber nicht gekauft. Sie waren zu teuer, aber sooo schön. Gestern <u>hat</u><sup>3</sup> ich nach der Arbeit Mira <u>besuchen</u><sup>4</sup>. Und weißt du was? Jetzt ist Schlussverkauf, 50 % Rabatt. Heute <u>habe</u><sup>5</sup> ich gleich zum Geschäft gegangen. Yeah ☺! Du musst auch schnell hin!!<br>Liebe Grüße<br>Jana</div>'+
+ '<div class="exm"><b>1.</b> ich habe → <b>habe ich</b> (verbul pe poziția 2)</div>'+M.map(function(m,i){return '<div class="item" data-i="'+i+'"><div class="mrow"><span class="n">'+m[0]+'</span><span class="o"><u>'+m[1]+'</u> →</span><input class="ti" style="max-width:220px" type="text" autocomplete="off" autocapitalize="off" spellcheck="false"></div><div class="fb"></div></div>';}).join("");
+var EX=[{res:null,total:3},{res:null,total:B.length-1},{res:null,total:V.length*2},{res:null,total:M.length}];
+function bar(k){return document.querySelector('.bar[data-bar="'+k+'"]');}
+function fields(k){return Array.prototype.slice.call(document.querySelectorAll("#c"+k+(k===0?" .sl:not(:disabled)":" .ti, #c"+k+" .sl")));}
+function answered(k){return fields(k).filter(function(x){return x.value.trim()!=="";}).length;}
+function upd(k){if(EX[k].res!==null)return;var b=bar(k),n=answered(k),t=EX[k].total;
+ b.querySelector(".chk").disabled=n<t;b.querySelector(".msg").textContent=n<t?"Ai completat "+n+" din "+t+".":"Gata! Apasă „Verifică răspunsurile”.";}
+function updTotal(){var c=0,t=0,any=false;EX.forEach(function(e,k){document.querySelector('.tab[data-ex="'+k+'"]').classList.toggle("done",e.res!==null);if(e.res!==null){c+=e.res;t+=e.total;any=true;}});
+ $("total").textContent=any?"Gesamt: "+c+" / "+t:"";if(any)scorm.report(c,t);}
+for(var k=0;k<4;k++)(function(k){$("c"+k).addEventListener("input",function(){upd(k);});$("c"+k).addEventListener("change",function(){upd(k);});})(k);
+function mark(x,ok,ans){x.disabled=true;x.classList.add(ok?"ok":"no");if(!ok)x.insertAdjacentHTML("afterend",'<span class="tag">→ '+esc(ans)+'</span>');}
+function check(k){var c=0;
+ if(k===0){document.querySelectorAll("#c0 .sent").forEach(function(row,i){var x=row.querySelector(".sl"),ok=x.value===x.dataset.a;if(i!==SENT.findIndex(function(s){return s[0]==="C";})||true){}
+   var isEx=SENT[i][0]==="C";if(!isEx){if(ok)c++;mark(x,ok,x.dataset.a);}row.querySelector(".fb").innerHTML=ex(isEx?true:ok,SENT[i][3]);});}
+ else if(k===1){document.querySelectorAll("#c1 .item").forEach(function(box){var i=+box.dataset.i,x=box.querySelector(".ti"),ok=B[i][1].map(normS).indexOf(normS(x.value))>-1;if(ok)c++;x.disabled=true;x.classList.add(ok?"ok":"no");
+   box.querySelector(".fb").innerHTML=(ok?'':'<div class="expl"><b class="t">Varianta corectă</b>'+esc(B[i][1][0])+'.</div>')+ex(ok,B[i][2]);});}
+ else if(k===2){document.querySelectorAll("#c2 tr[data-i]").forEach(function(tr){var i=+tr.dataset.i,s=tr.querySelector(".sl"),t=tr.querySelector(".ti"),ok1=s.value===s.dataset.a,ok2=normS(t.value)===normS(t.dataset.k);
+   if(ok1)c++;if(ok2)c++;mark(s,ok1,s.dataset.a);mark(t,ok2,t.dataset.k);tr.nextElementSibling.querySelector(".fb").innerHTML=ex(ok1&&ok2,V[i][3]);});}
+ else{document.querySelectorAll("#c3 .item").forEach(function(box){var i=+box.dataset.i,x=box.querySelector(".ti"),ok=normS(x.value)===normS(M[i][2]);if(ok)c++;mark(x,ok,M[i][2]);box.querySelector(".fb").innerHTML=ex(ok,M[i][3]);});}
+ EX[k].res=c;
+ var t=EX[k].total,p=Math.round(c/t*100),b=bar(k),s=b.querySelector(".score");
+ s.textContent="Rezultat: "+c+" / "+t+" ("+p+"%)";s.className="score "+(p>=80?"good":p>=PASS_PERCENT?"mid":"low");
+ b.querySelector(".msg").classList.add("hidden");b.querySelector(".chk").classList.add("hidden");b.querySelector(".rty").classList.remove("hidden");updTotal();}
+function retry(k){EX[k].res=null;
+ document.querySelectorAll("#c"+k+" .sl,#c"+k+" .ti").forEach(function(x){if(k===0&&x.closest(".sent")&&x.closest(".sent").querySelector(".L").textContent==="C")return;x.disabled=false;x.className=x.tagName==="SELECT"?"sl":"ti";x.value="";});
+ document.querySelectorAll("#c"+k+" .tag").forEach(function(x){x.parentNode.removeChild(x);});
+ document.querySelectorAll("#c"+k+" .fb").forEach(function(f){f.innerHTML="";});
+ var b=bar(k);b.querySelector(".score").className="score hidden";b.querySelector(".msg").classList.remove("hidden");b.querySelector(".chk").classList.remove("hidden");b.querySelector(".rty").classList.add("hidden");upd(k);updTotal();}
+EX.forEach(function(_,k){var b=bar(k);b.querySelector(".chk").addEventListener("click",function(){check(k);});b.querySelector(".rty").addEventListener("click",function(){retry(k);});});
+document.querySelectorAll(".tab").forEach(function(t){t.addEventListener("click",function(){
+ document.querySelectorAll(".tab").forEach(function(x){x.classList.toggle("on",x===t);});
+ document.querySelectorAll("section.ex").forEach(function(s,i){s.classList.toggle("on",i===+t.dataset.ex);});window.scrollTo(0,0);});});
+EX.forEach(function(_,k){upd(k);});
+scorm.init();window.addEventListener("pagehide",scorm.finish);
+</script></body></html>

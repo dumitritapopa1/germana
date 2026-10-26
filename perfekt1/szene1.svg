@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="800" height="600"><rect width="400" height="300" fill="#eaf1f8"/><rect y="240" width="400" height="60" fill="#d5dfea"/>
+<rect x="200" y="196" width="170" height="14" rx="4" fill="#a8744a"/><rect x="214" y="210" width="10" height="42" fill="#8d5f3b"/><rect x="346" y="210" width="10" height="42" fill="#8d5f3b"/>
+<rect x="214" y="96" width="142" height="98" rx="8" fill="#31363f"/><rect x="222" y="104" width="126" height="82" rx="4" fill="#f7fbff"/>
+<path d="M258 118 l12 -8 h14 l12 8 l10 20 l-12 6 l-4 -8 v34 h-36 v-34 l-4 8 l-12 -6 z" fill="#2f6b57"/>
+<rect x="238" y="168" width="64" height="14" rx="7" fill="#f0a83a"/><text x="270" y="179" font-family="Arial" font-size="10" font-weight="700" text-anchor="middle" fill="#fff">Bestellen</text>
+<path d="M118 238 v-62 h54 v62 z" fill="#5b8def"/><path d="M118 176 q4 -30 27 -34 q23 4 27 34 z" fill="#5b8def"/>
+<path d="M165 170 q22 14 44 20" stroke="#f2c7a1" stroke-width="14" stroke-linecap="round" fill="none"/>
+<rect x="124" y="238" width="22" height="40" rx="6" fill="#3b4c70"/><rect x="150" y="238" width="22" height="40" rx="6" fill="#3b4c70"/>
+<circle cx="145" cy="112" r="0" fill="none"/><ellipse cx="145" cy="108" rx="26" ry="29" fill="#f2c7a1"/><path d="M118 104 q2 -32 27 -30 q25 0 27 30 z" fill="#3a2f2b"/><circle cx="139" cy="106" r="3" fill="#2b2b36"/><circle cx="157" cy="106" r="3" fill="#2b2b36"/><path d="M136 119 q9 9 18 0" stroke="#2b2b36" stroke-width="3" fill="none" stroke-linecap="round"/>
+<path d="M122 80 q-30 -2 -34 -32 q2 -30 36 -30 q36 2 36 32 q0 28 -38 30 z" fill="#fff" opacity="0"/>
+<rect x="196" y="190" width="16" height="10" fill="#f2c7a1"/>
+</svg>
