@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pronomen: Dativ und Akkusativ</title>
+<style>
+
+:root{--bg:#f4f5f7;--card:#fff;--ink:#1f2430;--muted:#5d6472;--line:#e3e6eb;--accent:#3b5bdb;--accent-soft:#e8edff;--ok:#1f8a5b;--ok-soft:#e6f5ee;--bad:#c92a2a;--bad-soft:#fdecec}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;font-size:16px;line-height:1.55;display:flex;flex-direction:column}
+header{padding:10px 24px;border-bottom:1px solid var(--line);background:var(--card);display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+header h1{margin:0;font-size:20px}
+.tabs{display:flex;gap:6px}
+.tab{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:7px 16px;font-size:15px;font-weight:700;cursor:pointer;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.tab .dn{display:none;margin-left:4px}.tab.done .dn{display:inline}
+.total{margin-left:auto;font-size:14px;font-weight:700;color:var(--muted)}
+section.ex{display:none;flex:1;min-height:0;flex-direction:column}
+section.ex.on{display:flex}
+.wrap{flex:1;padding:16px 24px;min-height:0;display:flex;gap:16px;justify-content:center}
+.pane{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow-y:auto;min-height:0}
+.wrap.split .pane{flex:1}
+.wrap.one .pane{width:100%;max-width:780px}
+.pi{padding:20px 26px}
+.instr{margin:0 0 14px;padding:12px 16px;background:var(--accent-soft);border-left:4px solid var(--accent);border-radius:6px;font-weight:600}
+.instr small{display:block;font-weight:400;color:var(--muted);margin-top:2px}
+.txt h2{margin:0 0 12px;font-size:20px}
+.txt p{margin:0 0 14px;font-size:17px;line-height:1.7}
+.q{padding:16px 0;border-top:1px solid var(--line)}
+.q:first-of-type{border-top:none}
+.q h3{margin:0 0 10px;font-size:17px}
+.opt{display:flex;align-items:center;gap:12px;padding:9px 13px;border:1.5px solid var(--line);border-radius:10px;margin-bottom:7px;cursor:pointer;font-size:16px}
+.opt:hover{border-color:#aeb6c8}
+.opt{position:relative}.opt input{position:absolute;opacity:0;pointer-events:none}
+.dot{flex:0 0 22px;height:22px;border-radius:50%;border:2px solid #b7bfce;background:#fff;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:800}
+.opt.on{border-color:var(--accent);background:var(--accent-soft)}
+.opt.on .dot{border-color:var(--accent);background:var(--accent);box-shadow:inset 0 0 0 4px #fff,inset 0 0 0 12px var(--accent)}
+.opt.locked{cursor:default}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}.opt.right .dot{border-color:var(--ok);background:var(--ok);box-shadow:none}.opt.right .dot::after{content:"✓"}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}.opt.wrong .dot{border-color:var(--bad);background:var(--bad);box-shadow:none}.opt.wrong .dot::after{content:"✕"}
+.opt.missed{border-color:var(--ok);border-style:dashed}
+.opt .tag{margin-left:auto;font-size:13px;font-weight:700;white-space:nowrap}
+.opt.right .tag,.opt.missed .tag{color:var(--ok)}.opt.wrong .tag{color:var(--bad)}
+.gaps p{font-size:18px;line-height:2.3;margin:0 0 14px}
+.g{display:inline-flex;align-items:baseline;white-space:nowrap}
+.g .pre{font-weight:600}
+.g input{font:inherit;font-size:17px;border:none;border-bottom:2px solid #9aa3b5;background:var(--accent-soft);padding:0 3px;margin:0 1px;border-radius:3px 3px 0 0;color:var(--ink);text-align:left}
+.g input:focus{outline:none;border-bottom-color:var(--accent);background:#dbe3ff}
+.g sup{font-size:11px;color:var(--muted);margin-left:1px}
+.g.ok input{background:var(--ok-soft);border-bottom-color:var(--ok);color:var(--ok);font-weight:600}
+.g.no input{background:var(--bad-soft);border-bottom-color:var(--bad);color:var(--bad);text-decoration:line-through}
+.fix{color:var(--ok);font-weight:700;font-size:15px;margin-left:4px}
+audio{width:100%;height:40px}
+.audio{position:sticky;top:0;background:var(--card);padding-bottom:10px;z-index:2}
+.s{padding:14px 0;border-top:1px solid var(--line)}
+.s:first-of-type{border-top:none}
+.s .st{font-size:17px;margin-bottom:8px}
+.rf{display:flex;gap:8px}
+.rf button{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:8px 20px;font-size:15px;font-weight:700;cursor:pointer;color:var(--ink)}
+.rf button.on{border-color:var(--accent);background:var(--accent-soft)}
+.rf button.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+.rf button.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.rf button.missed{border-color:var(--ok);border-style:dashed;color:var(--ok)}
+.fb{font-size:14px;font-weight:700;margin-top:6px}.fb.ok{color:var(--ok)}.fb.no{color:var(--bad)}
+.bar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:12px 24px;background:var(--card);border-top:1px solid var(--line)}
+.btn{border:none;border-radius:8px;padding:10px 22px;font-size:15px;font-weight:700;cursor:pointer}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:disabled{opacity:.45;cursor:not-allowed}
+.btn-ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line)}
+.msg{font-size:15px;color:var(--muted)}
+.score{font-size:16px;font-weight:700}.score.good{color:var(--ok)}.score.mid{color:#b06a00}.score.low{color:var(--bad)}
+.hidden{display:none!important}
+@media (max-width:820px){
+ body{height:auto;min-height:100%}
+ header{padding:10px 14px}
+ .wrap{padding:10px;flex-direction:column}
+ .pane{overflow:visible}
+ .pi{padding:16px}
+ .total{margin-left:0;width:100%}
+ .bar{position:sticky;bottom:0;padding:10px 14px;z-index:5}
+ .audio{top:0}
+}
+
+.sent{width:100%;font:inherit;font-size:17px;border:1.5px solid var(--line);border-radius:8px;padding:9px 12px;background:var(--accent-soft);color:var(--ink)}
+.sent:focus{outline:none;border-color:var(--accent);background:#dbe3ff}
+.sent.ok{background:var(--ok-soft);border-color:var(--ok);color:var(--ok);font-weight:600}
+.sent.no{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.cue{font-weight:600}
+.bank{display:flex;flex-wrap:wrap;gap:8px;padding:12px;background:#eef1f6;border-radius:10px;margin-bottom:18px;min-height:56px}
+.chip{border:1.5px solid #cfd5e1;background:#fff;border-radius:8px;padding:6px 14px;font-size:16px;cursor:grab;user-select:none;display:inline-block}
+.chip.sel{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 2px rgba(59,91,219,.25)}
+.slot{display:inline-block;min-width:8ch;min-height:36px;vertical-align:middle;border:1.5px dashed #9aa3b5;border-radius:8px;padding:2px 4px;margin:0 3px;background:#fff;text-align:center;line-height:1.6}
+.slot.over{border-color:var(--accent);background:var(--accent-soft)}
+.slot .chip{padding:1px 10px;font-size:17px}
+.slot.ok{border-style:solid;border-color:var(--ok);background:var(--ok-soft)}
+.slot.ok .chip{color:var(--ok);border-color:var(--ok);background:transparent;font-weight:600}
+.slot.no{border-style:solid;border-color:var(--bad);background:var(--bad-soft)}
+.slot.no .chip{color:var(--bad);border-color:var(--bad);background:transparent;text-decoration:line-through}
+.bank.over{background:var(--accent-soft)}
+.img img{width:100%;height:auto;display:block;border-radius:8px}
+.sl .g{margin:0 2px}
+.sl p{margin:0 0 6px;font-size:18px;line-height:2.4}
+
+.audiorow{background:var(--card);border-bottom:1px solid var(--line);padding:8px 24px;position:sticky;top:0;z-index:6}
+.audiorow audio{max-width:900px;display:block;margin:0 auto}
+.wordlist{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}
+.wordlist span{background:#eef1f6;border-radius:8px;padding:5px 12px;font-style:italic;font-weight:600}
+.s audio{margin:4px 0 10px}
+.sg p{margin:0 0 4px;font-size:18px;line-height:2.4}
+@media (max-width:820px){.audiorow{padding:8px 12px}}
+
+.tabs{flex-wrap:wrap}
+.tab{padding:7px 12px}
+.row{display:flex;align-items:baseline;gap:8px;padding:6px 0;font-size:18px;line-height:2.2}
+.row .n{color:var(--muted);min-width:1.8em}
+.row .base{font-weight:600;min-width:6.5em}
+.row.ex{color:var(--muted)}
+.row.ex .ans{font-weight:700;color:var(--ok)}
+.hint{color:var(--muted);font-size:14px}
+.convs{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:6px}
+.conv{border:2px dashed var(--line);border-radius:12px;padding:10px;background:#fafbfc;min-height:150px}
+.conv.over,.pool.over{border-color:var(--accent);background:var(--accent-soft)}
+.conv h3{margin:0 0 6px;text-align:center;font-size:16px}
+.conv audio{height:36px;margin-bottom:8px}
+.pool{display:flex;flex-wrap:wrap;gap:8px;padding:10px;border:2px dashed var(--line);border-radius:12px;min-height:54px;margin-bottom:14px}
+.pool .chip{margin:0}
+.conv .chip{display:block;margin:0 0 7px;text-align:left}
+.chip small{display:block;font-weight:700;font-size:12px;margin-top:2px}
+.chip.ok{border-color:var(--ok);background:var(--ok-soft);color:var(--ok);cursor:default}
+.chip.no{border-color:var(--bad);background:var(--bad-soft);color:var(--bad);cursor:default}
+.aw{display:inline-flex;gap:4px;vertical-align:middle;margin:0 3px}
+.aw button{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:2px 14px;font-size:16px;font-weight:700;cursor:pointer;color:var(--ink)}
+.aw button.on{border-color:var(--accent);background:var(--accent-soft)}
+.aw button.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+.aw button.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.aw button.missed{border-color:var(--ok);border-style:dashed;color:var(--ok)}
+.forum p{margin:0 0 4px;font-size:17px;line-height:2.3}
+.forum .gap{height:10px}
+@media (max-width:820px){.convs{grid-template-columns:1fr}}
+
+.qrow{display:grid;grid-template-columns:1fr 1.15fr;gap:10px;margin-bottom:10px;align-items:stretch}
+.qbox{border:1.5px solid var(--line);border-radius:10px;padding:10px 14px;background:#fff;font-weight:600;display:flex;align-items:center}
+.aslot{border:2px dashed #b7bfce;border-radius:10px;min-height:56px;padding:4px;background:#fafbfc;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:14px;text-align:center}
+.aslot.over{border-color:var(--accent);background:var(--accent-soft)}
+.aslot .chip{display:block;width:100%;margin:0;text-align:left}
+.aslot.ok{border-style:solid;border-color:var(--ok);background:var(--ok-soft)}
+.aslot.no{border-style:solid;border-color:var(--bad);background:var(--bad-soft)}
+.aslot .chip.ok{border-color:var(--ok);background:transparent;color:var(--ok)}
+.aslot .chip.no{border-color:var(--bad);background:transparent;color:var(--bad);text-decoration:line-through}
+.aslot .fixt{display:block;color:var(--ok);font-size:13px;font-weight:700;margin-top:3px;text-decoration:none}
+.abank{display:flex;flex-direction:column;gap:8px;padding:12px;background:#eef1f6;border-radius:10px;margin-bottom:18px;min-height:56px}
+.abank .chip{margin:0;text-align:left;display:block}
+.abank.over{background:var(--accent-soft)}
+.fqitem{margin-bottom:12px;padding:10px 12px;background:#f7f8fb;border-radius:10px}
+.fqbuilt{min-height:48px;padding:6px;border:2px dashed #b7bfce;border-radius:10px;background:#fff;display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:4px 0 8px}
+.fqbuilt.ok{border-style:solid;border-color:var(--ok);background:var(--ok-soft)}
+.fqbuilt.no{border-style:solid;border-color:var(--bad);background:var(--bad-soft)}
+.fqtiles{display:flex;flex-wrap:wrap;gap:8px}
+.fqitem .chip{margin:0;cursor:pointer}
+.cmpd{font-size:19px;line-height:2.4;padding:4px 0}
+.cmpd .n{color:var(--muted);display:inline-block;min-width:1.8em}
+@media (min-width:821px){.abank{display:grid;grid-template-columns:1fr 1fr}}
+@media (max-width:820px){.qrow{grid-template-columns:1fr}}
+
+.txt .title{font-weight:700;font-size:18px;margin:0 0 6px}
+.txt p{margin:0 0 12px;font-size:17px;line-height:1.7}
+.rfs{padding:14px 0;border-top:1px solid var(--line)}
+.rfs:first-of-type{border-top:none}
+.rfs .st{font-size:17px;margin-bottom:8px}
+.rf{display:flex;gap:8px}
+.rf button{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:8px 20px;font-size:15px;font-weight:700;cursor:pointer;color:var(--ink)}
+.rf button.on{border-color:var(--accent);background:var(--accent-soft)}
+.rf button.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+.rf button.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.rf button.missed{border-color:var(--ok);border-style:dashed;color:var(--ok)}
+.corr{display:none;margin-top:10px}
+.corr.show{display:block}
+.corr label{display:block;font-size:13px;color:var(--muted);margin-bottom:4px}
+.sug{margin-top:8px;font-size:14px;color:var(--ok);font-weight:700}
+.film{padding:14px 0;border-top:1px solid var(--line)}
+.film:first-of-type{border-top:none}
+.film h3{margin:0 0 6px;font-size:17px}
+.film audio{margin-bottom:10px}
+
+.drow{padding:12px 0;border-top:1px solid var(--line)}
+.drow:first-of-type{border-top:none}
+.drow .st{font-size:17px;margin-bottom:6px}
+.dline{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dline .pre{font-weight:700;white-space:nowrap;font-size:17px}
+.dline input{flex:1;min-width:220px}
+.drow.ex{background:#f3f7f4;border-radius:10px;padding:12px 14px;margin-bottom:6px;border:1px solid var(--ok)}
+.drow.ex .ans{color:var(--ok);font-weight:700;font-size:17px}
+.tip{background:#fff8e6;border-left:4px solid #e0a100;border-radius:6px;padding:10px 14px;margin:0 0 14px;font-size:15px}
+.tip b{color:#8a5a00}
+.convs.four{grid-template-columns:1fr 1fr}
+
+.mbank{display:flex;flex-wrap:wrap;gap:8px;padding:12px;background:#eef1f6;border-radius:10px;margin-bottom:18px;min-height:56px}
+.mbank.over{background:var(--accent-soft)}
+.mbank .chip{margin:0}
+.pgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.pcell{text-align:center}
+.pcell img{width:100%;height:auto;display:block;border-radius:6px}
+.pcell .slot{display:block;margin:6px auto 0;width:76px;min-width:0;min-height:38px;font-size:18px}
+.pcell .slot .chip{padding:1px 10px;font-size:18px;font-weight:700}
+.msl .slot .chip{font-size:16px}
+.sl2 p{margin:0 0 4px;font-size:18px;line-height:2.5}
+.post{margin-bottom:14px}
+.post .nm{font-weight:700}
+.post p{margin:4px 0 0;font-size:17px;line-height:1.75}
+.post .ttl{display:inline-block;vertical-align:middle}
+.exchip{display:inline-block;border:1.5px solid var(--ok);background:var(--ok-soft);color:var(--ok);border-radius:8px;padding:2px 10px;font-size:16px;font-weight:600}
+.fixs{color:var(--ok);font-weight:700;font-size:13px;display:block}
+@media (max-width:820px){.pgrid{grid-template-columns:repeat(2,1fr)}}
+
+.nb2{background:#f3f8fc;border-left:4px solid #29a8e0;border-radius:10px;padding:10px 16px;margin:0 0 14px;font-size:15px}
+.nb2 summary{cursor:pointer;font-weight:700}.nb2 p{margin:6px 0}
+.item{padding:10px 0;border-top:1px solid var(--line)}.item:first-child{border-top:none}
+.line{font-size:18px;line-height:2.1}.line .n{color:var(--muted);font-weight:700;margin-right:4px}
+.cue{font-size:15px;color:var(--muted);margin:2px 0}
+.exm{background:#e8f6fd;border-left:4px solid #29a8e0;border-radius:10px;padding:8px 14px;margin:0 0 10px;font-size:17px;line-height:1.7}
+.ti{font:inherit;font-size:17px;padding:4px 8px;border:1.5px solid var(--line);border-radius:6px;margin:2px 3px;width:15em;max-width:100%}
+.ti.s{width:9em}
+.ti:focus{outline:none;border-color:var(--accent)}
+.ti.ok{border-color:var(--ok);background:var(--ok-soft);color:var(--ok);font-weight:700}
+.ti.no{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.pcard{border:1.5px solid var(--line);border-radius:12px;padding:10px;margin:0 0 14px;background:#fff}
+.pcard img{display:block;max-width:100%;max-height:200px;margin:0 auto 8px}
+.ans{min-height:46px;border:2px dashed var(--line);border-radius:10px;padding:6px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 8px;background:#fafbfc}
+.ans.ok{border-color:var(--ok);background:var(--ok-soft)}.ans.no{border-color:var(--bad);background:var(--bad-soft)}
+.pool{display:flex;flex-wrap:wrap;gap:6px}
+.ck{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:5px 12px;font:inherit;font-size:17px;cursor:pointer;color:var(--ink)}
+.ck:hover{border-color:var(--accent)}.ck.used{opacity:.25;pointer-events:none}.ck.in{background:var(--accent-soft);border-color:var(--accent)}
+.ck:disabled{cursor:default}
+.tk{display:inline-block;font-size:19px;line-height:2.4}
+.gp{display:inline-block;width:22px;height:28px;margin:0 1px;border:1.5px dashed #b8c0d0;border-radius:6px;vertical-align:middle;background:#fff;cursor:pointer;padding:0;font:inherit;font-size:15px;color:var(--ok);font-weight:700}
+.gp:hover{background:var(--accent-soft);border-color:var(--accent)}
+.gp.on{width:auto;min-width:40px;padding:0 8px;border-style:solid;border-color:var(--accent);background:var(--accent-soft);color:var(--ink)}
+.gp.ok{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}.gp.no{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.gp:disabled{cursor:default}
+.pr{display:inline-block;background:var(--accent);color:#fff;border-radius:999px;padding:2px 12px;font-weight:700;font-size:16px;margin-left:6px}
+.expl{font-weight:400;margin:6px 0 0;padding:8px 12px;background:var(--bad-soft);border-left:4px solid var(--bad);border-radius:6px;font-size:15px;line-height:1.5}
+.expl.ok{background:var(--ok-soft);border-left-color:var(--ok)}
+.expl b.t{display:block;margin-bottom:2px;font-weight:700}
+.expl.ok b.t{color:var(--ok)}.expl:not(.ok) b.t{color:var(--bad)}
+.verbs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}.verbs span{background:#fff3e0;border:1.5px solid #f2b66b;border-radius:999px;padding:2px 12px;font-weight:700}
+</style></head><body>
+<header><h1>Pronomen: Dativ und Akkusativ</h1><div class="tabs"><button class="tab on" data-ex="0">Übung 1<span class="dn"> ✓</span></button><button class="tab" data-ex="1">Übung 2<span class="dn"> ✓</span></button><button class="tab" data-ex="2">Übung 3<span class="dn"> ✓</span></button><button class="tab" data-ex="3">Übung 4<span class="dn"> ✓</span></button><button class="tab" data-ex="4">Übung 5<span class="dn"> ✓</span></button></div><span class="total" id="total"></span></header>
+<section class="ex on" id="ex0">
+ <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
+  <p class="instr">1.1 Im Sprachkurs. Ergänzen Sie die Sätze. Achten Sie auf die Position im Satz.<small>Scrie cele două elemente date în ordinea corectă (ele sunt amestecate în dreapta). Exemplul (1) e dat. După verificare vezi explicația.</small></p>
+  <details class="nb2" open><summary>Reține: poziția în propoziție</summary><p>Substantiv + substantiv: <b>Dativ înaintea Akkusativ</b> → <i>Sie gibt <b>jeder Gruppe</b> <b>einen Würfel</b>.</i></p><p>Pronume + substantiv: <b>pronumele vine primul</b> → <i>Sie erklärt <b>ihnen</b> die Regeln. / Sie erklärt <b>es</b> den Schülern.</i></p></details><div id="c0"></div>
+ </div></div></div>
+ <div class="bar" data-bar="0">
+  <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
+  <span class="msg"></span><span class="score hidden"></span>
+ </div>
+</section>
+<section class="ex" id="ex1">
+ <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
+  <p class="instr">1.2 Was passiert hier? Bilden Sie Sätze zu den Bildern.<small>Pentru fiecare poză formează o propoziție: atinge bucățile în ordinea corectă (atinge o bucată din propoziție ca s-o scoți). Câte un verb din chenar pentru fiecare poză: leiht, zeigt, erklärt, bringt.</small></p>
+  <details class="nb2" open><summary>Reține: poziția în propoziție</summary><p>Substantiv + substantiv: <b>Dativ înaintea Akkusativ</b> → <i>Sie gibt <b>jeder Gruppe</b> <b>einen Würfel</b>.</i></p><p>Pronume + substantiv: <b>pronumele vine primul</b> → <i>Sie erklärt <b>ihnen</b> die Regeln. / Sie erklärt <b>es</b> den Schülern.</i></p></details><div id="c1"></div>
+ </div></div></div>
+ <div class="bar" data-bar="1">
+  <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
+  <span class="msg"></span><span class="score hidden"></span>
+ </div>
+</section>
+<section class="ex" id="ex2">
+ <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
+  <p class="instr">1.3 Wo passen die Pronomen? Markieren Sie.<small>Pronumele din dreapta lipsește din a doua propoziție. Atinge locul (între cuvinte) unde trebuie introdus. Exemplul (1) e dat.</small></p>
+  <details class="nb2" open><summary>Reține: două pronume</summary><p>Când ambele obiecte sunt pronume: <b>Akkusativ înaintea Dativ</b> → <i>Sie erklärt <b>es ihnen</b>.</i> (invers față de substantive!)</p><p>Akkusativ: ihn (m) · sie (f) · es (n) · sie (pl). Dativ: ihm (m) · ihr (f) · ihm (n) · ihnen (pl).</p></details><div id="c2"></div>
+ </div></div></div>
+ <div class="bar" data-bar="2">
+  <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
+  <span class="msg"></span><span class="score hidden"></span>
+ </div>
+</section>
+<section class="ex" id="ex3">
+ <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
+  <p class="instr">1.4 Schon gemacht! Ergänzen Sie die Pronomen.<small>Completează cu cele două pronume în ordinea corectă (Akkusativ + Dativ). Exemplul (1) e dat. Pronumele disponibile: <b>ihn · sie · ihr · ihm · es · ihnen · ihm · ihn</b> (fiecare se folosește o dată în itemii 2–5).</small></p>
+  <details class="nb2" open><summary>Reține: două pronume</summary><p>Când ambele obiecte sunt pronume: <b>Akkusativ înaintea Dativ</b> → <i>Sie erklärt <b>es ihnen</b>.</i> (invers față de substantive!)</p><p>Akkusativ: ihn (m) · sie (f) · es (n) · sie (pl). Dativ: ihm (m) · ihr (f) · ihm (n) · ihnen (pl).</p></details><div id="c3"></div>
+ </div></div></div>
+ <div class="bar" data-bar="3">
+  <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
+  <span class="msg"></span><span class="score hidden"></span>
+ </div>
+</section>
+<section class="ex" id="ex4">
+ <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
+  <p class="instr">1.5 Ersetzen Sie die markierten Substantive durch Pronomen. Achten Sie auf die Position.<small>Înlocuiește cele două substantive (Dativ + Akkusativ) cu pronume, în ordinea corectă. Exemplul (1) e dat. Atenție la cine vorbește!</small></p>
+  <details class="nb2" open><summary>Reține: două pronume</summary><p>Când ambele obiecte sunt pronume: <b>Akkusativ înaintea Dativ</b> → <i>Sie erklärt <b>es ihnen</b>.</i> (invers față de substantive!)</p><p>Akkusativ: ihn (m) · sie (f) · es (n) · sie (pl). Dativ: ihm (m) · ihr (f) · ihm (n) · ihnen (pl).</p></details><div id="c4"></div>
+ </div></div></div>
+ <div class="bar" data-bar="4">
+  <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
+  <span class="msg"></span><span class="score hidden"></span>
+ </div>
+</section>
+
+<script>
+var PASS_PERCENT=50;
+var E1=[["Sie erklärt", "ihnen die Regeln", "die Regeln / ihnen", "«ihnen» e pronume, «die Regeln» e substantiv → <b>pronumele vine primul</b>: «Sie erklärt <b>ihnen</b> die Regeln.»"], ["Sie gibt", "jeder Gruppe einen Würfel", "einen Würfel / jeder Gruppe", "Două substantive → <b>Dativ înaintea Akkusativ</b>: «jeder Gruppe» (Dativ) + «einen Würfel» (Akkusativ)."], ["Eine Schülerin leiht", "der Lehrerin ihre Uhr", "der Lehrerin / ihre Uhr", "Două substantive → <b>Dativ înaintea Akkusativ</b>: «der Lehrerin» (Dativ) + «ihre Uhr» (Akkusativ)."], ["Die Lehrerin schenkt", "den Gewinnern einen Kuchen", "einen Kuchen / den Gewinnern", "Două substantive → <b>Dativ înaintea Akkusativ</b>: «den Gewinnern» (Dativ, -n la plural) + «einen Kuchen» (Akkusativ)."]], E2=[["p1", ["Der Trainer", "erklärt", "den Männern", "die Übung"], "Trainerul explică bărbaților exercițiul."], ["p2", ["Der Deutschlehrer", "leiht", "seiner Schülerin", "das Buch"], "Profesorul de germană îi împrumută eleva sale cartea."], ["p3", ["Die Verkäuferin", "zeigt", "der Kundin", "die Sportschuhe"], "Vânzătoarea îi arată clientei pantofii de sport."], ["p4", ["Die Kellnerin", "bringt", "dem Gast", "den Orangensaft"], "Chelnerița îi aduce oaspetelui sucul de portocale."]], ORD2=[[2, 0, 3, 1], [3, 1, 0, 2], [1, 3, 2, 0], [2, 3, 0, 1]], E3=[["Sandra braucht neue Sportsachen.", ["Wir", "schenken", "eine", "Sporthose", "zum", "Geburtstag."], "ihr", 1, ""], ["Zwei Freunde wollten Informationen zum Hochseilgarten.", ["Sandra", "hat", "sie", "gegeben."], "ihnen", 2, "«sie» = Informationen (Akkusativ), «ihnen» = den Freunden (Dativ). La două pronume: <b>Akkusativ înaintea Dativ</b> → «Sandra hat <b>sie ihnen</b> gegeben.»"], ["Wir haben die Regeln nicht verstanden.", ["Der", "Trainer", "hat", "uns", "noch", "mal", "erklärt."], "sie", 2, "«sie» = die Regeln (Akkusativ), «uns» (Dativ). <b>Akkusativ înaintea Dativ</b> → «Der Trainer hat <b>sie uns</b> noch mal erklärt.»"], ["Ich wollte so gern das Foto sehen.", ["Sandra", "hat", "mir", "geschickt."], "es", 1, "«es» = das Foto (Akkusativ), «mir» (Dativ). <b>Akkusativ înaintea Dativ</b> → «Sandra hat <b>es mir</b> geschickt.»"], ["Die Schuhe passen super.", ["Conny", "hat", "sie", "geliehen."], "mir", 2, "«sie» = die Schuhe (Akkusativ), «mir» (Dativ). <b>Akkusativ înaintea Dativ</b> → «Conny hat <b>sie mir</b> geliehen.» (Dativul «mir» vine după «sie».)"]], E4=[["Du musst Conny die Schuhe bringen.", "Ich habe", "sie ihr", "schon gebracht.", "exemplu"], ["Kannst du Peter die Nummer von Conny schicken?", "Ich habe", "sie ihm", "schon lange geschickt.", "«die Nummer» (feminin, Akkusativ) → <b>sie</b>; «Peter» (masculin, Dativ) → <b>ihm</b>. Akkusativ înaintea Dativ: «sie ihm»."], ["Hast du deinen Freunden schon den Weg erklärt?", "Ja, ich habe", "ihn ihnen", "schon erklärt.", "«den Weg» (masculin, Akkusativ) → <b>ihn</b>; «deinen Freunden» (plural, Dativ) → <b>ihnen</b>. «ihn ihnen»."], ["Bringst du dem Trainer den Helm zurück?", "Ich habe", "ihn ihm", "schon gestern zurückgegeben.", "«den Helm» (masculin, Akkusativ) → <b>ihn</b>; «dem Trainer» (masculin, Dativ) → <b>ihm</b>. «ihn ihm»."], ["Du wolltest Sandra doch noch das Buch schenken.", "Ich habe", "es ihr", "doch schon geschenkt.", "«das Buch» (neutru, Akkusativ) → <b>es</b>; «Sandra» (feminin, Dativ) → <b>ihr</b>. «es ihr»."]], E5=[["Die Lehrerin hat ihren Schülern ein Spiel mitgebracht.", "Die Lehrerin erklärt", "es ihnen", "", "exemplu"], ["Sandra zeigt ihrer Freundin eine DVD.", "Sandra leiht", "sie ihr", ".", "«eine DVD» (feminin, Akkusativ) → <b>sie</b>; «ihrer Freundin» (feminin, Dativ) → <b>ihr</b>. Akkusativ înaintea Dativ: «sie ihr»."], ["Mirko empfiehlt seinem Freund ein Restaurant.", "Er zeigt", "es ihm", "auf dem Weg zur Arbeit.", "«ein Restaurant» (neutru, Akkusativ) → <b>es</b>; «seinem Freund» (masculin, Dativ) → <b>ihm</b>. «es ihm»."], ["„Ich hab' dir einen Link geschickt.", "Ich kann", "ihn dir", "wirklich empfehlen.“", "«einen Link» (masculin, Akkusativ) → <b>ihn</b>; «dir» e deja pronume și rămâne. Akkusativ înaintea Dativ: «ihn dir»."], ["„Kannst du mir einen Stift geben?“ –", "„Klar, ich schenke", "ihn dir", ".“", "«einen Stift» (masculin, Akkusativ) → <b>ihn</b>. Atenție la perspectivă: întrebarea zice «mir» (cel care întreabă), dar cel care răspunde se adresează lui → <b>dir</b>. «ihn dir»."], ["„Können Sie dem Hund Wasser geben?“ –", "„Ja, ich bringe", "es ihm", "sofort!“", "«Wasser» (neutru, Akkusativ) → <b>es</b>; «dem Hund» (masculin, Dativ) → <b>ihm</b>. «es ihm»."]];
+var scorm=(function(){var api=null,active=false;
+ function find(w){var n=0;while(w&&n<10){try{if(w.API)return w.API;}catch(e){}if(w.parent&&w.parent!==w){w=w.parent;n++;}else break;}return null;}
+ function init(){api=find(window);if(!api){try{if(window.opener)api=find(window.opener);}catch(e){}}
+  if(api){try{active=String(api.LMSInitialize(""))==="true";if(active){var st=api.LMSGetValue("cmi.core.lesson_status");if(st==="not attempted"||st==="")api.LMSSetValue("cmi.core.lesson_status","incomplete");api.LMSCommit("");}}catch(e){active=false;}}}
+ function report(c,t){if(!active)return;var p=Math.round(c/t*100);try{api.LMSSetValue("cmi.core.score.min","0");api.LMSSetValue("cmi.core.score.max","100");api.LMSSetValue("cmi.core.score.raw",String(p));api.LMSSetValue("cmi.core.lesson_status",p>=PASS_PERCENT?"passed":"failed");api.LMSCommit("");}catch(e){}}
+ function finish(){if(!active)return;try{api.LMSFinish("");}catch(e){}active=false;}
+ return{init:init,report:report,finish:finish};})();
+
+
+
+
+
+
+
+
+
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function normS(s){return String(s).toLowerCase().replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss").replace(/[^a-z0-9 ]/g," ").replace(/\s+/g," ").trim();}
+function ex(ok,txt){return '<div class="expl'+(ok?' ok':'')+'"><b class="t">'+(ok?'Corect':'Greșit')+'</b>'+txt+'</div>';}
+var EX=[{res:null,total:E1.length},{res:null,total:E2.length},{res:null,total:E3.length-1},{res:null,total:E4.length-1},{res:null,total:E5.length-1}];
+function tinput(cls){return '<input class="ti '+(cls||'')+'" type="text" autocomplete="off" autocapitalize="off" spellcheck="false">';}
+// Ex0
+$("c0").innerHTML='<div class="exm"><b>(1)</b> Heute hat die Lehrerin <b>ihren Schülern ein Spiel</b> mitgebracht. <small>(ihren Schülern / ein Spiel)</small></div>'+E1.map(function(e,i){return '<div class="item" data-i="'+i+'"><div class="line"><span class="n">'+(i+2)+'.</span>'+esc(e[0])+' '+tinput()+' .</div><div class="cue">'+esc(e[2])+'</div><div class="fb"></div></div>';}).join("");
+// Ex1 chunk builder
+var ans2=E2.map(function(){return [];}),res2=false;
+function render1(){$("c1").innerHTML='<div class="verbs">'+["leiht","zeigt","erklärt","bringt"].map(function(v){return '<span>'+v+'</span>';}).join("")+'</div>'+E2.map(function(e,i){
+ var a=ans2[i];return '<div class="pcard" data-i="'+i+'"><img src="'+e[0]+'.jpg" alt=""><div class="ans'+(res2?(e._ok?' ok':' no'):'')+'">'+a.map(function(k,p){return '<button type="button" class="ck in" data-p="'+p+'"'+(res2?' disabled':'')+'>'+esc(e[1][k])+'</button>';}).join("")+'</div><div class="pool">'+ORD2[i].map(function(k){return '<button type="button" class="ck'+(a.indexOf(k)>-1?' used':'')+'" data-k="'+k+'"'+(res2?' disabled':'')+'>'+esc(e[1][k])+'</button>';}).join("")+'</div><div class="fb">'+(e._fb||'')+'</div></div>';}).join("");}
+$("c1").addEventListener("click",function(e){var b=e.target.closest(".ck");if(!b||res2)return;var i=+b.closest(".pcard").dataset.i;if(b.dataset.k!==undefined)ans2[i].push(+b.dataset.k);else ans2[i].splice(+b.dataset.p,1);render1();upd(1);});
+// Ex2 gaps
+var pl3=E3.map(function(){return -1;}),res3=false;
+function render2(){$("c2").innerHTML=E3.map(function(e,i){var ex0=i===0,h='<div class="item" data-i="'+i+'"><div class="line"><span class="n">('+(i+1)+')</span>'+esc(e[0])+' <span class="tk">';
+ e[1].forEach(function(w,j){h+=esc(w)+' ';if(j<e[1].length-1){var on=ex0?(j===e[3]):(pl3[j===undefined?0:i]===j);on=ex0?j===e[3]:pl3[i]===j;var cls="gp"+(on?" on":"");if(res3&&!ex0&&on)cls+=(j===e[3]?" ok":" no");
+  h+='<button type="button" class="'+cls+'" data-j="'+j+'"'+(ex0||res3?' disabled':'')+'>'+(on?esc(e[2]):'')+'</button> ';}});
+ h+='</span> <span class="pr">'+esc(e[2])+'</span></div><div class="fb">'+(i>0&&e._fb?e._fb:'')+'</div></div>';return h;}).join("");}
+$("c2").addEventListener("click",function(e){var b=e.target.closest(".gp");if(!b||b.disabled||res3)return;var i=+b.closest(".item").dataset.i;pl3[i]=(pl3[i]===+b.dataset.j)?-1:+b.dataset.j;render2();upd(2);});
+// Ex3, Ex4
+$("c3").innerHTML='<div class="exm"><b>(1)</b> '+esc(E4[0][0])+'<br>'+esc(E4[0][1])+' <b>'+esc(E4[0][2])+'</b> '+esc(E4[0][3])+'</div>'+E4.slice(1).map(function(e,i){return '<div class="item" data-i="'+(i+1)+'"><div class="line"><span class="n">'+(i+2)+'.</span>'+esc(e[0])+'<br>'+esc(e[1])+' '+tinput("s")+' '+esc(e[3])+'</div><div class="fb"></div></div>';}).join("");
+$("c4").innerHTML='<div class="exm"><b>(1)</b> '+esc(E5[0][0])+' '+esc(E5[0][1])+' <b>'+esc(E5[0][2])+'</b>.</div>'+E5.slice(1).map(function(e,i){return '<div class="item" data-i="'+(i+1)+'"><div class="line"><span class="n">'+(i+2)+'.</span>'+esc(e[0])+'<br>'+esc(e[1])+' '+tinput("s")+' '+esc(e[3])+'</div><div class="fb"></div></div>';}).join("");
+render1();render2();
+function bar(k){return document.querySelector('.bar[data-bar="'+k+'"]');}
+function tis(k){return Array.prototype.slice.call(document.querySelectorAll("#c"+k+" .ti"));}
+function answered(k){if(k===1)return ans2.filter(function(a,i){return a.length===E2[i][1].length;}).length;if(k===2)return pl3.slice(1).filter(function(x){return x>-1;}).length;return tis(k).filter(function(x){return x.value.trim()!=="";}).length;}
+function upd(k){if(EX[k].res!==null)return;var b=bar(k),n=answered(k),t=EX[k].total;b.querySelector(".chk").disabled=n<t;b.querySelector(".msg").textContent=n<t?"Ai completat "+n+" din "+t+".":"Gata! Apasă „Verifică răspunsurile”.";}
+function updTotal(){var c=0,t=0,any=false;EX.forEach(function(e,k){document.querySelector('.tab[data-ex="'+k+'"]').classList.toggle("done",e.res!==null);if(e.res!==null){c+=e.res;t+=e.total;any=true;}});$("total").textContent=any?"Gesamt: "+c+" / "+t:"";if(any)scorm.report(c,t);}
+[0,3,4].forEach(function(k){$("c"+k).addEventListener("input",function(){upd(k);});});
+function typed(k,get){var c=0;document.querySelectorAll("#c"+k+" .item").forEach(function(it){var i=+it.dataset.i,x=it.querySelector(".ti"),g=get(i),ok=normS(x.value)===normS(g.ans);if(ok)c++;x.disabled=true;x.classList.add(ok?"ok":"no");
+ it.querySelector(".fb").innerHTML=(ok?'':'<div class="expl"><b class="t">Varianta corectă</b>'+esc(g.full)+'</div>')+ex(ok,g.expl);});return c;}
+function check(k){var c=0;
+ if(k===0){c=typed(0,function(i){var e=E1[i];return {ans:e[1],full:e[0]+' '+e[1]+'.',expl:e[3]};});}
+ else if(k===1){res2=true;E2.forEach(function(e,i){var ch=e[1],t=ans2[i].map(function(x){return normS(ch[x]);}).join(" "),
+   good=[[0,1,2,3],[2,1,0,3]].map(function(p){return p.map(function(x){return normS(ch[x]);}).join(" ");}),sv=[0,1,3,2].map(function(x){return normS(ch[x]);}).join(" "),ok=good.indexOf(t)>-1;e._ok=ok;if(ok)c++;
+   var note=(t===sv)?'Ordinea ta e posibilă în germană, dar cu două substantive <b>Dativ vine de obicei înaintea Akkusativ</b>. ':'';
+   e._fb=(ok?'':'<div class="expl"><b class="t">Varianta corectă</b>'+esc(ch[0]+' '+ch[1]+' '+ch[2]+' '+ch[3])+'.</div>')+ex(ok,note+'<b>'+esc(ch[0]+' '+ch[1]+' '+ch[2]+' '+ch[3])+'.</b> ('+e[2]+') «'+esc(ch[2])+'» = Dativ (persoana care primește), «'+esc(ch[3])+'» = Akkusativ (lucrul). Ordine: Dativ → Akkusativ; ambele variante cu <b>verbul pe poziția 2</b> sunt corecte (ex.: «'+esc(ch[2].charAt(0).toUpperCase()+ch[2].slice(1)+' '+ch[1]+' '+ch[0].charAt(0).toLowerCase()+ch[0].slice(1)+' '+ch[3])+'»).');});render1();}
+ else if(k===2){res3=true;E3.forEach(function(e,i){if(i===0)return;var ok=pl3[i]===e[3];if(ok)c++;var full=e[1].slice(0,e[3]+1).join(" ")+" "+e[2]+" "+e[1].slice(e[3]+1).join(" ");e._fb=(ok?'':'<div class="expl"><b class="t">Varianta corectă</b>'+esc(full)+'</div>')+ex(ok,e[4]);});render2();}
+ else if(k===3){c=typed(3,function(i){var e=E4[i];return {ans:e[2],full:e[1]+' '+e[2]+' '+e[3],expl:e[4]};});}
+ else{c=typed(4,function(i){var e=E5[i];return {ans:e[2],full:e[1]+' '+e[2]+' '+e[3],expl:e[4]};});}
+ EX[k].res=c;var t=EX[k].total,pc=Math.round(c/t*100),b=bar(k),s=b.querySelector(".score");
+ s.textContent="Rezultat: "+c+" / "+t+" ("+pc+"%)";s.className="score "+(pc>=80?"good":pc>=PASS_PERCENT?"mid":"low");
+ b.querySelector(".msg").classList.add("hidden");b.querySelector(".chk").classList.add("hidden");b.querySelector(".rty").classList.remove("hidden");updTotal();}
+function retry(k){EX[k].res=null;
+ if(k===1){res2=false;ans2=E2.map(function(){return [];});E2.forEach(function(e){delete e._fb;delete e._ok;});render1();}
+ else if(k===2){res3=false;pl3=E3.map(function(){return -1;});E3.forEach(function(e){delete e._fb;});render2();}
+ else{document.querySelectorAll("#c"+k+" .ti").forEach(function(x){x.disabled=false;x.className=x.className.replace(/\b(ok|no)\b/g,"").trim();x.value="";});document.querySelectorAll("#c"+k+" .fb").forEach(function(f){f.innerHTML="";});}
+ var b=bar(k);b.querySelector(".score").className="score hidden";b.querySelector(".msg").classList.remove("hidden");b.querySelector(".chk").classList.remove("hidden");b.querySelector(".rty").classList.add("hidden");upd(k);updTotal();}
+EX.forEach(function(_,k){var b=bar(k);b.querySelector(".chk").addEventListener("click",function(){check(k);});b.querySelector(".rty").addEventListener("click",function(){retry(k);});upd(k);});
+document.querySelectorAll(".tab").forEach(function(t){t.addEventListener("click",function(){document.querySelectorAll(".tab").forEach(function(x){x.classList.toggle("on",x===t);});document.querySelectorAll("section.ex").forEach(function(s,i){s.classList.toggle("on",i===+t.dataset.ex);});window.scrollTo(0,0);});});
+scorm.init();window.addEventListener("pagehide",scorm.finish);
+</script></body></html>
