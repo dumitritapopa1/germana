@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Leseverstehen – Test</title>
+<style>
+
+:root{--bg:#f4f5f7;--card:#fff;--ink:#1f2430;--muted:#5d6472;--line:#e3e6eb;--accent:#3b5bdb;--accent-soft:#e8edff;--ok:#1f8a5b;--ok-soft:#e6f5ee;--bad:#c92a2a;--bad-soft:#fdecec}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;font-size:16px;line-height:1.55;display:flex;flex-direction:column}
+header{padding:10px 24px;border-bottom:1px solid var(--line);background:var(--card);display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+header h1{margin:0;font-size:20px}
+.tabs{display:flex;gap:6px}
+.tab{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:7px 16px;font-size:15px;font-weight:700;cursor:pointer;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.tab .dn{display:none;margin-left:4px}.tab.done .dn{display:inline}
+.total{margin-left:auto;font-size:14px;font-weight:700;color:var(--muted)}
+section.ex{display:none;flex:1;min-height:0;flex-direction:column}
+section.ex.on{display:flex}
+.wrap{flex:1;padding:16px 24px;min-height:0;display:flex;gap:16px;justify-content:center}
+.pane{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow-y:auto;min-height:0}
+.wrap.split .pane{flex:1}
+.wrap.one .pane{width:100%;max-width:780px}
+.pi{padding:20px 26px}
+.instr{margin:0 0 14px;padding:12px 16px;background:var(--accent-soft);border-left:4px solid var(--accent);border-radius:6px;font-weight:600}
+.instr small{display:block;font-weight:400;color:var(--muted);margin-top:2px}
+.txt h2{margin:0 0 12px;font-size:20px}
+.txt p{margin:0 0 14px;font-size:17px;line-height:1.7}
+.q{padding:16px 0;border-top:1px solid var(--line)}
+.q:first-of-type{border-top:none}
+.q h3{margin:0 0 10px;font-size:17px}
+.opt{display:flex;align-items:center;gap:12px;padding:9px 13px;border:1.5px solid var(--line);border-radius:10px;margin-bottom:7px;cursor:pointer;font-size:16px}
+.opt:hover{border-color:#aeb6c8}
+.opt{position:relative}.opt input{position:absolute;opacity:0;pointer-events:none}
+.dot{flex:0 0 22px;height:22px;border-radius:50%;border:2px solid #b7bfce;background:#fff;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:800}
+.opt.on{border-color:var(--accent);background:var(--accent-soft)}
+.opt.on .dot{border-color:var(--accent);background:var(--accent);box-shadow:inset 0 0 0 4px #fff,inset 0 0 0 12px var(--accent)}
+.opt.locked{cursor:default}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}.opt.right .dot{border-color:var(--ok);background:var(--ok);box-shadow:none}.opt.right .dot::after{content:"✓"}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}.opt.wrong .dot{border-color:var(--bad);background:var(--bad);box-shadow:none}.opt.wrong .dot::after{content:"✕"}
+.opt.missed{border-color:var(--ok);border-style:dashed}
+.opt .tag{margin-left:auto;font-size:13px;font-weight:700;white-space:nowrap}
+.opt.right .tag,.opt.missed .tag{color:var(--ok)}.opt.wrong .tag{color:var(--bad)}
+.gaps p{font-size:18px;line-height:2.3;margin:0 0 14px}
+.g{display:inline-flex;align-items:baseline;white-space:nowrap}
+.g .pre{font-weight:600}
+.g input{font:inherit;font-size:17px;border:none;border-bottom:2px solid #9aa3b5;background:var(--accent-soft);padding:0 3px;margin:0 1px;border-radius:3px 3px 0 0;color:var(--ink);text-align:left}
+.g input:focus{outline:none;border-bottom-color:var(--accent);background:#dbe3ff}
+.g sup{font-size:11px;color:var(--muted);margin-left:1px}
+.g.ok input{background:var(--ok-soft);border-bottom-color:var(--ok);color:var(--ok);font-weight:600}
+.g.no input{background:var(--bad-soft);border-bottom-color:var(--bad);color:var(--bad);text-decoration:line-through}
+.fix{color:var(--ok);font-weight:700;font-size:15px;margin-left:4px}
+audio{width:100%;height:40px}
+.audio{position:sticky;top:0;background:var(--card);padding-bottom:10px;z-index:2}
+.s{padding:14px 0;border-top:1px solid var(--line)}
+.s:first-of-type{border-top:none}
+.s .st{font-size:17px;margin-bottom:8px}
+.rf{display:flex;gap:8px}
+.rf button{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:8px 20px;font-size:15px;font-weight:700;cursor:pointer;color:var(--ink)}
+.rf button.on{border-color:var(--accent);background:var(--accent-soft)}
+.rf button.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+.rf button.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.rf button.missed{border-color:var(--ok);border-style:dashed;color:var(--ok)}
+.fb{font-size:14px;font-weight:700;margin-top:6px}.fb.ok{color:var(--ok)}.fb.no{color:var(--bad)}
+.bar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:12px 24px;background:var(--card);border-top:1px solid var(--line)}
+.btn{border:none;border-radius:8px;padding:10px 22px;font-size:15px;font-weight:700;cursor:pointer}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:disabled{opacity:.45;cursor:not-allowed}
+.btn-ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line)}
+.msg{font-size:15px;color:var(--muted)}
+.score{font-size:16px;font-weight:700}.score.good{color:var(--ok)}.score.mid{color:#b06a00}.score.low{color:var(--bad)}
+.hidden{display:none!important}
+@media (max-width:820px){
+ body{height:auto;min-height:100%}
+ header{padding:10px 14px}
+ .wrap{padding:10px;flex-direction:column}
+ .pane{overflow:visible}
+ .pi{padding:16px}
+ .total{margin-left:0;width:100%}
+ .bar{position:sticky;bottom:0;padding:10px 14px;z-index:5}
+ .audio{top:0}
+}
+
+.sent{width:100%;font:inherit;font-size:17px;border:1.5px solid var(--line);border-radius:8px;padding:9px 12px;background:var(--accent-soft);color:var(--ink)}
+.sent:focus{outline:none;border-color:var(--accent);background:#dbe3ff}
+.sent.ok{background:var(--ok-soft);border-color:var(--ok);color:var(--ok);font-weight:600}
+.sent.no{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.cue{font-weight:600}
+.bank{display:flex;flex-wrap:wrap;gap:8px;padding:12px;background:#eef1f6;border-radius:10px;margin-bottom:18px;min-height:56px}
+.chip{border:1.5px solid #cfd5e1;background:#fff;border-radius:8px;padding:6px 14px;font-size:16px;cursor:grab;user-select:none;display:inline-block}
+.chip.sel{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 2px rgba(59,91,219,.25)}
+.slot{display:inline-block;min-width:8ch;min-height:36px;vertical-align:middle;border:1.5px dashed #9aa3b5;border-radius:8px;padding:2px 4px;margin:0 3px;background:#fff;text-align:center;line-height:1.6}
+.slot.over{border-color:var(--accent);background:var(--accent-soft)}
+.slot .chip{padding:1px 10px;font-size:17px}
+.slot.ok{border-style:solid;border-color:var(--ok);background:var(--ok-soft)}
+.slot.ok .chip{color:var(--ok);border-color:var(--ok);background:transparent;font-weight:600}
+.slot.no{border-style:solid;border-color:var(--bad);background:var(--bad-soft)}
+.slot.no .chip{color:var(--bad);border-color:var(--bad);background:transparent;text-decoration:line-through}
+.bank.over{background:var(--accent-soft)}
+.img img{width:100%;height:auto;display:block;border-radius:8px}
+.sl .g{margin:0 2px}
+.sl p{margin:0 0 6px;font-size:18px;line-height:2.4}
+
+.audiorow{background:var(--card);border-bottom:1px solid var(--line);padding:8px 24px;position:sticky;top:0;z-index:6}
+.audiorow audio{max-width:900px;display:block;margin:0 auto}
+.wordlist{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}
+.wordlist span{background:#eef1f6;border-radius:8px;padding:5px 12px;font-style:italic;font-weight:600}
+.s audio{margin:4px 0 10px}
+.sg p{margin:0 0 4px;font-size:18px;line-height:2.4}
+@media (max-width:820px){.audiorow{padding:8px 12px}}
+
+.tabs{flex-wrap:wrap}
+.tab{padding:7px 12px}
+.row{display:flex;align-items:baseline;gap:8px;padding:6px 0;font-size:18px;line-height:2.2}
+.row .n{color:var(--muted);min-width:1.8em}
+.row .base{font-weight:600;min-width:6.5em}
+.row.ex{color:var(--muted)}
+.row.ex .ans{font-weight:700;color:var(--ok)}
+.hint{color:var(--muted);font-size:14px}
+.convs{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:6px}
+.conv{border:2px dashed var(--line);border-radius:12px;padding:10px;background:#fafbfc;min-height:150px}
+.conv.over,.pool.over{border-color:var(--accent);background:var(--accent-soft)}
+.conv h3{margin:0 0 6px;text-align:center;font-size:16px}
+.conv audio{height:36px;margin-bottom:8px}
+.pool{display:flex;flex-wrap:wrap;gap:8px;padding:10px;border:2px dashed var(--line);border-radius:12px;min-height:54px;margin-bottom:14px}
+.pool .chip{margin:0}
+.conv .chip{display:block;margin:0 0 7px;text-align:left}
+.chip small{display:block;font-weight:700;font-size:12px;margin-top:2px}
+.chip.ok{border-color:var(--ok);background:var(--ok-soft);color:var(--ok);cursor:default}
+.chip.no{border-color:var(--bad);background:var(--bad-soft);color:var(--bad);cursor:default}
+.aw{display:inline-flex;gap:4px;vertical-align:middle;margin:0 3px}
+.aw button{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:2px 14px;font-size:16px;font-weight:700;cursor:pointer;color:var(--ink)}
+.aw button.on{border-color:var(--accent);background:var(--accent-soft)}
+.aw button.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+.aw button.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.aw button.missed{border-color:var(--ok);border-style:dashed;color:var(--ok)}
+.forum p{margin:0 0 4px;font-size:17px;line-height:2.3}
+.forum .gap{height:10px}
+@media (max-width:820px){.convs{grid-template-columns:1fr}}
+
+.qrow{display:grid;grid-template-columns:1fr 1.15fr;gap:10px;margin-bottom:10px;align-items:stretch}
+.qbox{border:1.5px solid var(--line);border-radius:10px;padding:10px 14px;background:#fff;font-weight:600;display:flex;align-items:center}
+.aslot{border:2px dashed #b7bfce;border-radius:10px;min-height:56px;padding:4px;background:#fafbfc;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:14px;text-align:center}
+.aslot.over{border-color:var(--accent);background:var(--accent-soft)}
+.aslot .chip{display:block;width:100%;margin:0;text-align:left}
+.aslot.ok{border-style:solid;border-color:var(--ok);background:var(--ok-soft)}
+.aslot.no{border-style:solid;border-color:var(--bad);background:var(--bad-soft)}
+.aslot .chip.ok{border-color:var(--ok);background:transparent;color:var(--ok)}
+.aslot .chip.no{border-color:var(--bad);background:transparent;color:var(--bad);text-decoration:line-through}
+.aslot .fixt{display:block;color:var(--ok);font-size:13px;font-weight:700;margin-top:3px;text-decoration:none}
+.abank{display:flex;flex-direction:column;gap:8px;padding:12px;background:#eef1f6;border-radius:10px;margin-bottom:18px;min-height:56px}
+.abank .chip{margin:0;text-align:left;display:block}
+.abank.over{background:var(--accent-soft)}
+.fqitem{margin-bottom:12px;padding:10px 12px;background:#f7f8fb;border-radius:10px}
+.fqbuilt{min-height:48px;padding:6px;border:2px dashed #b7bfce;border-radius:10px;background:#fff;display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:4px 0 8px}
+.fqbuilt.ok{border-style:solid;border-color:var(--ok);background:var(--ok-soft)}
+.fqbuilt.no{border-style:solid;border-color:var(--bad);background:var(--bad-soft)}
+.fqtiles{display:flex;flex-wrap:wrap;gap:8px}
+.fqitem .chip{margin:0;cursor:pointer}
+.cmpd{font-size:19px;line-height:2.4;padding:4px 0}
+.cmpd .n{color:var(--muted);display:inline-block;min-width:1.8em}
+@media (min-width:821px){.abank{display:grid;grid-template-columns:1fr 1fr}}
+@media (max-width:820px){.qrow{grid-template-columns:1fr}}
+
+.txt .title{font-weight:700;font-size:18px;margin:0 0 6px}
+.txt p{margin:0 0 12px;font-size:17px;line-height:1.7}
+.rfs{padding:14px 0;border-top:1px solid var(--line)}
+.rfs:first-of-type{border-top:none}
+.rfs .st{font-size:17px;margin-bottom:8px}
+.rf{display:flex;gap:8px}
+.rf button{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:8px 20px;font-size:15px;font-weight:700;cursor:pointer;color:var(--ink)}
+.rf button.on{border-color:var(--accent);background:var(--accent-soft)}
+.rf button.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+.rf button.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.rf button.missed{border-color:var(--ok);border-style:dashed;color:var(--ok)}
+.corr{display:none;margin-top:10px}
+.corr.show{display:block}
+.corr label{display:block;font-size:13px;color:var(--muted);margin-bottom:4px}
+.sug{margin-top:8px;font-size:14px;color:var(--ok);font-weight:700}
+.film{padding:14px 0;border-top:1px solid var(--line)}
+.film:first-of-type{border-top:none}
+.film h3{margin:0 0 6px;font-size:17px}
+.film audio{margin-bottom:10px}
+
+.drow{padding:12px 0;border-top:1px solid var(--line)}
+.drow:first-of-type{border-top:none}
+.drow .st{font-size:17px;margin-bottom:6px}
+.dline{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dline .pre{font-weight:700;white-space:nowrap;font-size:17px}
+.dline input{flex:1;min-width:220px}
+.drow.ex{background:#f3f7f4;border-radius:10px;padding:12px 14px;margin-bottom:6px;border:1px solid var(--ok)}
+.drow.ex .ans{color:var(--ok);font-weight:700;font-size:17px}
+.tip{background:#fff8e6;border-left:4px solid #e0a100;border-radius:6px;padding:10px 14px;margin:0 0 14px;font-size:15px}
+.tip b{color:#8a5a00}
+.convs.four{grid-template-columns:1fr 1fr}
+
+.mbank{display:flex;flex-wrap:wrap;gap:8px;padding:12px;background:#eef1f6;border-radius:10px;margin-bottom:18px;min-height:56px}
+.mbank.over{background:var(--accent-soft)}
+.mbank .chip{margin:0}
+.pgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.pcell{text-align:center}
+.pcell img{width:100%;height:auto;display:block;border-radius:6px}
+.pcell .slot{display:block;margin:6px auto 0;width:76px;min-width:0;min-height:38px;font-size:18px}
+.pcell .slot .chip{padding:1px 10px;font-size:18px;font-weight:700}
+.msl .slot .chip{font-size:16px}
+.sl2 p{margin:0 0 4px;font-size:18px;line-height:2.5}
+.post{margin-bottom:14px}
+.post .nm{font-weight:700}
+.post p{margin:4px 0 0;font-size:17px;line-height:1.75}
+.post .ttl{display:inline-block;vertical-align:middle}
+.exchip{display:inline-block;border:1.5px solid var(--ok);background:var(--ok-soft);color:var(--ok);border-radius:8px;padding:2px 10px;font-size:16px;font-weight:600}
+.fixs{color:var(--ok);font-weight:700;font-size:13px;display:block}
+@media (max-width:820px){.pgrid{grid-template-columns:repeat(2,1fr)}}
+
+.mail{border:2px solid #444;border-radius:10px;background:#fff;margin:0 0 14px;overflow:hidden}
+.mail .tb{background:#eceef2;padding:6px 10px;border-bottom:1px solid #ccc;display:flex;gap:6px}
+.mail .tb i{width:12px;height:12px;border-radius:50%;display:inline-block}
+.mail .bd{padding:10px 16px;font-size:16.5px;line-height:1.9}
+.sg{cursor:pointer;border-radius:4px;padding:1px 2px;transition:background .1s}.sg:hover{background:#eef3ff}
+.sg.p{background:#bfe8c8}.sg.n{background:#f7c3c3}
+.sg.okm{box-shadow:0 0 0 2px #2e9e57}.sg.badm{box-shadow:0 0 0 2px #d33;text-decoration:line-through}
+.sg.missp{outline:2px dashed #2e9e57}.sg.missn{outline:2px dashed #d33}
+.mode{display:flex;gap:8px;margin:0 0 10px;flex-wrap:wrap}
+.mb{border:2px solid var(--line);background:#fff;border-radius:999px;padding:5px 16px;font:inherit;font-size:16px;cursor:pointer;color:var(--ink)}
+.mb.p.on{background:#bfe8c8;border-color:#2e9e57;font-weight:700}.mb.n.on{background:#f7c3c3;border-color:#d33;font-weight:700}
+.part{font-weight:700;font-size:18px;margin:16px 0 6px;color:var(--accent)}
+.item{padding:10px 0;border-top:1px solid var(--line)}.item:first-child{border-top:none}
+.line{font-size:18px;line-height:2.1}.line .n{color:var(--muted);font-weight:700;margin-right:4px}
+.cw{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:2px 14px;font:inherit;font-size:17px;cursor:pointer;color:var(--ink);margin:0 3px}
+.cw:hover{border-color:#aeb6c8}.cw.on{border-color:var(--accent);background:var(--accent-soft);font-weight:700}
+.cw.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok);font-weight:700}
+.cw.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad);text-decoration:line-through}
+.cw.missed{border-color:var(--ok);border-style:dashed;color:var(--ok);font-weight:700}.cw:disabled{cursor:default}
+.cl{padding:8px 0;border-top:1px solid var(--line)}.cl:first-child{border-top:none}.cline{font-size:18px;line-height:2.2}
+#c1 .slot{display:inline-block;width:auto;min-width:190px;min-height:34px;margin:0 3px;padding:1px 6px;vertical-align:middle;text-align:center}
+#c1 .slot .chip{font-size:16px}
+.exm{background:#e8f6fd;border-left:4px solid #29a8e0;border-radius:10px;padding:8px 14px;margin:0 0 10px;font-size:16.5px;line-height:1.7}
+.src{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin:0 0 14px}
+.card{border:1.5px solid var(--line);border-radius:8px;background:#fffef8;padding:10px 14px;font-size:15px;line-height:1.5;box-shadow:2px 3px 0 #e6e9f0}
+.form{border:2px solid #444;border-radius:8px;background:#fff;padding:12px 16px;max-width:560px}
+.form h4{margin:0 0 4px;font-size:20px}.form .fr{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:6px 0;font-size:16px}
+.form .fr b{min-width:8.5em;font-weight:400;color:#444}.form .fr .v{color:#2a4a9a;font-style:italic}
+.ti{font:inherit;font-size:16px;padding:3px 8px;border:1.5px solid var(--line);border-radius:6px;width:11em}
+.ti:focus{outline:none;border-color:var(--accent)}
+.ti.ok{border-color:var(--ok);background:var(--ok-soft);color:var(--ok);font-weight:700}.ti.no{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.tag{font-size:13px;color:var(--ok);font-weight:700}
+.txt{border:1.5px solid var(--line);border-radius:8px;background:#fff;padding:12px 18px;margin:0 0 14px;font-size:16.5px;line-height:1.65}
+.txt h3{margin:0 0 6px}.txt p{margin:0 0 8px;text-indent:1.2em}
+.expl{font-weight:400;margin:6px 0 0;padding:8px 12px;background:var(--bad-soft);border-left:4px solid var(--bad);border-radius:6px;font-size:15px;line-height:1.5}
+.expl.ok{background:var(--ok-soft);border-left-color:var(--ok)}
+.expl b.t{display:block;margin-bottom:2px;font-weight:700}
+.expl.ok b.t{color:var(--ok)}.expl:not(.ok) b.t{color:var(--bad)}
+</style></head><body>
+<header><h1>Leseverstehen – Test</h1><div class="tabs"><button class="tab on" data-ex="0">Lesen 1<span class="dn"> ✓</span></button><button class="tab" data-ex="1">Lesen 2<span class="dn"> ✓</span></button><button class="tab" data-ex="2">Lesen 3<span class="dn"> ✓</span></button><button class="tab" data-ex="3">Lesen 4<span class="dn"> ✓</span></button></div><span class="total" id="total"></span></header>
+<section class="ex on" id="ex0">
+ <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
+  <p class="instr">Lesen 1: Lesen Sie die Mails von Clara und Marie.<small><b>Teil b:</b> Ce a fost pozitiv și ce negativ la cursuri? Alege culoarea (verde = pozitiv, roșu = negativ) și atinge propozițiile; atinge din nou ca să scoți marcajul. Nu marca propozițiile neutre (fiecare propoziție neutră marcată scade din scor). <b>Teil c:</b> Cui i se potrivesc afirmațiile: C (Clara) sau M (Marie)?</small></p>
+  <div id="c0"></div>
+ </div></div></div>
+ <div class="bar" data-bar="0">
+  <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
+  <span class="msg"></span><span class="score hidden"></span>
+ </div>
+</section>
+<section class="ex" id="ex1">
+ <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
+  <p class="instr">Lesen 2: Lesen Sie die Beschreibung der Situationen. Warum feiern die Personen? Schreiben Sie die Wörter dazu.<small>Citește situațiile și potrivește cuvântul corect: trage-l în căsuță sau atinge-l, apoi atinge căsuța. Exemplul (1) e dat. Fiecare cuvânt se folosește o singură dată.</small></p>
+  <div class="mbank" id="bank1"></div><div id="c1"></div>
+ </div></div></div>
+ <div class="bar" data-bar="1">
+  <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
+  <span class="msg"></span><span class="score hidden"></span>
+ </div>
+</section>
+<section class="ex" id="ex2">
+ <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
+  <p class="instr">Lesen 3: Die Prüfungsaufgabe – Bach-Studentenwohnheim Leipzig<small>Sofia Sertorio vrea să studieze un an la Leipzig. Scrie cele cinci informații lipsă din formular (1)–(5), pe baza datelor despre Sofia.</small></p>
+  <div id="c2"></div>
+ </div></div></div>
+ <div class="bar" data-bar="2">
+  <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
+  <span class="msg"></span><span class="score hidden"></span>
+ </div>
+</section>
+<section class="ex" id="ex3">
+ <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
+  <p class="instr">Lesen 4: Die Prüfungsaufgabe, Teil 2 – Glück gehabt<small>Citește textul și afirmațiile 1–5. Sunt corecte (Richtig) sau false (Falsch)? Exemplul (0) e dat.</small></p>
+  <div id="c3"></div>
+ </div></div></div>
+ <div class="bar" data-bar="3">
+  <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
+  <span class="msg"></span><span class="score hidden"></span>
+ </div>
+</section>
+
+<script>
+var PASS_PERCENT=50;
+var MAILS=[["Hallo Marie,", [["Letzte Woche hatte ich meinen Zumba-Kurs für Anfänger – ich wollte doch schon lange Sport machen.", 0, ""], ["Wir haben an vier Tagen jeweils eine Stunde trainiert.", 0, ""], ["Die Trainerinnen haben uns erst alles langsam gezeigt und dann haben wir selbst getanzt.", 1, "Trainerele au arătat totul încet și apoi au lăsat-o să danseze singură – o metodă bună de predare."], ["Ich fühle mich schon viel fitter!", 1, "«viel fitter» = mult mai în formă – efect pozitiv al cursului."], ["Die Musik ist auch toll.", 1, "«toll» = grozav – evaluare pozitivă."], ["Ich habe mir gleich eine CD gekauft und höre sie zu Hause. Manchmal tanze ich einfach mit … wenn niemand zu Hause ist ☺.", 1, "Cursul i-a plăcut atât de mult încât și-a cumpărat un CD și dansează și acasă – pozitiv."], ["Der Kurs war viel zu schnell vorbei.", 2, "«viel zu schnell vorbei» = s-a terminat mult prea repede – aspect negativ (cursul a fost prea scurt)."], ["Im Herbst will ich unbedingt weitermachen, aber nur einmal in der Woche.", 3, ""]], "Schreib bald, liebe Grüße<br>Clara"], ["Hallo Clara,", [["Zumba sieht immer so toll aus, aber für mich ist das zu schnell. ;-)", 0, ""], ["Mein Malkurs in der Toskana war seeehr entspannt,", 1, "«seeehr entspannt» = foarte relaxant – pozitiv."], ["aber leider nicht so interessant, denn ich habe nicht viel Neues gelernt.", 2, "«leider nicht so interessant … nicht viel Neues gelernt» = n-a fost interesant, a învățat puține lucruri noi – negativ."], ["Anna, unsere Kursleiterin, hat uns einige Bilder gezeigt und dazu etwas erzählt,", 0, ""], ["aber beim Malen hat sie uns dann kaum geholfen.", 2, "«kaum geholfen» = aproape deloc ajutor – critică la adresa profesoarei, negativ."], ["Aber wir Teilnehmer haben uns alle gut verstanden und hatten viel Spaß.", 1, "«gut verstanden … viel Spaß» = s-au înțeles bine și s-au distrat – pozitiv."], ["Wir wollen uns mal in München treffen und gemeinsam Ausstellungen besuchen.", 3, ""], ["Das nächste Mal schicke ich dir ein paar Fotos von meinen Bildern. Mal sehen, ob sie dir gefallen!", 0, ""]], "LG Marie"]], CM=[["Der Kurs von", "war nicht besonders gut.", "M", "Marie: «leider nicht so interessant, denn ich habe nicht viel Neues gelernt» → cursul ei nu a fost deosebit de bun."], ["", "übt auch zu Hause.", "C", "Clara: «Ich habe mir gleich eine CD gekauft und höre sie zu Hause. Manchmal tanze ich einfach mit …» → exersează și acasă."], ["", "macht bald noch einen Kurs.", "C", "Clara: «Im Herbst will ich unbedingt weitermachen» → face în curând un nou curs."], ["", "hat nette Leute kennengelernt.", "M", "Marie: «wir Teilnehmer haben uns alle gut verstanden … Wir wollen uns mal in München treffen» → a cunoscut oameni simpatici."], ["", "war nicht zufrieden mit der Lehrerin.", "M", "Marie: «beim Malen hat sie uns dann kaum geholfen» → nemulțumită de profesoară."], ["", "fühlt sich nach dem Kurs besser.", "C", "Clara: «Ich fühle mich schon viel fitter!» → se simte mai bine."]], FS=[["Anke hat eine Prüfung gemacht. Jetzt darf sie selbst mit dem Auto fahren, denn sie hat den …", "Führerschein", null], ["Verwandte oder Freunde hängen Babykleidung und einen Storch an das Haus. Sie freuen sich über die …", "Geburt von einem Kind", "Babykleidung + barza (Storch) → se bucură de <b>nașterea unui copil</b>. «die» → feminin (die Geburt)."], ["Herr Schwob arbeitet schon 25 Jahre in der Firma, er bekommt ein Geschenk vom Chef und feiert mit den Kollegen das …", "Jubiläum", "25 de ani în aceeași firmă + cadou de la șef → <b>aniversare de serviciu (Jubiläum)</b>. «das» → neutru."], ["Zwei Erwachsene wollen das Leben gemeinsam verbringen, sie sagen „ja“ und tragen einen Ring. Es ist ihre …", "Hochzeit", "Doi adulți spun «da» și poartă inele → <b>nuntă (Hochzeit)</b>. «ihre» → feminin."], ["Alle Schüler tragen schöne Kleidung, sie bekommen das Abiturzeugnis und feiern den …", "Schulabschluss", "Diploma de bacalaureat (Abiturzeugnis) → <b>absolvirea școlii (Schulabschluss)</b>. «den» → masculin Akkusativ."], ["Thomas liebt Sport, er läuft jeden Tag. Heute hat er bei einem Lauf gewonnen. Er ist glücklich über diesen …", "ersten Platz", "A câștigat o alergare → <b>locul întâi («ersten Platz»)</b>. «diesen» → masculin Akkusativ, de aceea «ersten» (cu -en)."], ["Die Zeit im Kindergarten ist vorbei. Lukas geht jetzt in die Grundschule. Er bekommt eine Schultüte. Für ihn ist es …", "der erste Schultag", "Trece de la grădiniță la școala primară și primește Schultüte → <b>prima zi de școală (der erste Schultag)</b>."], ["Heute hat Großmutter viele Gäste. Verwandte und Freunde bringen Blumen und Geschenke. Es ist ihr …", "80. Geburtstag", "Bunica are mulți oaspeți, flori și cadouri → <b>a 80-a aniversare (80. Geburtstag)</b>. «ihr» → masculin (der Geburtstag)."]], CHIPS=["Geburt von einem Kind", "Jubiläum", "Hochzeit", "Schulabschluss", "ersten Platz", "der erste Schultag", "80. Geburtstag"], ORD2=[3, 5, 0, 6, 2, 4, 1], FORM=[["Geburtsdatum", [11, 3, 1990], "11.03.1990", "(1)", "Din <b>Studentenausweis</b>: «geb. 11.03.1990»."], ["PLZ", [16121], "16121", "(2)", "Din <b>cartea de vizită</b>: «16121 Genua» → codul poștal e 16121."], ["Studienfach", null, "Physik", "(3)", "Din text: «Sofia studiert seit zwei Jahren in Stuttgart <b>Physik</b>»."]], RF=[["Michael besucht jetzt eine Schule in England.", 1, "Textul: «Seine Schule ist eine Privatschule in England» și «Vor einem Jahr ist Michael mit seinem Vater nach Manchester gezogen» → merge acum la școală în Anglia."], ["In der Schule hat Michael ein Einzelzimmer.", 0, "Textul: «ein kleines Zimmer zusammen mit einem Mitschüler» → împarte camera cu un coleg, deci <b>nu</b> are cameră single."], ["Die Mitschüler lernen von Michael Deutsch.", 0, "Textul spune doar că Michael poate folosi <b>informații în germană</b> la proiecte, ceea ce e bun pentru colegi și echipă. Nu spune că ei învață germana."], ["Früher waren 25 Schüler in Michaels Klasse.", 1, "Textul: «In seiner Klasse sind nur 12 Schüler, nicht 25 wie zuletzt in Hamburg» → în Hamburg erau 25."], ["Michael ist froh, dass er diese Schule besuchen kann.", 1, "Textul: «fühle ich mich hier wirklich gut» și «Aber Michael weiß auch, dass er Glück hat» → e bucuros (titlul: «Glück gehabt»)."]], TEXT=["Michael Landhort ist 18 Jahre alt und geht gern in die Schule. „Ich weiß, es ist uncool, wenn man das sagt, aber es ist so. Und zum ersten Mal nach 10 Jahren Schule in Hamburg fühle ich mich hier wirklich gut.“", "Seine Schule ist eine Privatschule in England, er wohnt auch in der Schule. Vor einem Jahr ist Michael mit seinem Vater nach Manchester gezogen. Am Anfang hat er alles schrecklich gefunden: ein kleines Zimmer zusammen mit einem Mitschüler, die Dusche und das WC auf dem Gang, kein eigenes Bad wie in Hamburg. Englisch ist inzwischen die zweite Sprache von Michael Landhort geworden. „Ich träume in der Nacht auf Englisch, und ich habe keine Nachteile mehr gegenüber anderen Schülern.“ Und wenn die Schüler Projekte machen, dann kann Michael auch deutsche Informationen verwenden. Das ist gut für seine Mitschüler und sein Team.", "In seiner Klasse sind nur 12 Schüler, nicht 25 wie zuletzt in Hamburg. „Ich muss hier viel für die Schule arbeiten“, sagt er, „aber die Lehrer sind auch wie Kollegen. Wenn ich bei den Prüfungen gute Ergebnisse bekomme, dann ist das auch ein Erfolg für die Lehrer. Das war neu für mich.“ Aber Michael weiß auch, dass er Glück hat. „Ich kann diese Schule nur besuchen, weil mein Vater viel Geld hat. Dieses Glück haben nicht viele.“"];
+var scorm=(function(){var api=null,active=false;
+ function find(w){var n=0;while(w&&n<10){try{if(w.API)return w.API;}catch(e){}if(w.parent&&w.parent!==w){w=w.parent;n++;}else break;}return null;}
+ function init(){api=find(window);if(!api){try{if(window.opener)api=find(window.opener);}catch(e){}}
+  if(api){try{active=String(api.LMSInitialize(""))==="true";if(active){var st=api.LMSGetValue("cmi.core.lesson_status");if(st==="not attempted"||st==="")api.LMSSetValue("cmi.core.lesson_status","incomplete");api.LMSCommit("");}}catch(e){active=false;}}}
+ function report(c,t){if(!active)return;var p=Math.round(c/t*100);try{api.LMSSetValue("cmi.core.score.min","0");api.LMSSetValue("cmi.core.score.max","100");api.LMSSetValue("cmi.core.score.raw",String(p));api.LMSSetValue("cmi.core.lesson_status",p>=PASS_PERCENT?"passed":"failed");api.LMSCommit("");}catch(e){}}
+ function finish(){if(!active)return;try{api.LMSFinish("");}catch(e){}active=false;}
+ return{init:init,report:report,finish:finish};})();
+
+
+
+
+
+
+
+
+
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function normS(s){return String(s).toLowerCase().replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss").replace(/[^a-z0-9 ]/g," ").replace(/\s+/g," ").trim();}
+function nums(s){return (String(s).match(/\d+/g)||[]).map(Number);}
+function ex(ok,txt){return '<div class="expl'+(ok?' ok':'')+'"><b class="t">'+(ok?'Corect':'Greșit')+'</b>'+txt+'</div>';}
+// key segments
+var SEG=[];MAILS.forEach(function(m,mi){m[1].forEach(function(s,si){SEG.push({m:mi,s:si,t:s[0],k:s[1],e:s[2]});});});
+var KEYN=SEG.filter(function(g){return g.k===1||g.k===2;}).length;
+var EX=[{res:null,total:KEYN+CM.length},{res:null,total:FS.length-1},{res:null,total:FORM.length+2},{res:null,total:RF.length}];
+var marks=SEG.map(function(){return 0;}),mode=1,cm=CM.map(function(){return "";}),res0=false;
+function render0(){var id=0;var h='<div class="part">Teil b – Was war bei den Kursen positiv, was negativ? Markieren Sie in zwei Farben.</div><div class="mode"><button type="button" class="mb p'+(mode===1?' on':'')+'" data-m="1"'+(res0?' disabled':'')+'>Pozitiv (verde)</button><button type="button" class="mb n'+(mode===2?' on':'')+'" data-m="2"'+(res0?' disabled':'')+'>Negativ (roșu)</button></div>';
+ MAILS.forEach(function(m,mi){h+='<div class="mail"><div class="tb"><i style="background:#c0392b"></i><i style="background:#e0a82e"></i><i style="background:#3aa05a"></i></div><div class="bd">'+esc(m[0])+'<br>';
+  m[1].forEach(function(s,si){var g=id++,c=marks[g]===1?" p":marks[g]===2?" n":"";if(res0){var k=SEG[g].k,mk=marks[g];if(k===1||k===2){c+=(mk===k)?" okm":(" miss"+(k===1?"p":"n"));}else if(k===0&&mk)c+=" badm";}
+   h+='<span class="sg'+c+'" data-g="'+g+'">'+esc(s[0])+'</span> ';});
+  h+='<br>'+m[2]+'</div></div>';});
+ h+='<div class="part">Teil c – Zu wem passen diese Aussagen? Notieren Sie C für Clara oder M für Marie.</div>'+CM.map(function(c,i){return '<div class="item" data-i="'+i+'"><div class="line"><span class="n">'+(i+1)+'.</span>'+esc(c[0])+' <button type="button" class="cw" data-v="C">C</button><button type="button" class="cw" data-v="M">M</button> '+esc(c[1])+'</div><div class="fb"></div></div>';}).join("")+'<div id="fb0"></div>';
+ $("c0").innerHTML=h;
+ document.querySelectorAll("#c0 .item").forEach(function(it){var i=+it.dataset.i;it.querySelectorAll(".cw").forEach(function(b){b.classList.toggle("on",cm[i]===b.dataset.v);});});}
+$("c0").addEventListener("click",function(e){if(EX[0].res!==null)return;var m=e.target.closest(".mb");if(m){mode=+m.dataset.m;document.querySelectorAll("#c0 .mb").forEach(function(b){b.classList.toggle("on",+b.dataset.m===mode);});return;}
+ var s=e.target.closest(".sg");if(s){var g=+s.dataset.g;marks[g]=(marks[g]===mode)?0:mode;s.classList.remove("p","n");if(marks[g]===1)s.classList.add("p");if(marks[g]===2)s.classList.add("n");upd(0);return;}
+ var b=e.target.closest(".cw");if(b){var it=b.closest(".item"),i=+it.dataset.i;cm[i]=b.dataset.v;it.querySelectorAll(".cw").forEach(function(x){x.classList.toggle("on",x.dataset.v===cm[i]);});upd(0);}});
+// Ex1
+$("c1").innerHTML='<div class="exm"><b>1.</b> '+esc(FS[0][0])+' <b>'+esc(FS[0][1])+'</b></div>'+FS.slice(1).map(function(f,i){return '<div class="cl"><div class="cline"><b>'+(i+2)+'.</b> '+esc(f[0])+' <span class="slot" data-s="'+i+'"></span></div><div class="fb"></div></div>';}).join("");
+// Ex2
+$("c2").innerHTML='<div class="src"><div class="card"><b>Sofia Sertorio</b><br>Via Dante 32<br>16121 Genua<br>sofsof@email.it<br>Tel: 0039-010-545352</div><div class="card"><b>Studentenausweis</b> Nr. 3317450<br>Sofia Sertorio<br>geb. 11.03.1990<br>Universität Stuttgart</div><div class="card">Ihre Freundin Sofia Sertorio möchte ab dem Wintersemester ein Jahr in Leipzig studieren. Sie sucht noch ein Zimmer und meldet sich in einem Studentenwohnheim an. Schreiben Sie die fünf fehlenden Informationen über Sofia in das Formular.<br><br>Sofia studiert seit zwei Jahren in Stuttgart Physik und ist im Sommer zu Hause in Italien. Ab September möchte sie in Leipzig studieren und allein in einem Zimmer im Wohnheim wohnen. Die Lage ist ihr egal. Sie kann dafür 250,– € ausgeben.</div></div>'+
+'<div class="form"><h4>Bach-Studentenwohnheim Leipzig</h4><div class="fr"><b>Vorname:</b><span class="v">Sofia</span></div><div class="fr"><b>Nachname:</b><span class="v">Sertorio</span></div>'+
+'<div class="fr"><b>Geburtsdatum:</b><input class="ti" data-f="0" type="text" autocomplete="off" placeholder="TT.MM.JJJJ"> (1)</div><div class="fr"><b>Geschlecht:</b><span class="v">☒ weiblich ☐ männlich</span></div><div class="fr"><b>Familienstand:</b><span class="v">☒ ledig ☐ verheiratet</span></div><div class="fr"><b>Straße:</b><span class="v">Via Dante 32</span></div>'+
+'<div class="fr"><b>PLZ, Ort:</b><input class="ti" data-f="1" type="text" autocomplete="off" style="width:6em"> <span class="v">Genua</span> (2)</div><div class="fr"><b>Telefonnummer:</b><span class="v">00-39-010-545352</span></div><div class="fr"><b>Studienbeginn:</b><span class="v">Wintersemester 2013</span></div>'+
+'<div class="fr"><b>Studienfach:</b><input class="ti" data-f="2" type="text" autocomplete="off"> (3)</div><div class="fr"><b>Wohntyp:</b><span id="wt"><button type="button" class="cw" data-v="egal">egal</button><button type="button" class="cw" data-v="WG">WG</button><button type="button" class="cw" data-v="Einzelzimmer">Einzelzimmer</button><button type="button" class="cw" data-v="Doppelzimmer">Doppelzimmer</button></span> (4)</div>'+
+'<div class="fr"><b>Miethöhe:</b><span class="v">maximal 250,– Euro</span></div><div class="fr"><b>Mietbeginn:</b><input class="ti" data-f="4" type="text" autocomplete="off"> (5)</div><div class="fr"><b>Lage:</b><span class="v">☐ zentral ☐ Stadtgebiet ☒ egal</span></div></div><div id="fb2"></div>';
+var wt="";
+$("wt").addEventListener("click",function(e){var b=e.target.closest(".cw");if(!b||b.disabled||EX[2].res!==null)return;wt=b.dataset.v;this.querySelectorAll(".cw").forEach(function(x){x.classList.toggle("on",x.dataset.v===wt);});upd(2);});
+// Ex3
+$("c3").innerHTML='<div class="txt"><h3>Glück gehabt</h3>'+TEXT.map(function(p){return '<p>'+esc(p)+'</p>';}).join("")+'</div><div class="exm"><b>0.</b> Michael Landhort war in Hamburg gern in der Schule. → <b>Falsch</b></div>'+RF.map(function(r,i){return '<div class="item" data-i="'+i+'"><div class="line"><span class="n">'+(i+1)+'.</span>'+esc(r[0])+'</div><button type="button" class="cw" data-j="1">Richtig</button><button type="button" class="cw" data-j="0">Falsch</button><div class="fb"></div></div>';}).join("");
+var sel3=RF.map(function(){return -1;});
+$("c3").addEventListener("click",function(e){var b=e.target.closest(".cw");if(!b||b.disabled||EX[3].res!==null)return;var it=b.closest(".item"),i=+it.dataset.i;sel3[i]=+b.dataset.j;it.querySelectorAll(".cw").forEach(function(x){x.classList.toggle("on",+x.dataset.j===sel3[i]);});upd(3);});
+/* ---------- generic matcher ---------- */
+var CUR=null,MS=[];
+function Matcher(cfg){
+ var root=$(cfg.root),bank=$(cfg.bank),M={chipSlot:{},sel:null,done:false,cfg:cfg,root:root};
+ function occ(s){for(var c in M.chipSlot)if(M.chipSlot[c]===s)return +c;return null;}
+ function chipH(c,cls){return '<span class="chip '+(cls||"")+'" draggable="'+(M.done?"false":"true")+'" data-c="'+c+'">'+esc(cfg.label(c))+'</span>';}
+ M.render=function(){var b="";
+  cfg.order.forEach(function(c){if(M.chipSlot[c]===undefined)b+=chipH(c,M.sel===c?"sel":"");});
+  bank.innerHTML=b||'<span class="hint">Toate au fost plasate.</span>';
+  root.querySelectorAll(".slot").forEach(function(sp){var s=+sp.dataset.s,c=occ(s);
+   if(c===null){sp.className="slot";sp.innerHTML="&nbsp;&nbsp;&nbsp;&nbsp;";return;}
+   if(M.done){var ok=cfg.isOk?cfg.isOk(s,c):cfg.correct[s]===c;sp.className="slot "+(ok?"ok":"no");sp.innerHTML=chipH(c,ok?"ok":"no")+(ok?"":'<span class="fixs">→ '+esc(cfg.fix?cfg.fix(s,c):cfg.label(cfg.correct[s]))+'</span>');}
+   else{sp.className="slot";sp.innerHTML=chipH(c,M.sel===c?"sel":"");}});
+  cfg.onChange();};
+ M.put=function(c,s){if(M.done)return;if(s!==null){var o=occ(s);if(o!==null)delete M.chipSlot[o];}
+  if(s===null)delete M.chipSlot[c];else M.chipSlot[c]=s;M.sel=null;M.render();};
+ M.count=function(){return Object.keys(M.chipSlot).length;};
+ M.check=function(){var c=0;cfg.correct.forEach(function(cc,s){var o=occ(s);if(o!==null&&(cfg.isOk?cfg.isOk(s,o):o===cc))c++;});M.done=true;M.sel=null;M.render();return c;};
+ M.reset=function(){M.chipSlot={};M.sel=null;M.done=false;M.render();};
+ root.parentNode.addEventListener("click",function(e){if(M.done||e.target.closest("audio")||!root.parentNode.contains(e.target))return;
+  var ch=e.target.closest(".chip"),sl=e.target.closest(".slot"),bk=e.target.closest(".mbank");
+  if(!root.contains(e.target)&&!bank.contains(e.target))return;
+  if(ch&&!sl){var c=+ch.dataset.c;M.sel=M.sel===c?null:c;M.render();return;}
+  if(ch&&sl){var c2=+ch.dataset.c;if(M.sel!==null&&M.sel!==c2)M.put(M.sel,+sl.dataset.s);else M.put(c2,null);return;}
+  if(sl&&M.sel!==null){M.put(M.sel,+sl.dataset.s);return;}
+  if(bk&&M.sel!==null&&M.chipSlot[M.sel]!==undefined)M.put(M.sel,null);});
+ MS.push(M);return M;}
+/* drag & drop (delegated) */
+function mOf(el){for(var i=0;i<MS.length;i++){if(MS[i].root.contains(el)||$(MS[i].cfg.bank).contains(el))return MS[i];}return null;}
+document.addEventListener("dragstart",function(e){var ch=e.target.closest&&e.target.closest(".chip");if(!ch)return;var m=mOf(ch);if(!m||m.done)return;CUR={m:m,c:+ch.dataset.c};try{e.dataTransfer.setData("text/plain","x");}catch(x){}});
+function zoneOf(e){if(!CUR)return null;var z=e.target.closest&&e.target.closest(".slot,.mbank");if(!z)return null;return mOf(z)===CUR.m?z:null;}
+document.addEventListener("dragover",function(e){var z=zoneOf(e);if(z){e.preventDefault();z.classList.add("over");}});
+document.addEventListener("dragleave",function(e){var z=zoneOf(e);if(z)z.classList.remove("over");});
+document.addEventListener("drop",function(e){var z=zoneOf(e);document.querySelectorAll(".over").forEach(function(x){x.classList.remove("over");});
+ if(!z)return;e.preventDefault();var d=CUR;CUR=null;d.m.put(d.c,z.classList.contains("slot")?+z.dataset.s:null);});
+document.addEventListener("dragend",function(){CUR=null;document.querySelectorAll(".over").forEach(function(x){x.classList.remove("over");});});
+
+
+var M1=Matcher({root:"c1",bank:"bank1",order:ORD2,label:function(c){return CHIPS[c];},correct:[0,1,2,3,4,5,6],onChange:function(){upd(1);}});
+function bar(k){return document.querySelector('.bar[data-bar="'+k+'"]');}
+function answered(k){if(k===0)return marks.some(function(x){return x>0;})?cm.filter(function(x){return x!=="";}).length:0;
+ if(k===1)return M1.count();
+ if(k===2){var n=0;document.querySelectorAll("#c2 .ti").forEach(function(x){if(x.value.trim()!=="")n++;});if(wt)n++;return n;}
+ return sel3.filter(function(x){return x>-1;}).length;}
+function need(k){return k===0?CM.length:k===1?FS.length-1:k===2?4:RF.length;}
+function upd(k){if(EX[k].res!==null)return;var b=bar(k),n=answered(k),t=need(k);b.querySelector(".chk").disabled=n<t;b.querySelector(".msg").textContent=n<t?(k===0&&n===0?"Marchează propoziții (Teil b) și răspunde la Teil c.":"Ai completat "+n+" din "+t+"."):"Gata! Apasă „Verifică răspunsurile”.";}
+function updTotal(){var c=0,t=0,any=false;EX.forEach(function(e,k){document.querySelector('.tab[data-ex="'+k+'"]').classList.toggle("done",e.res!==null);if(e.res!==null){c+=e.res;t+=e.total;any=true;}});$("total").textContent=any?"Gesamt: "+c+" / "+t:"";if(any)scorm.report(c,t);}
+$("c2").addEventListener("input",function(){upd(2);});
+function check(k){var c=0;
+ if(k===0){res0=true;var good=0,bad=0,h='';SEG.forEach(function(g,i){var mk=marks[i];if(g.k===1||g.k===2){var ok=mk===g.k;if(ok)good++;h+=ex(ok,'<b>«'+esc(g.t)+'»</b> → '+(g.k===1?'<b>pozitiv</b>':'<b>negativ</b>')+(ok?'':(mk?' (tu ai marcat '+(mk===1?'pozitiv':'negativ')+')':' (nemarcat)'))+'<br>'+g.e);}else if(g.k===0&&mk){bad++;h+=ex(false,'<b>«'+esc(g.t)+'»</b> → propoziție <b>neutră</b> (descrie ce s-a întâmplat, nu o evaluare pozitivă/negativă) – nu trebuia marcată.');}});
+  c=Math.max(0,good-bad);
+  document.querySelectorAll("#c0 .item").forEach(function(it){var i=+it.dataset.i,ok=cm[i]===CM[i][2];if(ok)c++;it.querySelectorAll(".cw").forEach(function(b){var v=b.dataset.v;b.disabled=true;b.classList.remove("on");if(v===cm[i]&&ok)b.classList.add("right");else if(v===cm[i])b.classList.add("wrong");else if(v===CM[i][2])b.classList.add("missed");});it.querySelector(".fb").innerHTML=ex(ok,(ok?'':'Corect: <b>'+CM[i][2]+'</b>. ')+CM[i][3]);});
+  var items=$("c0").innerHTML;$("c0").querySelectorAll(".sg").forEach(function(s){var g=+s.dataset.g,k=SEG[g].k,mk=marks[g];if(k===1||k===2)s.classList.add(mk===k?"okm":("miss"+(k===1?"p":"n")));else if(k===0&&mk)s.classList.add("badm");});
+  document.querySelectorAll("#c0 .mb").forEach(function(b){b.disabled=true;});$("fb0").innerHTML='<div class="part">Explicații Teil b (verde = pozitiv, roșu = negativ)</div>'+h+'<p style="margin-top:8px">Scor Teil b: <b>'+Math.max(0,good-bad)+' / '+KEYN+'</b> (corecte '+good+(bad?', minus '+bad+' propoziții neutre marcate':'')+').</p>';}
+ else if(k===1){c=M1.check();document.querySelectorAll("#c1 .cl").forEach(function(row,i){var ok=row.querySelector(".slot").classList.contains("ok");row.querySelector(".fb").innerHTML=ex(ok,(ok?'':'Corect: <b>'+esc(FS[i+1][1])+'</b>. ')+FS[i+1][2]);});}
+ else if(k===2){var h="";FORM.forEach(function(f,i){var x=document.querySelector('#c2 .ti[data-f="'+i+'"]'),ok=f[1]?(JSON.stringify(nums(x.value))===JSON.stringify(f[1])):normS(x.value)===normS(f[2]);if(ok)c++;x.disabled=true;x.classList.add(ok?"ok":"no");if(!ok)x.insertAdjacentHTML("afterend",' <span class="tag">→ '+esc(f[2])+'</span>');h+=ex(ok,'<b>'+f[3]+' '+f[0]+'</b>: '+f[4]);});
+  var ok4=wt==="Einzelzimmer";if(ok4)c++;document.querySelectorAll("#wt .cw").forEach(function(b){var v=b.dataset.v;b.disabled=true;b.classList.remove("on");if(v===wt&&ok4)b.classList.add("right");else if(v===wt)b.classList.add("wrong");else if(v==="Einzelzimmer")b.classList.add("missed");});
+  h+=ex(ok4,'<b>(4) Wohntyp</b>: Sofia vrea să locuiască «allein in einem Zimmer» → <b>Einzelzimmer</b> (cameră single). «WG» = apartament în comun, «Doppelzimmer» = cameră dublă.');
+  var x5=document.querySelector('#c2 .ti[data-f="4"]'),ok5=/sept/.test(normS(x5.value));if(ok5)c++;x5.disabled=true;x5.classList.add(ok5?"ok":"no");if(!ok5)x5.insertAdjacentHTML("afterend",' <span class="tag">→ September</span>');
+  h+=ex(ok5,'<b>(5) Mietbeginn</b>: «Ab <b>September</b> möchte sie in Leipzig studieren» → chiria începe în septembrie.');$("fb2").innerHTML=h;}
+ else{document.querySelectorAll("#c3 .item").forEach(function(it){var i=+it.dataset.i,key=RF[i][1],ok=sel3[i]===key;if(ok)c++;it.querySelectorAll(".cw").forEach(function(b){var j=+b.dataset.j;b.disabled=true;b.classList.remove("on");if(j===sel3[i]&&ok)b.classList.add("right");else if(j===sel3[i])b.classList.add("wrong");else if(j===key)b.classList.add("missed");});it.querySelector(".fb").innerHTML=ex(ok,(ok?'':'Corect: <b>'+(key?'Richtig':'Falsch')+'</b>. ')+RF[i][2]);});}
+ EX[k].res=c;var t=EX[k].total,pc=Math.round(c/t*100),b=bar(k),s=b.querySelector(".score");
+ s.textContent="Rezultat: "+c+" / "+t+" ("+pc+"%)";s.className="score "+(pc>=80?"good":pc>=PASS_PERCENT?"mid":"low");
+ b.querySelector(".msg").classList.add("hidden");b.querySelector(".chk").classList.add("hidden");b.querySelector(".rty").classList.remove("hidden");updTotal();}
+function retry(k){EX[k].res=null;
+ if(k===0){res0=false;marks=SEG.map(function(){return 0;});cm=CM.map(function(){return "";});render0();}
+ else if(k===1){M1.reset();document.querySelectorAll("#c1 .fb").forEach(function(f){f.innerHTML="";});}
+ else if(k===2){document.querySelectorAll("#c2 .ti").forEach(function(x){x.disabled=false;x.className="ti";x.value="";});document.querySelectorAll("#c2 .tag").forEach(function(x){x.parentNode.removeChild(x);});wt="";document.querySelectorAll("#wt .cw").forEach(function(b){b.disabled=false;b.className="cw";});$("fb2").innerHTML="";}
+ else{sel3=RF.map(function(){return -1;});document.querySelectorAll("#c3 .item").forEach(function(it){it.querySelectorAll(".cw").forEach(function(b){b.disabled=false;b.className="cw";});it.querySelector(".fb").innerHTML="";});}
+ var b=bar(k);b.querySelector(".score").className="score hidden";b.querySelector(".msg").classList.remove("hidden");b.querySelector(".chk").classList.remove("hidden");b.querySelector(".rty").classList.add("hidden");upd(k);updTotal();}
+EX.forEach(function(_,k){var b=bar(k);b.querySelector(".chk").addEventListener("click",function(){check(k);});b.querySelector(".rty").addEventListener("click",function(){retry(k);});});
+document.querySelectorAll(".tab").forEach(function(t){t.addEventListener("click",function(){document.querySelectorAll(".tab").forEach(function(x){x.classList.toggle("on",x===t);});document.querySelectorAll("section.ex").forEach(function(s,i){s.classList.toggle("on",i===+t.dataset.ex);});window.scrollTo(0,0);});});
+render0();M1.render();EX.forEach(function(_,k){upd(k);});
+scorm.init();window.addEventListener("pagehide",scorm.finish);
+</script></body></html>
