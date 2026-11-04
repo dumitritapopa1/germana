@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Traumhaus und WG</title>
+<style>
+
+:root{--bg:#f4f5f7;--card:#fff;--ink:#1f2430;--muted:#5d6472;--line:#e3e6eb;--accent:#3b5bdb;--accent-soft:#e8edff;--ok:#1f8a5b;--ok-soft:#e6f5ee;--bad:#c92a2a;--bad-soft:#fdecec}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;font-size:16px;line-height:1.55;display:flex;flex-direction:column}
+header{padding:10px 24px;border-bottom:1px solid var(--line);background:var(--card);display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+header h1{margin:0;font-size:20px}
+.tabs{display:flex;gap:6px}
+.tab{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:7px 16px;font-size:15px;font-weight:700;cursor:pointer;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.tab .dn{display:none;margin-left:4px}.tab.done .dn{display:inline}
+.total{margin-left:auto;font-size:14px;font-weight:700;color:var(--muted)}
+section.ex{display:none;flex:1;min-height:0;flex-direction:column}
+section.ex.on{display:flex}
+.wrap{flex:1;padding:16px 24px;min-height:0;display:flex;gap:16px;justify-content:center}
+.pane{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow-y:auto;min-height:0}
+.wrap.split .pane{flex:1}
+.wrap.one .pane{width:100%;max-width:780px}
+.pi{padding:20px 26px}
+.instr{margin:0 0 14px;padding:12px 16px;background:var(--accent-soft);border-left:4px solid var(--accent);border-radius:6px;font-weight:600}
+.instr small{display:block;font-weight:400;color:var(--muted);margin-top:2px}
+.txt h2{margin:0 0 12px;font-size:20px}
+.txt p{margin:0 0 14px;font-size:17px;line-height:1.7}
+.q{padding:16px 0;border-top:1px solid var(--line)}
+.q:first-of-type{border-top:none}
+.q h3{margin:0 0 10px;font-size:17px}
+.opt{display:flex;align-items:center;gap:12px;padding:9px 13px;border:1.5px solid var(--line);border-radius:10px;margin-bottom:7px;cursor:pointer;font-size:16px}
+.opt:hover{border-color:#aeb6c8}
+.opt{position:relative}.opt input{position:absolute;opacity:0;pointer-events:none}
+.dot{flex:0 0 22px;height:22px;border-radius:50%;border:2px solid #b7bfce;background:#fff;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:800}
+.opt.on{border-color:var(--accent);background:var(--accent-soft)}
+.opt.on .dot{border-color:var(--accent);background:var(--accent);box-shadow:inset 0 0 0 4px #fff,inset 0 0 0 12px var(--accent)}
+.opt.locked{cursor:default}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}.opt.right .dot{border-color:var(--ok);background:var(--ok);box-shadow:none}.opt.right .dot::after{content:"✓"}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}.opt.wrong .dot{border-color:var(--bad);background:var(--bad);box-shadow:none}.opt.wrong .dot::after{content:"✕"}
+.opt.missed{border-color:var(--ok);border-style:dashed}
+.opt .tag{margin-left:auto;font-size:13px;font-weight:700;white-space:nowrap}
+.opt.right .tag,.opt.missed .tag{color:var(--ok)}.opt.wrong .tag{color:var(--bad)}
+.gaps p{font-size:18px;line-height:2.3;margin:0 0 14px}
+.g{display:inline-flex;align-items:baseline;white-space:nowrap}
+.g .pre{font-weight:600}
+.g input{font:inherit;font-size:17px;border:none;border-bottom:2px solid #9aa3b5;background:var(--accent-soft);padding:0 3px;margin:0 1px;border-radius:3px 3px 0 0;color:var(--ink);text-align:left}
+.g input:focus{outline:none;border-bottom-color:var(--accent);background:#dbe3ff}
+.g sup{font-size:11px;color:var(--muted);margin-left:1px}
+.g.ok input{background:var(--ok-soft);border-bottom-color:var(--ok);color:var(--ok);font-weight:600}
+.g.no input{background:var(--bad-soft);border-bottom-color:var(--bad);color:var(--bad);text-decoration:line-through}
+.fix{color:var(--ok);font-weight:700;font-size:15px;margin-left:4px}
+audio{width:100%;height:40px}
+.audio{position:sticky;top:0;background:var(--card);padding-bottom:10px;z-index:2}
+.s{padding:14px 0;border-top:1px solid var(--line)}
+.s:first-of-type{border-top:none}
+.s .st{font-size:17px;margin-bottom:8px}
+.rf{display:flex;gap:8px}
+.rf button{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:8px 20px;font-size:15px;font-weight:700;cursor:pointer;color:var(--ink)}
+.rf button.on{border-color:var(--accent);background:var(--accent-soft)}
+.rf button.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+.rf button.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.rf button.missed{border-color:var(--ok);border-style:dashed;color:var(--ok)}
+.fb{font-size:14px;font-weight:700;margin-top:6px}.fb.ok{color:var(--ok)}.fb.no{color:var(--bad)}
+.bar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:12px 24px;background:var(--card);border-top:1px solid var(--line)}
+.btn{border:none;border-radius:8px;padding:10px 22px;font-size:15px;font-weight:700;cursor:pointer}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:disabled{opacity:.45;cursor:not-allowed}
+.btn-ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line)}
+.msg{font-size:15px;color:var(--muted)}
+.score{font-size:16px;font-weight:700}.score.good{color:var(--ok)}.score.mid{color:#b06a00}.score.low{color:var(--bad)}
+.hidden{display:none!important}
+@media (max-width:820px){
+ body{height:auto;min-height:100%}
+ header{padding:10px 14px}
+ .wrap{padding:10px;flex-direction:column}
+ .pane{overflow:visible}
+ .pi{padding:16px}
+ .total{margin-left:0;width:100%}
+ .bar{position:sticky;bottom:0;padding:10px 14px;z-index:5}
+ .audio{top:0}
+}
+
+.sent{width:100%;font:inherit;font-size:17px;border:1.5px solid var(--line);border-radius:8px;padding:9px 12px;background:var(--accent-soft);color:var(--ink)}
+.sent:focus{outline:none;border-color:var(--accent);background:#dbe3ff}
+.sent.ok{background:var(--ok-soft);border-color:var(--ok);color:var(--ok);font-weight:600}
+.sent.no{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.cue{font-weight:600}
+.bank{display:flex;flex-wrap:wrap;gap:8px;padding:12px;background:#eef1f6;border-radius:10px;margin-bottom:18px;min-height:56px}
+.chip{border:1.5px solid #cfd5e1;background:#fff;border-radius:8px;padding:6px 14px;font-size:16px;cursor:grab;user-select:none;display:inline-block}
+.chip.sel{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 2px rgba(59,91,219,.25)}
+.slot{display:inline-block;min-width:8ch;min-height:36px;vertical-align:middle;border:1.5px dashed #9aa3b5;border-radius:8px;padding:2px 4px;margin:0 3px;background:#fff;text-align:center;line-height:1.6}
+.slot.over{border-color:var(--accent);background:var(--accent-soft)}
+.slot .chip{padding:1px 10px;font-size:17px}
+.slot.ok{border-style:solid;border-color:var(--ok);background:var(--ok-soft)}
+.slot.ok .chip{color:var(--ok);border-color:var(--ok);background:transparent;font-weight:600}
+.slot.no{border-style:solid;border-color:var(--bad);background:var(--bad-soft)}
+.slot.no .chip{color:var(--bad);border-color:var(--bad);background:transparent;text-decoration:line-through}
+.bank.over{background:var(--accent-soft)}
+.img img{width:100%;height:auto;display:block;border-radius:8px}
+.sl .g{margin:0 2px}
+.sl p{margin:0 0 6px;font-size:18px;line-height:2.4}
+
+.audiorow{background:var(--card);border-bottom:1px solid var(--line);padding:8px 24px;position:sticky;top:0;z-index:6}
+.audiorow audio{max-width:900px;display:block;margin:0 auto}
+.wordlist{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}
+.wordlist span{background:#eef1f6;border-radius:8px;padding:5px 12px;font-style:italic;font-weight:600}
+.s audio{margin:4px 0 10px}
+.sg p{margin:0 0 4px;font-size:18px;line-height:2.4}
+@media (max-width:820px){.audiorow{padding:8px 12px}}
+
+.tabs{flex-wrap:wrap}
+.tab{padding:7px 12px}
+.row{display:flex;align-items:baseline;gap:8px;padding:6px 0;font-size:18px;line-height:2.2}
+.row .n{color:var(--muted);min-width:1.8em}
+.row .base{font-weight:600;min-width:6.5em}
+.row.ex{color:var(--muted)}
+.row.ex .ans{font-weight:700;color:var(--ok)}
+.hint{color:var(--muted);font-size:14px}
+.convs{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:6px}
+.conv{border:2px dashed var(--line);border-radius:12px;padding:10px;background:#fafbfc;min-height:150px}
+.conv.over,.pool.over{border-color:var(--accent);background:var(--accent-soft)}
+.conv h3{margin:0 0 6px;text-align:center;font-size:16px}
+.conv audio{height:36px;margin-bottom:8px}
+.pool{display:flex;flex-wrap:wrap;gap:8px;padding:10px;border:2px dashed var(--line);border-radius:12px;min-height:54px;margin-bottom:14px}
+.pool .chip{margin:0}
+.conv .chip{display:block;margin:0 0 7px;text-align:left}
+.chip small{display:block;font-weight:700;font-size:12px;margin-top:2px}
+.chip.ok{border-color:var(--ok);background:var(--ok-soft);color:var(--ok);cursor:default}
+.chip.no{border-color:var(--bad);background:var(--bad-soft);color:var(--bad);cursor:default}
+.aw{display:inline-flex;gap:4px;vertical-align:middle;margin:0 3px}
+.aw button{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:2px 14px;font-size:16px;font-weight:700;cursor:pointer;color:var(--ink)}
+.aw button.on{border-color:var(--accent);background:var(--accent-soft)}
+.aw button.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+.aw button.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.aw button.missed{border-color:var(--ok);border-style:dashed;color:var(--ok)}
+.forum p{margin:0 0 4px;font-size:17px;line-height:2.3}
+.forum .gap{height:10px}
+@media (max-width:820px){.convs{grid-template-columns:1fr}}
+
+.qrow{display:grid;grid-template-columns:1fr 1.15fr;gap:10px;margin-bottom:10px;align-items:stretch}
+.qbox{border:1.5px solid var(--line);border-radius:10px;padding:10px 14px;background:#fff;font-weight:600;display:flex;align-items:center}
+.aslot{border:2px dashed #b7bfce;border-radius:10px;min-height:56px;padding:4px;background:#fafbfc;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:14px;text-align:center}
+.aslot.over{border-color:var(--accent);background:var(--accent-soft)}
+.aslot .chip{display:block;width:100%;margin:0;text-align:left}
+.aslot.ok{border-style:solid;border-color:var(--ok);background:var(--ok-soft)}
+.aslot.no{border-style:solid;border-color:var(--bad);background:var(--bad-soft)}
+.aslot .chip.ok{border-color:var(--ok);background:transparent;color:var(--ok)}
+.aslot .chip.no{border-color:var(--bad);background:transparent;color:var(--bad);text-decoration:line-through}
+.aslot .fixt{display:block;color:var(--ok);font-size:13px;font-weight:700;margin-top:3px;text-decoration:none}
+.abank{display:flex;flex-direction:column;gap:8px;padding:12px;background:#eef1f6;border-radius:10px;margin-bottom:18px;min-height:56px}
+.abank .chip{margin:0;text-align:left;display:block}
+.abank.over{background:var(--accent-soft)}
+.fqitem{margin-bottom:12px;padding:10px 12px;background:#f7f8fb;border-radius:10px}
+.fqbuilt{min-height:48px;padding:6px;border:2px dashed #b7bfce;border-radius:10px;background:#fff;display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:4px 0 8px}
+.fqbuilt.ok{border-style:solid;border-color:var(--ok);background:var(--ok-soft)}
+.fqbuilt.no{border-style:solid;border-color:var(--bad);background:var(--bad-soft)}
+.fqtiles{display:flex;flex-wrap:wrap;gap:8px}
+.fqitem .chip{margin:0;cursor:pointer}
+.cmpd{font-size:19px;line-height:2.4;padding:4px 0}
+.cmpd .n{color:var(--muted);display:inline-block;min-width:1.8em}
+@media (min-width:821px){.abank{display:grid;grid-template-columns:1fr 1fr}}
+@media (max-width:820px){.qrow{grid-template-columns:1fr}}
+
+.txt .title{font-weight:700;font-size:18px;margin:0 0 6px}
+.txt p{margin:0 0 12px;font-size:17px;line-height:1.7}
+.rfs{padding:14px 0;border-top:1px solid var(--line)}
+.rfs:first-of-type{border-top:none}
+.rfs .st{font-size:17px;margin-bottom:8px}
+.rf{display:flex;gap:8px}
+.rf button{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:8px 20px;font-size:15px;font-weight:700;cursor:pointer;color:var(--ink)}
+.rf button.on{border-color:var(--accent);background:var(--accent-soft)}
+.rf button.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+.rf button.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.rf button.missed{border-color:var(--ok);border-style:dashed;color:var(--ok)}
+.corr{display:none;margin-top:10px}
+.corr.show{display:block}
+.corr label{display:block;font-size:13px;color:var(--muted);margin-bottom:4px}
+.sug{margin-top:8px;font-size:14px;color:var(--ok);font-weight:700}
+.film{padding:14px 0;border-top:1px solid var(--line)}
+.film:first-of-type{border-top:none}
+.film h3{margin:0 0 6px;font-size:17px}
+.film audio{margin-bottom:10px}
+
+.drow{padding:12px 0;border-top:1px solid var(--line)}
+.drow:first-of-type{border-top:none}
+.drow .st{font-size:17px;margin-bottom:6px}
+.dline{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dline .pre{font-weight:700;white-space:nowrap;font-size:17px}
+.dline input{flex:1;min-width:220px}
+.drow.ex{background:#f3f7f4;border-radius:10px;padding:12px 14px;margin-bottom:6px;border:1px solid var(--ok)}
+.drow.ex .ans{color:var(--ok);font-weight:700;font-size:17px}
+.tip{background:#fff8e6;border-left:4px solid #e0a100;border-radius:6px;padding:10px 14px;margin:0 0 14px;font-size:15px}
+.tip b{color:#8a5a00}
+.convs.four{grid-template-columns:1fr 1fr}
+
+.mbank{display:flex;flex-wrap:wrap;gap:8px;padding:12px;background:#eef1f6;border-radius:10px;margin-bottom:18px;min-height:56px}
+.mbank.over{background:var(--accent-soft)}
+.mbank .chip{margin:0}
+.pgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.pcell{text-align:center}
+.pcell img{width:100%;height:auto;display:block;border-radius:6px}
+.pcell .slot{display:block;margin:6px auto 0;width:76px;min-width:0;min-height:38px;font-size:18px}
+.pcell .slot .chip{padding:1px 10px;font-size:18px;font-weight:700}
+.msl .slot .chip{font-size:16px}
+.sl2 p{margin:0 0 4px;font-size:18px;line-height:2.5}
+.post{margin-bottom:14px}
+.post .nm{font-weight:700}
+.post p{margin:4px 0 0;font-size:17px;line-height:1.75}
+.post .ttl{display:inline-block;vertical-align:middle}
+.exchip{display:inline-block;border:1.5px solid var(--ok);background:var(--ok-soft);color:var(--ok);border-radius:8px;padding:2px 10px;font-size:16px;font-weight:600}
+.fixs{color:var(--ok);font-weight:700;font-size:13px;display:block}
+@media (max-width:820px){.pgrid{grid-template-columns:repeat(2,1fr)}}
+
+
+.expl{font-weight:400;margin:6px 0 0;padding:8px 12px;background:var(--bad-soft);border-left:4px solid var(--bad);border-radius:6px;font-size:15px;line-height:1.5}
+.expl.ok{background:var(--ok-soft);border-left-color:var(--ok)}
+.expl b.t{display:block;margin-bottom:2px;font-weight:700}.expl.ok b.t{color:var(--ok)}.expl:not(.ok) b.t{color:var(--bad)}
+.rb{border:2px solid #f0b6cf;background:#fdeaf3;border-radius:12px;margin:0 0 14px}.rb summary{cursor:pointer;padding:9px 14px;font-weight:700;color:#a3225d}.rb .rbx{padding:0 14px 12px;font-size:16px;line-height:1.6}
+.illu{text-align:center;margin:0 0 10px}.illu img{max-width:100%;width:340px;height:auto}
+.iv{border:1.5px solid var(--line);border-radius:12px;background:#fffef8;padding:12px 16px;margin:0 0 16px}
+.iv h3{margin:0 0 8px;font-size:18px;color:var(--accent)}
+.iv .top{display:flex;gap:16px;align-items:flex-start}.iv .top img{width:170px;height:auto;flex:none}.iv .top p{margin:0;font-size:16.5px;line-height:1.65}
+.exm{background:#e8f6fd;border-left:4px solid #29a8e0;border-radius:10px;padding:8px 14px;margin:10px 0 6px;font-size:16.5px;line-height:1.6}
+.cq{padding:10px 0;border-top:1px solid var(--line);font-size:17px;line-height:1.5}.cq .n{font-weight:700;color:var(--muted);margin-right:6px}
+.cw{display:block;width:100%;text-align:left;border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:6px 14px;font:inherit;font-size:16.5px;cursor:pointer;color:var(--ink);margin:6px 0}
+.cw:hover{border-color:#aeb6c8}.cw.on{border-color:var(--accent);background:var(--accent-soft);font-weight:700}
+.cw.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok);font-weight:700}.cw.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad);text-decoration:line-through}
+.cw.missed{border-color:var(--ok);border-style:dashed;color:var(--ok);font-weight:700}.cw:disabled{cursor:default}
+.note{border-radius:10px;padding:10px 14px;margin:0 0 14px;box-shadow:2px 3px 0 #e6e9f0;border:1.5px solid #e0dfd0}
+.note h4{margin:0 0 6px;font-size:16px;color:#555}.note .hd{font-size:16.5px;margin:0 0 6px;color:#2a4a9a;font-style:italic}
+.zr{padding:8px 0;border-top:1px dashed #cfcfc0}.zr:first-of-type{border-top:none}
+.scr{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14.5px;line-height:1.5;word-break:break-word;color:#333;margin:0 0 4px}
+.tw{display:block;width:100%;box-sizing:border-box;font:inherit;font-size:17px;padding:7px 10px;border:1.5px solid var(--line);border-radius:8px;background:#fff}
+.tw:focus{outline:none;border-color:var(--accent)}.tw.ok{border-color:var(--ok);background:var(--ok-soft)}.tw.no{border-color:var(--bad);background:var(--bad-soft)}
+.cs{font-size:17px;line-height:1.7;margin:6px 0 0}.cs b.miss{color:var(--bad);text-decoration:underline wavy}
+.story{font-size:18px;line-height:2.3}.story .exg{color:#2a4a9a;font-style:italic;text-decoration:underline}.story small{color:var(--muted)}
+.ti{font:inherit;font-size:16px;padding:3px 8px;border:1.5px solid var(--line);border-radius:6px;width:10em;max-width:100%}.ti:focus{outline:none;border-color:var(--accent)}
+.ti.ok{border-color:var(--ok);background:var(--ok-soft);color:var(--ok);font-weight:700}.ti.no{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}.tag{font-size:14px;color:var(--ok);font-weight:700}
+@media(max-width:560px){.iv .top{flex-direction:column;align-items:center}.iv .top img{width:150px}}
+
+</style></head><body>
+<header><h1>Traumhaus und WG</h1><div class="tabs"><button class="tab on" data-ex="0">Übung 1<span class="dn"> ✓</span></button><button class="tab" data-ex="1">Übung 2<span class="dn"> ✓</span></button><button class="tab" data-ex="2">Übung 3<span class="dn"> ✓</span></button><button class="tab" data-ex="3">Übung 4<span class="dn"> ✓</span></button></div><span class="total" id="total"></span></header>
+<section class="ex on" id="ex0">
+ <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
+  <p class="instr">Übung 1: Wie stellen sich diese Bewohner eines Mietshauses ihr Traumhaus oder ihre Traumwohnung vor?<small>Citește interviurile și alege răspunsul corect la fiecare întrebare. La primul interviu, întrebarea a) e deja rezolvată ca exemplu.</small></p>
+  <div id="c0"></div>
+ </div></div></div>
+ <div class="bar" data-bar="0">
+  <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
+  <span class="msg"></span><span class="score hidden"></span>
+ </div>
+</section>
+<section class="ex" id="ex1">
+ <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
+  <p class="instr">Übung 2: Chaos in der WG – Bringen Sie die Zettel in Ordnung (1)<small>Veronika, Peter și Barbara locuiesc împreună. Peretele din bucătărie e panoul lor de mesaje. Textele sunt scrise <b>fără spații</b>: separă cuvintele și scrie corect fiecare propoziție. Prima propoziție e dată ca exemplu. Punctuația și majusculele nu contează la punctaj, dar scrie-le.</small></p>
+  <div class="illu"><img src="kueche.png" alt="Bucătăria din WG cu bilețele pe perete"></div><details class="rb"><summary>Ajutor</summary><div class="rbx">Caută cuvinte pe care le cunoști. Substantivele se scriu cu <b>majusculă</b>. După . ! ? începe o propoziție nouă. Fiecare rând de mai jos este o propoziție.</div></details><div id="c1"></div>
+ </div></div></div>
+ <div class="bar" data-bar="1">
+  <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
+  <span class="msg"></span><span class="score hidden"></span>
+ </div>
+</section>
+<section class="ex" id="ex2">
+ <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
+  <p class="instr">Übung 3: Chaos in der WG – Bringen Sie die Zettel in Ordnung (2)<small>În biletul 3 lipsește <b>prima literă</b> din fiecare cuvânt, în biletul 4 lipsesc <b>vocalele</b>. Scrie fiecare propoziție completă. Începutul fiecărui bilet e dat ca exemplu.</small></p>
+  <div id="c2"></div>
+ </div></div></div>
+ <div class="bar" data-bar="2">
+  <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
+  <span class="msg"></span><span class="score hidden"></span>
+ </div>
+</section>
+<section class="ex" id="ex3">
+ <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
+  <p class="instr">Übung 4: Chaos in der WG – Zettel 5 und 6 und 6<small>Cuvintele din paranteză au silabele sau literele amestecate. Scrie cuvântul corect în spațiu. «angerufen» și «dreimal» sunt exemplele.</small></p>
+  <div id="c3"></div>
+ </div></div></div>
+ <div class="bar" data-bar="3">
+  <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
+  <span class="msg"></span><span class="score hidden"></span>
+ </div>
+</section>
+
+<script>
+var PASS_PERCENT=50;
+var IV=[["Heide, 32 Jahre alt", "heide.png", "„Mein Traumhaus hat einen großen Garten für die Kinder, mit hohen alten Bäumen und vielen Blumen. Das Wohnzimmer ist groß und hell und hat einen schönen Holzboden. Auch ein Kamin ist darin, für gemütliche Winterabende! Die Küche muss richtig groß sein und genug Platz für einen Esstisch haben. Im ersten Stock gibt es dann für jedes Kind ein großes Zimmer. Und die Zimmer sollten alle einen Balkon haben. Oben, unter dem Dach, möchte ich das Schlafzimmer für meinen Mann und mich, mit einem eigenen Bad. Das wäre schön!“", [["Was ist Heide wichtig für die Kinder?", "Ein großer Garten (mit hohen alten Bäumen und vielen Blumen)"]], [["Was möchte Heide für sich und ihren Mann?", ["Ein Schlafzimmer im ersten Stock mit Balkon.", "Ein Schlafzimmer unter dem Dach mit eigenem Bad.", "Ein Schlafzimmer neben der Küche mit Kamin."], 1, "«Oben, unter dem Dach, möchte ich das Schlafzimmer für meinen Mann und mich, mit einem eigenen Bad.» Balconul e pentru camerele copiilor, nu pentru dormitorul lor."], ["Welche Zimmer im Haus sollen groß sein?", ["Das Wohnzimmer, die Küche und die Kinderzimmer.", "Nur das Schlafzimmer und das Bad.", "Der Keller und der Garten."], 0, "«Das Wohnzimmer ist groß und hell», «Die Küche muss richtig groß sein» și «für jedes Kind ein großes Zimmer» → living, bucătărie și camerele copiilor."]]], ["Peter, 55 Jahre alt", "peter.png", "„Für mein Traumhaus ist die Lage am wichtigsten. Ich möchte am liebsten an einem See oder am Meer leben und aufs Wasser schauen können! Das Haus selbst muss nicht so groß sein, ich lebe ja allein und hätte damit nur viel Arbeit. Im Erdgeschoss ist eine gemütliche Küche mit Esstisch und ein kleines Wohnzimmer mit einem großen Lesesessel und einem Schlafsofa, wenn ich mal Besuch bekomme. Im ersten Stock dann ein Arbeitszimmer, natürlich mit Blick aufs Wasser, und mein Schlafzimmer. Darin müssen nur ein großes Bett und ein Schrank Platz haben. Wichtig ist auch, dass das Bad ein großes Fenster hat. Ich liebe es, von der Badewanne aus nach draußen schauen zu können!“", [], [["Was ist für Peter am wichtigsten?", ["Ein großes Haus mit vielen Zimmern.", "Ein Garten mit Blumen.", "Die Lage: am See oder am Meer."], 2, "«Für mein Traumhaus ist die Lage am wichtigsten … am liebsten an einem See oder am Meer». Casa nu trebuie să fie mare («muss nicht so groß sein»)."], ["Warum möchte er im Wohnzimmer ein Schlafsofa?", ["Für Besuch.", "Weil er gern im Wohnzimmer schläft.", "Weil sein Schlafzimmer zu klein ist."], 0, "«ein Schlafsofa, wenn ich mal Besuch bekomme» → canapea extensibilă pentru când vin oaspeți."], ["Warum möchte er im Bad ein großes Fenster?", ["Er möchte im Bad arbeiten.", "Er liebt es, aus der Badewanne nach draußen zu schauen.", "Er braucht das Licht zum Lesen."], 1, "«Ich liebe es, von der Badewanne aus nach draußen schauen zu können!» → îi place să se uite afară din cadă."]]], ["Maren, 29 Jahre alt", "maren.png", "„Ich möchte kein Haus, das ist zu viel Arbeit. Aber eine schicke Wohnung im Stadtzentrum, das wäre schön! Am besten mit Dachterrasse, mit Blick über die ganze Stadt! Das Wohnzimmer sollte nur schwarz und weiß eingerichtet sein, klare Linien, moderne Formen – das gefällt mir. Die Küche sollte aus weißem Marmor sein und das Bad schwarz mit silbernen Wasserhähnen. Im Schlafzimmer möchte ich dünne, weiße Vorhänge und ein großes rundes Bett in der Mitte.“", [], [["Warum möchte Maren kein Haus?", ["Ein Haus ist ihr zu teuer.", "Ein Haus ist zu viel Arbeit.", "Sie mag keine Gärten."], 1, "«Ich möchte kein Haus, das ist zu viel Arbeit.» Prețul nu e menționat."], ["Wo soll ihre Wohnung liegen?", ["Am Stadtrand, mit Garten.", "Am Meer.", "Im Stadtzentrum (am besten mit Dachterrasse)."], 2, "«eine schicke Wohnung im Stadtzentrum … am besten mit Dachterrasse, mit Blick über die ganze Stadt»."], ["Was gefällt Maren?", ["Klare Linien und moderne Formen, schwarz und weiß.", "Alte Möbel und bunte Vorhänge.", "Dunkles Holz und kleine Fenster."], 0, "«Das Wohnzimmer sollte nur schwarz und weiß eingerichtet sein, klare Linien, moderne Formen – das gefällt mir.»"]]]],Z=[{"nm": "Zettel 1 (Peter)", "bg": "#fff8d6", "ex": "Hallo, ihr Lieben!", "head": "halloihrlieben!", "rows": [["jetztistes15uhr,binkurzbeimeinkaufen.", "Jetzt ist es 15 Uhr, bin kurz beim Einkaufen.", "«bin … beim Einkaufen» = sunt la cumpărături (<b>beim</b> + verb substantivat, cu majusculă: «Einkaufen»). Subiectul «ich» lipsește, ca în mesajele rapide."], ["späterkocheichfüruns,wirkönnendannum19uhressen.", "Später koche ich für uns, wir können dann um 19 Uhr essen.", "«Später» e pe locul 1, deci verbul vine pe locul 2: <b>koche ich</b>. «um 19 Uhr» = la ora 19."], ["barbara,könntestdubittenochdasgeschirrabwaschen?", "Barbara, könntest du bitte noch das Geschirr abwaschen?", "Rugăminte politicoasă cu «könntest» (Konjunktiv II). «abwaschen» (separabil) rămâne la infinitiv, la final. «das Geschirr» = vasele."], ["danke!bisspäter,peter", "Danke! Bis später, Peter", "Formule de încheiere: «Danke!» și «Bis später» (pe mai târziu)."]]}, {"nm": "Zettel 2 (Veronika)", "bg": "#e4f1fb", "ex": "Guten Morgen!", "head": "gutenmorgen!", "rows": [["ichmussheuteschonganzfrühindieuni.", "Ich muss heute schon ganz früh in die Uni.", "«muss» + o mișcare subînțeleasă (gehen): «Ich muss … in die Uni». «ganz früh» = foarte devreme."], ["warmerkaffeestehtnochaufdemherd.", "Warmer Kaffee steht noch auf dem Herd.", "«Kaffee» e fără articol, deci «warmer» are -er. «auf dem Herd» = pe aragaz (Dativ: unde?)."], ["wirsehenunsheuteabend.", "Wir sehen uns heute Abend.", "«sich sehen» (a se vedea): <b>wir sehen uns</b>. «heute Abend» – «Abend» se scrie cu majusculă."], ["schönentag,ihrbeiden!veronika", "Schönen Tag, ihr Beiden! Veronika", "«Schönen Tag!» e o urare scurtă (Akkusativ: «Ich wünsche euch einen schönen Tag»). «Beiden» se scrie de obicei cu majusculă după «ihr»."]]}, {"nm": "Zettel 3 (Barbara)", "bg": "#fff8d6", "ex": "Ihr Diebe!", "head": "Ihr Diebe!", "rows": [["__er __at __chon __ieder __einen __ieblingsjoghurt __egessen?", "Wer hat schon wieder meinen Lieblingsjoghurt gegessen?", "«schon wieder» = iar. Perfekt: <b>hat … gegessen</b>. «meinen Lieblingsjoghurt» = Akkusativ masculin (der Joghurt)."], ["__enn __ch __eute __bend __ach __ause __omme, __öchte __ch __m __ühlschrank __indestens __rei __echer __ananenjoghurt __inden!!!", "Wenn ich heute Abend nach Hause komme, möchte ich im Kühlschrank mindestens drei Becher Bananenjoghurt finden!!!", "«Wenn» + verbul conjugat la <b>sfârșit</b>: «komme». În principală, după virgulă, verbul vine primul: <b>möchte ich</b>. «nach Hause» = acasă (direcția)."], ["__ure __ungrige __arbara", "Eure hungrige Barbara", "Încheiere afectuoasă: «Eure Barbara» (a voastră Barbara). «hungrige» = flămândă (adjectiv cu -e după numele propriu fără articol)."]]}, {"nm": "Zettel 4 (Veronika)", "bg": "#e4f1fb", "ex": "Barbara!", "head": "Barbara!", "rows": [["__ch h__b__ d____ g__nz__ l__tzt__ W__ch__ d__s G__sch__rr g__sp__lt.", "Ich habe die ganze letzte Woche das Geschirr gespült.", "Perfekt: <b>habe … gespült</b> (spülen = a spăla vasele). «die ganze letzte Woche» = toată săptămâna trecută (Akkusativ de timp)."], ["F__nd__st d__ n__cht ____ch, d__ss d__ d__s m__l m__ch__n k__nnt__st?", "Findest du nicht auch, dass du das mal machen könntest?", "După «dass» verbul conjugat merge la final: «machen <b>könntest</b>» (infinitiv + modal). «nicht auch» = nu crezi și tu."], ["__nd d__s B__d s____ht ____ch f__rchtb__r ____s.", "Und das Bad sieht auch furchtbar aus.", "«aussehen» (separabil): <b>sieht … aus</b>. «furchtbar» = îngrozitor."], ["W__r m__ss__n __m S__mst__g z__s__mm__n p__tz__n!", "Wir müssen am Samstag zusammen putzen!", "«müssen» + infinitiv la final: «putzen». «am Samstag» = sâmbătă. Semnătura «Veronika» e deja scrisă."]]}],Z5=[["Wochenende", "chen-de-Wo-en", "«bis zum Wochenende» = până la weekend: <b>Wochen</b> + <b>ende</b> → Wochenende (neutru: das Wochenende)."], ["zurückrufen", "ru-rück-fen-zu", "«zurückrufen» = a suna înapoi (separabil: <i>Ich rufe ihn zurück</i>). După «sollen» rămâne întreg, la infinitiv."], ["Telefonnummer", "num-le-fon-Te-mer", "«die Telefonnummer» = numărul de telefon: <b>Telefon</b> + <b>nummer</b> (substantiv compus, cu majusculă)."], ["einladen", "la-ein-den", "«zum Spargelessen einladen» = a invita la cina cu sparanghel. «einladen» e separabil (<i>Ich lade dich ein</i>); aici, după «möchte», infinitiv."], ["erreichen", "erericehn", "«erreichen» = a ajunge la cineva (a contacta). După «versucht, dich zu» vine infinitivul: <b>zu erreichen</b>. Atenție: rr în mijloc."], ["ausrichten", "asrtichuen", "«jemandem etwas ausrichten» = a transmite cuiva ceva. Separabil: <i>Ich richte dir aus</i>; cu «soll … » rămâne la infinitiv: «Ich soll dir <b>ausrichten</b>»."], ["gewaschen", "geaeswchn", "Partizip II al lui «waschen» (verb tare): <b>gewaschen</b>. «Wäsche ist fertig gewaschen» = rufele sunt spălate."], ["gebügelt", "gegübelt", "Partizip II al lui «bügeln» (verb slab): <b>ge-bügel-t</b> = călcat."], ["abholen", "alhoben", "«abholen» = a ridica, a lua de undeva (separabil: <i>Ich hole die Wäsche ab</i>). După «kannst» → infinitiv: «du kannst sie <b>abholen</b>»."]],T5=[["Veronika! Lorenz hat <span class=\"exg\">angerufen</span> (ge-fen-an-ru), er ist da! Er bleibt bis zum ", "(chen-de-Wo-en) in München. Du sollst ihn ", "(ru-rück-fen-zu). Seine ", "(num-le-fon-Te-mer) ist 089/7605983. Er möchte dich zum Spargelessen ", "(la-ein-den) … ☺ Barbara"], ["Hi, Peter! Deine Mutter hat schon <span class=\"exg\">dreimal</span> (drmeial) versucht, dich zu ", "(erericehn). Ich soll dir ", "(asrtichuen), deine Wäsche ist fertig ", "(geaeswchn) und ", "(gegübelt), du kannst sie ", "(alhoben). (So eine Mutter hätte ich auch gern, du Faultier!) Veronika"]];
+var scorm=(function(){var api=null,active=false;
+ function find(w){var n=0;while(w&&n<10){try{if(w.API)return w.API;}catch(e){}if(w.parent&&w.parent!==w){w=w.parent;n++;}else break;}return null;}
+ function init(){api=find(window);if(!api){try{if(window.opener)api=find(window.opener);}catch(e){}}
+  if(api){try{active=String(api.LMSInitialize(""))==="true";if(active){var st=api.LMSGetValue("cmi.core.lesson_status");if(st==="not attempted"||st==="")api.LMSSetValue("cmi.core.lesson_status","incomplete");api.LMSCommit("");}}catch(e){active=false;}}}
+ function report(c,t){if(!active)return;var p=Math.round(c/t*100);try{api.LMSSetValue("cmi.core.score.min","0");api.LMSSetValue("cmi.core.score.max","100");api.LMSSetValue("cmi.core.score.raw",String(p));api.LMSSetValue("cmi.core.lesson_status",p>=PASS_PERCENT?"passed":"failed");api.LMSCommit("");}catch(e){}}
+ function finish(){if(!active)return;try{api.LMSFinish("");}catch(e){}active=false;}
+ return{init:init,report:report,finish:finish};})();
+
+
+
+
+
+
+
+
+
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function normS(s){return String(s).toLowerCase().replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss").replace(/[^a-z0-9 ]/g," ").replace(/\s+/g," ").trim();}
+function ex(ok,txt){return '<div class="expl'+(ok?' ok':'')+'"><b class="t">'+(ok?'Corect':'Greșit')+'</b>'+txt+'</div>';}
+function stripTok(w){return w.replace(/[„“"?!.,;:]/g,"");}
+function lcs(a,b){var n=a.length,m=b.length,d=[],i,j;for(i=0;i<=n;i++){d.push([]);for(j=0;j<=m;j++)d[i].push(0);}
+ for(i=n-1;i>=0;i--)for(j=m-1;j>=0;j--)d[i][j]=a[i]===b[j]?d[i+1][j+1]+1:Math.max(d[i+1][j],d[i][j+1]);
+ var mt=b.map(function(){return false;});i=0;j=0;while(i<n&&j<m){if(a[i]===b[j]){mt[j]=true;i++;j++;}else if(d[i+1][j]>=d[i][j+1])i++;else j++;}return mt;}
+var QS=[];IV.forEach(function(p,pi){p[4].forEach(function(q,qi){QS.push({p:pi,q:qi,d:q});});});
+var ZR=[[],[]];[0,1,2,3].forEach(function(zi){Z[zi].rows.forEach(function(r,ri){ZR[zi<2?0:1].push({z:zi,r:ri,d:r});});});
+var EX=[{res:null,total:QS.length},{res:null,total:ZR[0].length},{res:null,total:ZR[1].length},{res:null,total:Z5.length}];
+/* Ex0 */
+var sel0=QS.map(function(){return -1;});
+(function(){var h="",k=0;IV.forEach(function(p){h+='<div class="iv"><h3>'+esc(p[0])+'</h3><div class="top"><img src="'+p[1]+'" alt="'+esc(p[0])+'"><p>'+esc(p[2])+'</p></div>';
+ p[3].forEach(function(e){h+='<div class="exm"><b>a)</b> '+esc(e[0])+'<br>→ <b>'+esc(e[1])+'</b></div>';});
+ p[4].forEach(function(q,qi){var L=p[3].length?"bc".charAt(qi):"abc".charAt(qi);h+='<div class="cq" data-i="'+k+'"><span class="n">'+L+')</span>'+esc(q[0])+q[1].map(function(o,j){return '<button type="button" class="cw" data-j="'+j+'">'+esc(o)+'</button>';}).join("")+'<div class="fb"></div></div>';k++;});
+ h+='</div>';});$("c0").innerHTML=h;})();
+$("c0").addEventListener("click",function(e){var b=e.target.closest(".cw");if(!b||b.disabled||EX[0].res!==null)return;var it=b.closest(".cq"),i=+it.dataset.i;sel0[i]=+b.dataset.j;it.querySelectorAll(".cw").forEach(function(x){x.classList.toggle("on",+x.dataset.j===sel0[i]);});upd(0);});
+/* Ex1, Ex2 rows */
+function zcards(id,zs){var h="";zs.forEach(function(zi){var z=Z[zi];h+='<div class="note" style="background:'+z.bg+'"><h4>'+esc(z.nm)+'</h4><div class="hd"><b>Beispiel:</b> '+esc(z.ex)+'</div>';
+ z.rows.forEach(function(r,ri){h+='<div class="zr" data-z="'+zi+'" data-r="'+ri+'"><div class="scr">'+esc(r[0])+'</div><input class="tw" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Scrie propoziția corectă…"><div class="fb"></div></div>';});
+ h+='</div>';});$(id).innerHTML=h;}
+zcards("c1",[0,1]);zcards("c2",[2,3]);
+$("c1").addEventListener("input",function(){upd(1);});$("c2").addEventListener("input",function(){upd(2);});
+/* Ex3 */
+(function(){var o="",g=0,bg=["#e4f1fb","#fff8d6"],nm=["Zettel 5 (Barbara)","Zettel 6 (Veronika)"];T5.forEach(function(st,si){o+='<div class="note story" style="background:'+bg[si]+'"><h4>'+nm[si]+'</h4>'+st[0];for(var i=1;i<st.length;i++){o+='<input class="ti" data-g="'+g+'" type="text" autocomplete="off" autocapitalize="off"> '+st[i];g++;}o+='</div>';});o+='<div id="fb3"></div>';$("c3").innerHTML=o;})();
+$("c3").addEventListener("input",function(){upd(3);});
+function bar(k){return document.querySelector('.bar[data-bar="'+k+'"]');}
+function filled(sel){var n=0;document.querySelectorAll(sel).forEach(function(x){if(x.value.trim()!=="")n++;});return n;}
+function answered(k){if(k===0)return sel0.filter(function(x){return x>-1;}).length;return filled("#c"+k+" input");}
+function need(k){return k===0?QS.length:k===1?ZR[0].length:k===2?ZR[1].length:Z5.length;}
+function upd(k){if(EX[k].res!==null)return;var b=bar(k),n=answered(k),t=need(k);b.querySelector(".chk").disabled=n<t;b.querySelector(".msg").textContent=n<t?"Ai completat "+n+" din "+t+".":"Gata! Apasă „Verifică răspunsurile”.";}
+function updTotal(){var c=0,t=0,any=false;EX.forEach(function(e,k){document.querySelector('.tab[data-ex="'+k+'"]').classList.toggle("done",e.res!==null);if(e.res!==null){c+=e.res;t+=e.total;any=true;}});$("total").textContent=any?"Gesamt: "+c+" / "+t:"";if(any)scorm.report(c,t);}
+function checkRows(id){var c=0;document.querySelectorAll("#"+id+" .zr").forEach(function(row){var z=+row.dataset.z,r=+row.dataset.r,d=Z[z].rows[r],x=row.querySelector(".tw"),ok=normS(x.value)===normS(d[1]);if(ok)c++;x.disabled=true;x.classList.add(ok?"ok":"no");
+  var ut=normS(x.value).split(" ").filter(Boolean),ct=d[1].split(/\s+/),cn=ct.map(function(w){return normS(stripTok(w));}),mt=lcs(ut,cn);
+  var cs=ct.map(function(w,j){return cn[j]===""||mt[j]||ok?esc(w):'<b class="miss">'+esc(w)+'</b>';}).join(" ");
+  row.querySelector(".fb").innerHTML='<div class="cs"><b>Varianta corectă:</b> '+cs+'</div>'+ex(ok,(ok?'':'Cuvintele subliniate în roșu lipsesc sau sunt scrise greșit. ')+d[2]);});return c;}
+function check(k){var c=0;
+ if(k===0){document.querySelectorAll("#c0 .cq").forEach(function(it){var i=+it.dataset.i,q=QS[i].d,key=q[2],ok=sel0[i]===key;if(ok)c++;it.querySelectorAll(".cw").forEach(function(b){var j=+b.dataset.j;b.disabled=true;b.classList.remove("on");if(j===sel0[i]&&ok)b.classList.add("right");else if(j===sel0[i])b.classList.add("wrong");else if(j===key)b.classList.add("missed");});it.querySelector(".fb").innerHTML=ex(ok,(ok?'':'Corect: <b>'+esc(q[1][key])+'</b><br>')+q[3]);});}
+ else if(k===1){c=checkRows("c1");}else if(k===2){c=checkRows("c2");}
+ else{var h="";Z5.forEach(function(g,i){var x=document.querySelector('#c3 .ti[data-g="'+i+'"]'),ok=normS(x.value)===normS(g[0]);if(ok)c++;x.disabled=true;x.classList.add(ok?"ok":"no");if(!ok)x.insertAdjacentHTML("afterend",' <span class="tag">→ '+esc(g[0])+'</span>');h+=ex(ok,'<b>'+esc(g[0])+'</b> ('+esc(g[1])+') – '+g[2]);});$("fb3").innerHTML=h;}
+ EX[k].res=c;var t=EX[k].total,pc=Math.round(c/t*100),b=bar(k),s=b.querySelector(".score");
+ s.textContent="Rezultat: "+c+" / "+t+" ("+pc+"%)";s.className="score "+(pc>=80?"good":pc>=PASS_PERCENT?"mid":"low");
+ b.querySelector(".msg").classList.add("hidden");b.querySelector(".chk").classList.add("hidden");b.querySelector(".rty").classList.remove("hidden");updTotal();}
+function retry(k){EX[k].res=null;
+ if(k===0){sel0=QS.map(function(){return -1;});document.querySelectorAll("#c0 .cq").forEach(function(it){it.querySelectorAll(".cw").forEach(function(b){b.disabled=false;b.className="cw";});it.querySelector(".fb").innerHTML="";});}
+ else{document.querySelectorAll("#c"+k+" input").forEach(function(x){x.disabled=false;x.value="";x.className=x.classList.contains("tw")?"tw":"ti";});document.querySelectorAll("#c"+k+" .tag").forEach(function(t){t.parentNode.removeChild(t);});document.querySelectorAll("#c"+k+" .fb").forEach(function(f){f.innerHTML="";});if(k===3)$("fb3").innerHTML="";}
+ var b=bar(k);b.querySelector(".score").className="score hidden";b.querySelector(".msg").classList.remove("hidden");b.querySelector(".chk").classList.remove("hidden");b.querySelector(".rty").classList.add("hidden");upd(k);updTotal();}
+EX.forEach(function(_,k){var b=bar(k);b.querySelector(".chk").addEventListener("click",function(){check(k);});b.querySelector(".rty").addEventListener("click",function(){retry(k);});});
+document.querySelectorAll(".tab").forEach(function(t){t.addEventListener("click",function(){document.querySelectorAll(".tab").forEach(function(x){x.classList.toggle("on",x===t);});document.querySelectorAll("section.ex").forEach(function(s,i){s.classList.toggle("on",i===+t.dataset.ex);});window.scrollTo(0,0);});});
+EX.forEach(function(_,k){upd(k);});
+scorm.init();window.addEventListener("pagehide",scorm.finish);
+</script></body></html>
