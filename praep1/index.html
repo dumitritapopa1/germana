@@ -1,10 +1,8 @@
 <!DOCTYPE html>
-<html lang="de">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Präpositionen</title>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verben mit Präpositionen</title>
 <style>
+
 :root{--bg:#f4f5f7;--card:#fff;--ink:#1f2430;--muted:#5d6472;--line:#e3e6eb;--accent:#3b5bdb;--accent-soft:#e8edff;--ok:#1f8a5b;--ok-soft:#e6f5ee;--bad:#c92a2a;--bad-soft:#fdecec}
 *{box-sizing:border-box}
 html,body{margin:0;height:100%}
@@ -32,7 +30,7 @@ section.ex.on{display:flex}
 .q h3{margin:0 0 10px;font-size:17px}
 .opt{display:flex;align-items:center;gap:12px;padding:9px 13px;border:1.5px solid var(--line);border-radius:10px;margin-bottom:7px;cursor:pointer;font-size:16px}
 .opt:hover{border-color:#aeb6c8}
-.opt input{position:absolute;opacity:0;pointer-events:none}
+.opt{position:relative}.opt input{position:absolute;opacity:0;pointer-events:none}
 .dot{flex:0 0 22px;height:22px;border-radius:50%;border:2px solid #b7bfce;background:#fff;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:800}
 .opt.on{border-color:var(--accent);background:var(--accent-soft)}
 .opt.on .dot{border-color:var(--accent);background:var(--accent);box-shadow:inset 0 0 0 4px #fff,inset 0 0 0 12px var(--accent)}
@@ -100,23 +98,173 @@ audio{width:100%;height:40px}
 .img img{width:100%;height:auto;display:block;border-radius:8px}
 .sl .g{margin:0 2px}
 .sl p{margin:0 0 6px;font-size:18px;line-height:2.4}
-</style>
-</head>
-<body>
-<header>
- <h1>Präpositionen</h1>
- <div class="tabs">
-  <button class="tab on" data-ex="0">Übung 1<span class="dn"> ✓</span></button>
-  <button class="tab" data-ex="1">Übung 2<span class="dn"> ✓</span></button>
-  <button class="tab" data-ex="2">Übung 3<span class="dn"> ✓</span></button>
- </div>
- <span class="total" id="total"></span>
-</header>
 
+.audiorow{background:var(--card);border-bottom:1px solid var(--line);padding:8px 24px;position:sticky;top:0;z-index:6}
+.audiorow audio{max-width:900px;display:block;margin:0 auto}
+.wordlist{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}
+.wordlist span{background:#eef1f6;border-radius:8px;padding:5px 12px;font-style:italic;font-weight:600}
+.s audio{margin:4px 0 10px}
+.sg p{margin:0 0 4px;font-size:18px;line-height:2.4}
+@media (max-width:820px){.audiorow{padding:8px 12px}}
+
+.tabs{flex-wrap:wrap}
+.tab{padding:7px 12px}
+.row{display:flex;align-items:baseline;gap:8px;padding:6px 0;font-size:18px;line-height:2.2}
+.row .n{color:var(--muted);min-width:1.8em}
+.row .base{font-weight:600;min-width:6.5em}
+.row.ex{color:var(--muted)}
+.row.ex .ans{font-weight:700;color:var(--ok)}
+.hint{color:var(--muted);font-size:14px}
+.convs{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:6px}
+.conv{border:2px dashed var(--line);border-radius:12px;padding:10px;background:#fafbfc;min-height:150px}
+.conv.over,.pool.over{border-color:var(--accent);background:var(--accent-soft)}
+.conv h3{margin:0 0 6px;text-align:center;font-size:16px}
+.conv audio{height:36px;margin-bottom:8px}
+.pool{display:flex;flex-wrap:wrap;gap:8px;padding:10px;border:2px dashed var(--line);border-radius:12px;min-height:54px;margin-bottom:14px}
+.pool .chip{margin:0}
+.conv .chip{display:block;margin:0 0 7px;text-align:left}
+.chip small{display:block;font-weight:700;font-size:12px;margin-top:2px}
+.chip.ok{border-color:var(--ok);background:var(--ok-soft);color:var(--ok);cursor:default}
+.chip.no{border-color:var(--bad);background:var(--bad-soft);color:var(--bad);cursor:default}
+.aw{display:inline-flex;gap:4px;vertical-align:middle;margin:0 3px}
+.aw button{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:2px 14px;font-size:16px;font-weight:700;cursor:pointer;color:var(--ink)}
+.aw button.on{border-color:var(--accent);background:var(--accent-soft)}
+.aw button.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+.aw button.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.aw button.missed{border-color:var(--ok);border-style:dashed;color:var(--ok)}
+.forum p{margin:0 0 4px;font-size:17px;line-height:2.3}
+.forum .gap{height:10px}
+@media (max-width:820px){.convs{grid-template-columns:1fr}}
+
+.qrow{display:grid;grid-template-columns:1fr 1.15fr;gap:10px;margin-bottom:10px;align-items:stretch}
+.qbox{border:1.5px solid var(--line);border-radius:10px;padding:10px 14px;background:#fff;font-weight:600;display:flex;align-items:center}
+.aslot{border:2px dashed #b7bfce;border-radius:10px;min-height:56px;padding:4px;background:#fafbfc;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:14px;text-align:center}
+.aslot.over{border-color:var(--accent);background:var(--accent-soft)}
+.aslot .chip{display:block;width:100%;margin:0;text-align:left}
+.aslot.ok{border-style:solid;border-color:var(--ok);background:var(--ok-soft)}
+.aslot.no{border-style:solid;border-color:var(--bad);background:var(--bad-soft)}
+.aslot .chip.ok{border-color:var(--ok);background:transparent;color:var(--ok)}
+.aslot .chip.no{border-color:var(--bad);background:transparent;color:var(--bad);text-decoration:line-through}
+.aslot .fixt{display:block;color:var(--ok);font-size:13px;font-weight:700;margin-top:3px;text-decoration:none}
+.abank{display:flex;flex-direction:column;gap:8px;padding:12px;background:#eef1f6;border-radius:10px;margin-bottom:18px;min-height:56px}
+.abank .chip{margin:0;text-align:left;display:block}
+.abank.over{background:var(--accent-soft)}
+.fqitem{margin-bottom:12px;padding:10px 12px;background:#f7f8fb;border-radius:10px}
+.fqbuilt{min-height:48px;padding:6px;border:2px dashed #b7bfce;border-radius:10px;background:#fff;display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:4px 0 8px}
+.fqbuilt.ok{border-style:solid;border-color:var(--ok);background:var(--ok-soft)}
+.fqbuilt.no{border-style:solid;border-color:var(--bad);background:var(--bad-soft)}
+.fqtiles{display:flex;flex-wrap:wrap;gap:8px}
+.fqitem .chip{margin:0;cursor:pointer}
+.cmpd{font-size:19px;line-height:2.4;padding:4px 0}
+.cmpd .n{color:var(--muted);display:inline-block;min-width:1.8em}
+@media (min-width:821px){.abank{display:grid;grid-template-columns:1fr 1fr}}
+@media (max-width:820px){.qrow{grid-template-columns:1fr}}
+
+.txt .title{font-weight:700;font-size:18px;margin:0 0 6px}
+.txt p{margin:0 0 12px;font-size:17px;line-height:1.7}
+.rfs{padding:14px 0;border-top:1px solid var(--line)}
+.rfs:first-of-type{border-top:none}
+.rfs .st{font-size:17px;margin-bottom:8px}
+.rf{display:flex;gap:8px}
+.rf button{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:8px 20px;font-size:15px;font-weight:700;cursor:pointer;color:var(--ink)}
+.rf button.on{border-color:var(--accent);background:var(--accent-soft)}
+.rf button.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+.rf button.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.rf button.missed{border-color:var(--ok);border-style:dashed;color:var(--ok)}
+.corr{display:none;margin-top:10px}
+.corr.show{display:block}
+.corr label{display:block;font-size:13px;color:var(--muted);margin-bottom:4px}
+.sug{margin-top:8px;font-size:14px;color:var(--ok);font-weight:700}
+.film{padding:14px 0;border-top:1px solid var(--line)}
+.film:first-of-type{border-top:none}
+.film h3{margin:0 0 6px;font-size:17px}
+.film audio{margin-bottom:10px}
+
+.drow{padding:12px 0;border-top:1px solid var(--line)}
+.drow:first-of-type{border-top:none}
+.drow .st{font-size:17px;margin-bottom:6px}
+.dline{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dline .pre{font-weight:700;white-space:nowrap;font-size:17px}
+.dline input{flex:1;min-width:220px}
+.drow.ex{background:#f3f7f4;border-radius:10px;padding:12px 14px;margin-bottom:6px;border:1px solid var(--ok)}
+.drow.ex .ans{color:var(--ok);font-weight:700;font-size:17px}
+.tip{background:#fff8e6;border-left:4px solid #e0a100;border-radius:6px;padding:10px 14px;margin:0 0 14px;font-size:15px}
+.tip b{color:#8a5a00}
+.convs.four{grid-template-columns:1fr 1fr}
+
+.mbank{display:flex;flex-wrap:wrap;gap:8px;padding:12px;background:#eef1f6;border-radius:10px;margin-bottom:18px;min-height:56px}
+.mbank.over{background:var(--accent-soft)}
+.mbank .chip{margin:0}
+.pgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.pcell{text-align:center}
+.pcell img{width:100%;height:auto;display:block;border-radius:6px}
+.pcell .slot{display:block;margin:6px auto 0;width:76px;min-width:0;min-height:38px;font-size:18px}
+.pcell .slot .chip{padding:1px 10px;font-size:18px;font-weight:700}
+.msl .slot .chip{font-size:16px}
+.sl2 p{margin:0 0 4px;font-size:18px;line-height:2.5}
+.post{margin-bottom:14px}
+.post .nm{font-weight:700}
+.post p{margin:4px 0 0;font-size:17px;line-height:1.75}
+.post .ttl{display:inline-block;vertical-align:middle}
+.exchip{display:inline-block;border:1.5px solid var(--ok);background:var(--ok-soft);color:var(--ok);border-radius:8px;padding:2px 10px;font-size:16px;font-weight:600}
+.fixs{color:var(--ok);font-weight:700;font-size:13px;display:block}
+@media (max-width:820px){.pgrid{grid-template-columns:repeat(2,1fr)}}
+
+
+.part{font-weight:700;font-size:18px;margin:16px 0 6px;color:var(--accent)}
+.aud{position:sticky;top:0;z-index:5;background:#fff;padding:6px 0 8px;margin:0 0 8px}.aud audio{width:100%;max-width:520px;height:40px}
+.illu{text-align:center;margin:0 0 10px}.illu img{max-width:100%;width:380px;height:auto;border-radius:12px;border:1.5px solid var(--line)}
+.mo{display:flex;gap:10px;align-items:flex-start;padding:8px 12px;border:1.5px solid var(--line);border-radius:10px;background:#fff;margin:6px 0;cursor:pointer;font-size:17px;line-height:1.45}
+.mo input{width:20px;height:20px;margin-top:3px;flex:none}
+.mo.exa{background:#e8f6fd;border-color:#29a8e0}
+.mo.ok{border-color:var(--ok);background:var(--ok-soft)}.mo.bad{border-color:var(--bad);background:var(--bad-soft)}.mo.miss{border-color:var(--ok);border-style:dashed}
+.expl{font-weight:400;margin:6px 0 0;padding:8px 12px;background:var(--bad-soft);border-left:4px solid var(--bad);border-radius:6px;font-size:15px;line-height:1.5}
+.expl.ok{background:var(--ok-soft);border-left-color:var(--ok)}
+.expl b.t{display:block;margin-bottom:2px;font-weight:700}.expl.ok b.t{color:var(--ok)}.expl:not(.ok) b.t{color:var(--bad)}
+.rb{border:2px solid #f0b6cf;background:#fdeaf3;border-radius:12px;margin:0 0 14px}.rb summary{cursor:pointer;padding:9px 14px;font-weight:700;color:#a3225d}.rb .rbx{padding:0 14px 12px;font-size:16px;line-height:1.7}
+.exm{background:#e8f6fd;border-left:4px solid #29a8e0;border-radius:10px;padding:8px 14px;margin:0 0 8px;font-size:17px;line-height:1.6}
+.sent{padding:8px 0;border-top:1px solid var(--line);font-size:17.5px;line-height:2.1}.sent .n{font-weight:700;color:var(--muted);margin-right:6px}
+.sent .exg{color:#2a4a9a;font-style:italic;text-decoration:underline}
+.ti{font:inherit;font-size:16px;padding:3px 8px;border:1.5px solid var(--line);border-radius:6px;width:9.5em;max-width:100%}.ti:focus{outline:none;border-color:var(--accent)}
+.ti.ok{border-color:var(--ok);background:var(--ok-soft);color:var(--ok);font-weight:700}.ti.no{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}.tag{font-size:14px;color:var(--ok);font-weight:700}
+.bank{position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;gap:8px;min-height:50px;padding:10px;border:2px dashed #aeb6c8;border-radius:12px;background:#f5f7fb;margin:0 0 12px}
+.chip{display:inline-block;padding:4px 14px;border:1.5px solid var(--accent);border-radius:999px;background:#fff;color:var(--accent);font-weight:700;font-size:17px;cursor:grab;user-select:none;-webkit-user-select:none}
+.chip.sel{background:var(--accent);color:#fff}
+.gap{display:inline-block;min-width:6.2em;min-height:1.7em;vertical-align:middle;border-bottom:2.5px dashed #8a94ab;margin:0 2px;text-align:center;background:#fafbfd;border-radius:6px 6px 0 0;cursor:pointer}
+.gap.fix{border-bottom:2.5px solid #29a8e0;background:#e8f6fd;cursor:default;font-style:italic;color:#2a4a9a;padding:0 8px}
+.gap .chip{padding:1px 12px;font-size:16.5px}.gap.ok .chip{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}.gap.no .chip{border-color:var(--bad);background:var(--bad-soft);color:var(--bad);text-decoration:line-through}
+.gap.over{background:var(--accent-soft)}
+.ctext{font-size:18px;line-height:2.4;margin:0 0 10px}.ctext sup{color:var(--muted);font-size:12px}
+.rd{background:#fffef8;border:1.5px solid var(--line);border-radius:12px;padding:12px 16px;margin:0 0 16px;font-size:16.5px;line-height:1.65;overflow:hidden}
+.rd h3{margin:0 0 8px;color:var(--accent);font-size:19px}.rd p{margin:0 0 10px}.rd img{float:right;width:210px;max-width:46%;height:auto;margin:0 0 8px 14px;border-radius:10px}
+.grp{margin:14px 0 0}.grp .h{display:inline-block;background:#e9ecf4;border-radius:8px;padding:3px 12px;font-weight:700;margin:0 0 4px}
+.item{padding:10px 0;border-top:1px solid var(--line);font-size:17px;line-height:1.5}.item .h{display:block;margin-bottom:4px}
+.cw.mc{width:100%;text-align:left;margin:6px 0;flex:none}.cw.mc b{margin-right:6px}
+.cw{display:block;text-align:center;flex:1;border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:6px 14px;font:inherit;font-size:16.5px;cursor:pointer;color:var(--ink)}
+.cw:hover{border-color:#aeb6c8}.cw.on{border-color:var(--accent);background:var(--accent-soft);font-weight:700}
+.cw.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok);font-weight:700}.cw.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad);text-decoration:line-through}
+.cw.missed{border-color:var(--ok);border-style:dashed;color:var(--ok);font-weight:700}.cw:disabled{cursor:default}
+@media(max-width:560px){.rd img{float:none;display:block;margin:0 auto 10px;width:200px;max-width:80%}}
+
+.vbank{border:3px dotted #c0344f;border-radius:10px;padding:10px 12px;margin:0 0 12px;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:2px 6px;font-size:17px;line-height:1.7}.vbank s{color:var(--muted)}.vbank i{color:#9aa3b8;font-style:normal;margin:0 2px}.vbank span{white-space:nowrap}
+.it{padding:10px 0;border-top:1px solid var(--line);font-size:18px;line-height:2.1}.it .n{font-weight:700;color:var(--muted);margin-right:6px}
+.exm{font-size:17.5px;line-height:1.9}.exm .exg{color:#2a4a9a;font-style:italic;text-decoration:underline}
+.ti{width:9em}.ti.w{width:11em}
+.bank{position:static}.bk{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 8px;align-items:center}.bk .lb{font-weight:700;font-size:14px;color:var(--muted);flex:none;width:100%}
+.chip.long{border-radius:12px;font-size:15.5px;padding:3px 12px;line-height:1.4}
+.pair{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;align-items:flex-start}
+.gap{min-width:7.5em;text-align:center}.gap.ans{min-width:14em;max-width:100%;text-align:left;padding:2px 4px}.gap.fix{padding:2px 10px}.gap.fix.ans{text-align:left}
+.gap .chip.long{white-space:normal}
+.tb2{display:block}
+.uu{text-decoration:underline;text-underline-offset:3px}
+@media(max-width:560px){.gap.ans{min-width:100%}}
+
+</style></head><body>
+<header><h1>Verben mit Präpositionen</h1><div class="tabs"><button class="tab on" data-ex="0">Übung 1<span class="dn"> ✓</span></button><button class="tab" data-ex="1">Übung 2<span class="dn"> ✓</span></button><button class="tab" data-ex="2">Übung 3<span class="dn"> ✓</span></button><button class="tab" data-ex="3">Übung 4<span class="dn"> ✓</span></button></div><span class="total" id="total"></span></header>
 <section class="ex on" id="ex0">
  <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
-  <p class="instr">1.1 Was macht Laura fast jeden Tag? Schreiben Sie Sätze.<small>Scrie propoziții complete, cu verbul conjugat și articolul corect (atenție la caz!). Poți începe cu subiectul sau cu timpul/locul.</small></p>
-  <div id="sents"></div>
+  <p class="instr">Übung 1: Ergänzen Sie das passende Verb in der richtigen Form.<small>Completează cu verbul potrivit din bancă, la forma corectă. Primul e exemplul.</small></p>
+  <div class="vbank"><span><s>(sich) freuen</s></span><i>●</i><span>(sich) interessieren</span><i>●</i><span>diskutieren</span><i>●</i><span>warten</span><i>●</i><span>denken</span><i>●</i><span>(sich) erinnern</span><i>●</i><span>(sich) kümmern</span></div><details class="rb" open><summary>Reține: verbe cu prepoziție</summary><div class="rbx">sich freuen <b>auf / über</b> · sich interessieren <b>für</b> · diskutieren <b>über</b> · warten <b>auf</b> · denken <b>an</b> · sich erinnern <b>an</b> · sich kümmern <b>um</b><br><small>+ Akkusativ (la «mit» → Dativ). Prepoziția face parte din verb – se învață împreună!</small></div></details><div class="exm"><b>0.</b> Klaus <span class="exg">freut</span> sich schon sehr auf seinen Urlaub.</div><div id="c0"></div>
  </div></div></div>
  <div class="bar" data-bar="0">
   <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
@@ -124,12 +272,10 @@ audio{width:100%;height:40px}
   <span class="msg"></span><span class="score hidden"></span>
  </div>
 </section>
-
 <section class="ex" id="ex1">
  <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
-  <p class="instr">1.2 Tobias in Graz.<small>Trage expresiile în spațiile libere sau atinge o expresie, apoi spațiul. Fiecare expresie se folosește o singură dată.</small></p>
-  <div class="bank" id="bank"></div>
-  <div class="sl" id="tobias"></div>
+  <p class="instr">Übung 2: Was gehört zusammen? Verbinden Sie.<small>Fiecare propoziție are un <b>cuvânt interogativ</b> și un <b>răspuns</b>. Trage-le din bancă la locul lor (sau atinge, apoi atinge spațiul). Prima propoziție e exemplul.</small></p>
+  <details class="rb" open><summary>Reține: Fragewörter cu prepoziție</summary><div class="rbx"><b>Persoană</b> → prepoziție + <b>wen / wem</b>: <i>Auf wen? Mit wem? Über wen?</i><br><b>Lucru</b> → <b>wo(r)</b> + prepoziție: <i>Worauf? Woran? Worüber? Wofür?</i><br><small>«r» apare doar înainte de vocală: wo<b>r</b>auf, wo<b>r</b>an, wo<b>r</b>über, wo<b>r</b>um – dar wofür, womit.</small></div></details><div id="c1"></div>
  </div></div></div>
  <div class="bar" data-bar="1">
   <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
@@ -137,16 +283,23 @@ audio{width:100%;height:40px}
   <span class="msg"></span><span class="score hidden"></span>
  </div>
 </section>
-
 <section class="ex" id="ex2">
- <div class="wrap split">
-  <div class="pane"><div class="pi img"><img src="kueche.png" alt="Küche"></div></div>
-  <div class="pane"><div class="pi">
-   <p class="instr">1.3 Privește imaginea și completează propozițiile.<small>Scrie verbul până la final, apoi prepoziția și articolul.</small></p>
-   <div class="gaps sl" id="gaps"></div>
-  </div></div>
- </div>
+ <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
+  <p class="instr">Übung 3: Welches Fragewort ist für die unterstrichene Information nötig?<small>Scrie cuvântul interogativ potrivit pentru partea subliniată.</small></p>
+  <details class="rb" open><summary>Reține: sich freuen auf / über</summary><div class="rbx"><b>sich freuen auf</b> = te bucuri de ceva ce <b>urmează</b>: <i>Peter hat morgen Geburtstag. Er freut sich auf die Geschenke.</i><br><b>sich freuen über</b> = te bucuri de ceva ce <b>e deja aici</b>: <i>Heute hat Peter Geburtstag. Er freut sich über die Geschenke.</i></div></details><div id="c2"></div>
+ </div></div></div>
  <div class="bar" data-bar="2">
+  <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
+  <span class="msg"></span><span class="score hidden"></span>
+ </div>
+</section>
+<section class="ex" id="ex3">
+ <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
+  <p class="instr">Übung 4: Ergänzen Sie die Fragen.<small>Completează întrebările cu cuvântul potrivit din bancă. Atenție: <b>persoană</b> → «über wen / an wen», <b>lucru</b> → «wofür / worauf / worüber». Primul e exemplul. Unul dintre cuvinte rămâne în plus.</small></p>
+  <div class="vbank"><span>wofür</span><i>●</i><span>über wen</span><i>●</i><span>worauf</span><i>●</i><span>an wen</span><i>●</i><span>worüber</span><i>●</i><span>woran</span></div><div class="exm"><b>1.</b> Gestern ist es ziemlich spät geworden. Wir haben lange diskutiert. – <span class="exg">Worüber</span> denn? – Na, rate mal! Natürlich über Sport.</div><div id="c3"></div>
+ </div></div></div>
+ <div class="bar" data-bar="3">
   <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
   <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
   <span class="msg"></span><span class="score hidden"></span>
@@ -155,26 +308,7 @@ audio{width:100%;height:40px}
 
 <script>
 var PASS_PERCENT=50;
-var SENT=[
- {cue:"um acht / Laura / in / das Zentrum / fahren",a:["Laura fährt um acht in das Zentrum.","Laura fährt um acht ins Zentrum.","Um acht fährt Laura in das Zentrum.","Um acht fährt Laura ins Zentrum."]},
- {cue:"sie / in / ein Kleidergeschäft / arbeiten",a:["Sie arbeitet in einem Kleidergeschäft.","In einem Kleidergeschäft arbeitet sie."]},
- {cue:"mittags / sie / in / das Geschäft / essen",a:["Mittags isst sie in dem Geschäft.","Mittags isst sie im Geschäft.","Sie isst mittags in dem Geschäft.","Sie isst mittags im Geschäft.","Mittags isst sie in das Geschäft.","Sie isst mittags in das Geschäft.","Mittags isst sie ins Geschäft.","Sie isst mittags ins Geschäft."]},
- {cue:"in der Pause / sie / in / eine Bäckerei / gehen",a:["In der Pause geht sie in eine Bäckerei.","Sie geht in der Pause in eine Bäckerei."]},
- {cue:"abends / sie / in / der Supermarkt / einkaufen",a:["Abends kauft sie im Supermarkt ein.","Abends kauft sie in dem Supermarkt ein.","Sie kauft abends im Supermarkt ein.","Sie kauft abends in dem Supermarkt ein."]},
- {cue:"sie / ihr Fahrrad / hinter / das Haus / stellen",a:["Sie stellt ihr Fahrrad hinter das Haus.","Sie stellt ihr Fahrrad hinters Haus.","Ihr Fahrrad stellt sie hinter das Haus.","Ihr Fahrrad stellt sie hinters Haus."]},
- {cue:"sie / vor / der Fernseher / essen",a:["Sie isst vor dem Fernseher.","Vor dem Fernseher isst sie."]}
-];
-var TOB="Tobias studiert [an der] Technischen Universität in Graz. Er wohnt mit 2 Freunden [in einem] Haus weit weg vom Zentrum. Am Abend geht er gern [in die] Lokale im Univiertel. Am Wochenende hatte Tobias Besuch von seinen Eltern. Am Morgen haben sie gemeinsam [auf dem] Markt am Kaiserplatz eingekauft. Mittags waren sie [im] Café. Am Nachmittag sind sie [ins] Kunsthaus gegangen. Später sind sie noch zum Schloss gegangen.";
-var BANK=["in einem","im","in die","ins","auf dem","an der"];
-var KIT=[
-"Die Kochbücher liegen [a|uf] [|dem] Boden.",
-"Der Stuhl [s|teht] [|vor] [|dem] Herd.",
-"Der Teppich [h|ängt] [|an] [|der] Tür.",
-"Die Katze [s|itzt] [|auf] [|dem] Schrank.",
-"Die Blumen [l|iegen] [|auf] [|dem] Tisch.",
-"Der Hund [s|itzt] [|auf] [|dem] Stuhl.",
-"Es ist Chaos [i|n] [|der] Küche."
-];
+var V1=[["Herr Schmidt hat mal wieder an alles ", " . Super Organisation!", "gedacht", "denken an + Akk: «an alles <b>gedacht</b>» = s-a gândit la toate. Perfekt: <i>hat … gedacht</i> (participiul stă la final; denken → gedacht)."], ["Ich ", " mich um den Hund von meinen Nachbarn, weil sie im Urlaub sind.", "kümmere", "sich kümmern um + Akk = a se ocupa de: «Ich <b>kümmere</b> mich um den Hund». Subiect «ich» → -e."], ["Schenken wir Nina ein Buch. Sie ", " sich für Kriminalromane.", "interessiert", "sich interessieren für + Akk = a fi interesat de: «Sie <b>interessiert</b> sich für Kriminalromane.» Subiect «sie» (ea) → -t."], ["Habt ihr wieder die ganze Nacht über Politik ", " ?", "diskutiert", "diskutieren über + Akk = a discuta despre. Perfekt: «Habt ihr … <b>diskutiert</b>?» Verbele în -ieren nu primesc «ge-» la participiu."], ["Kannst du dich noch an unseren ersten Urlaub ", " ? War das schön!", "erinnern", "sich erinnern an + Akk = a-și aminti de. După modalul «kannst» verbul rămâne la infinitiv, la final: «dich … <b>erinnern</b>»."], ["Wir müssen noch auf Lennart ", " . Er will auch mitkommen.", "warten", "warten auf + Akk = a aștepta pe. După «müssen» → infinitiv la final: «auf Lennart <b>warten</b>»."]],B1=["Mit wem?", "Worauf?", "Woran?", "Worüber?"],B2=["Über ein Problem in unserer Firma.", "An den Termin heute Abend.", "Mit meinen Eltern.", "Auf meine Prüfung. Sie ist echt schwer."],P2=[["Ich telefoniere.", "Mit wem?", "Mit meinen Eltern.", "«telefonieren <b>mit</b> + Dativ» → întrebi după o <b>persoană</b>: <b>Mit wem?</b> → «Mit meinen Eltern.»"], ["Wir unterhalten uns gerade.", "Worüber?", "Über ein Problem in unserer Firma.", "«sich unterhalten <b>über</b> + Akk» → subiectul discuției e un <b>lucru</b>: <b>Worüber?</b> (wo + r + über) → «Über ein Problem …»"], ["Ich bereite mich vor.", "Worauf?", "Auf meine Prüfung. Sie ist echt schwer.", "«sich vorbereiten <b>auf</b> + Akk» → lucru: <b>Worauf?</b> (wo + r + auf) → «Auf meine Prüfung.»"], ["Ich denke.", "Woran?", "An den Termin heute Abend.", "«denken <b>an</b> + Akk» → lucru: <b>Woran?</b> (wo + r + an) → «An den Termin heute Abend.»"]],Q3=[["Stefan bereitet sich ", "auf den Urlaub", " vor.", "Worauf", "«sich vorbereiten <b>auf</b>» + lucru («den Urlaub») → <b>wo + r + auf = Worauf?</b> (r apare înainte de vocală)."], ["Ilva denkt immer ", "an ihre Arbeit", ".", "Woran", "«denken <b>an</b>» + lucru → <b>wo + r + an = Woran?</b>"], ["Elna kümmert sich ", "um die Tickets", " für die Reise.", "Worum", "«sich kümmern <b>um</b>» + lucru («die Tickets») → <b>wo + r + um = Worum?</b>"], ["Frank interessiert sich ", "für Computer", ".", "Wofür", "«sich interessieren <b>für</b>» + lucru → <b>wo + für = Wofür?</b> (fără r, pentru că «für» începe cu consoană)."]],D=[["Interessierst du dich eigentlich für Sport? – Ja, besonders für Tennis. Und du, ", " interessierst du dich? – Für fast alles, nur nicht für Sport!", "Wofür", "«sich interessieren <b>für</b>» + lucru → <b>Wofür</b> interessierst du dich?"], ["Tina hat sich gestern im Büro so über jemanden geärgert! – Wirklich? ", " denn? – Ach, ihre Chefin war so komisch.", "Über wen", "«sich ärgern <b>über</b>» + <b>persoană</b> («jemanden») → <b>Über wen</b> (nu «worüber», care e pentru lucruri)."], ["Ich habe heute lange mit Björn gesprochen. – ", " denn? – Über seine Probleme bei der Arbeit.", "Worüber", "«sprechen <b>über</b>» + lucru («seine Probleme») → <b>Worüber</b>? Răspunsul începe cu «Über»."], ["Was hast du vor? – Ich muss mich vorbereiten. – ", " denn? – Auf die Prüfung.", "Worauf", "«sich vorbereiten <b>auf</b>» + lucru («die Prüfung») → <b>Worauf</b>?"], ["Sieh mal das Foto mit den Studenten aus Italien! ", " erinnerst du dich noch? – An Pietro, der war immer so lustig.", "An wen", "«sich erinnern <b>an</b>» + <b>persoană</b> (Pietro) → <b>An wen</b> erinnerst du dich? «woran» e pentru lucruri."]];
 var scorm=(function(){var api=null,active=false;
  function find(w){var n=0;while(w&&n<10){try{if(w.API)return w.API;}catch(e){}if(w.parent&&w.parent!==w){w=w.parent;n++;}else break;}return null;}
  function init(){api=find(window);if(!api){try{if(window.opener)api=find(window.opener);}catch(e){}}
@@ -184,81 +318,70 @@ var scorm=(function(){var api=null,active=false;
  return{init:init,report:report,finish:finish};})();
 
 
+
+
+
+
+
+
+
 function $(id){return document.getElementById(id);}
 function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
-function norm(s){return String(s).toLowerCase().replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss").replace(/[^a-z0-9]/g,"");}
 function normS(s){return String(s).toLowerCase().replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss").replace(/[^a-z0-9 ]/g," ").replace(/\s+/g," ").trim();}
-
-/* Ex1 */
-$("sents").innerHTML=SENT.map(function(x,i){return '<div class="s"><div class="st"><b>'+(i+1)+'.</b> <span class="cue">'+esc(x.cue)+'</span></div><input class="sent" type="text" data-i="'+i+'" autocomplete="off" autocapitalize="sentences" spellcheck="false"><div class="fb"></div></div>';}).join("");
-
-/* Ex2 */
-var TG=[];
-$("tobias").innerHTML="<p>"+TOB.split(/(\[[^\]]+\])/).map(function(x){var m=x.match(/^\[([^\]]+)\]$/);if(!m)return esc(x);
- var i=TG.length;TG.push(m[1]);return '<span class="slot" data-s="'+i+'"></span>';}).join("")+"</p>";
-var chipSlot={},sel=null,BORDER=[3,0,5,2,1,4];
-/* chipSlot[chipIdx]=slotIdx or undefined */
-function slotOf(c){return chipSlot[c];}
-function occupant(s){for(var c in chipSlot)if(chipSlot[c]===s)return +c;return null;}
-function chipHTML(c){return '<span class="chip'+(sel===c?" sel":"")+'" draggable="'+(EX[1].res!==null?"false":"true")+'" data-c="'+c+'">'+esc(BANK[c])+'</span>';}
-function renderT(){var b="";BORDER.forEach(function(c){if(slotOf(c)===undefined)b+=chipHTML(c);});$("bank").innerHTML=b;
- document.querySelectorAll("#tobias .slot").forEach(function(sp){var s=+sp.dataset.s,c=occupant(s);sp.innerHTML=c===null?"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;":chipHTML(c);
-  if(EX[1].res!==null){var ok=c!==null&&norm(BANK[c])===norm(TG[s]);sp.className="slot "+(ok?"ok":"no");if(!ok)sp.innerHTML+='<span class="fix"> → '+esc(TG[s])+'</span>';}});
- upd(1);}
-function putChip(c,s){if(EX[1].res!==null)return;var o=occupant(s);if(o!==null)delete chipSlot[o];
- if(s===null)delete chipSlot[c];else chipSlot[c]=s;sel=null;renderT();}
-document.getElementById("ex1").addEventListener("click",function(e){if(EX[1].res!==null)return;
- var ch=e.target.closest(".chip"),sl=e.target.closest(".slot"),bk=e.target.closest(".bank");
- if(ch&&!sl){var c=+ch.dataset.c;sel=sel===c?null:c;renderT();return;}
- if(ch&&sl){var c2=+ch.dataset.c;if(sel!==null&&sel!==c2){putChip(sel,+sl.dataset.s);}else putChip(c2,null);return;}
- if(sl&&sel!==null){putChip(sel,+sl.dataset.s);return;}
- if(bk&&sel!==null&&slotOf(sel)!==undefined)putChip(sel,null);});
-var dragC=null;
-document.addEventListener("dragstart",function(e){var ch=e.target.closest&&e.target.closest("#ex1 .chip");if(!ch||EX[1].res!==null)return;dragC=+ch.dataset.c;try{e.dataTransfer.setData("text/plain",String(dragC));}catch(x){}});
-document.addEventListener("dragover",function(e){var z=e.target.closest&&e.target.closest("#ex1 .slot,#ex1 .bank");if(z&&dragC!==null){e.preventDefault();z.classList.add("over");}});
-document.addEventListener("dragleave",function(e){var z=e.target.closest&&e.target.closest("#ex1 .slot,#ex1 .bank");if(z)z.classList.remove("over");});
-document.addEventListener("drop",function(e){var z=e.target.closest&&e.target.closest("#ex1 .slot,#ex1 .bank");document.querySelectorAll(".over").forEach(function(x){x.classList.remove("over");});
- if(!z||dragC===null)return;e.preventDefault();var c=dragC;dragC=null;putChip(c,z.classList.contains("slot")?+z.dataset.s:null);});
-document.addEventListener("dragend",function(){dragC=null;document.querySelectorAll(".over").forEach(function(x){x.classList.remove("over");});});
-
-/* Ex3 */
-var KG=[],kh="";
-KIT.forEach(function(t,n){kh+="<p><b>"+(n+1)+".</b> "+t.split(/(\[[^\]]+\])/).map(function(x){var m=x.match(/^\[([^|]*)\|([^\]]+)\]$/);if(!m)return esc(x);
- var i=KG.length;KG.push({p:m[1],r:m[2]});
- return '<span class="g" data-g="'+i+'">'+(m[1]?'<span class="pre">'+esc(m[1])+'</span>':"")+'<input type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" style="width:'+(Math.max(m[2].length,3)+1.5)+'ch"></span>';}).join("")+"</p>";});
-$("gaps").innerHTML=kh;
-
-var EX=[{total:SENT.length,res:null},{total:TG.length,res:null},{total:KG.length,res:null}];
-function answered(k){var n=0;
- if(k===0)document.querySelectorAll("#sents input").forEach(function(x){if(x.value.trim())n++;});
- else if(k===1)n=Object.keys(chipSlot).length;
- else document.querySelectorAll("#gaps input").forEach(function(x){if(x.value.trim())n++;});return n;}
+function dia(s){return String(s).normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().replace(/ß/g,"ss").replace(/[^a-z]/g,"");}
+function same(a,b){return normS(a)===normS(b)||dia(a)===dia(b);}
+function ex(ok,txt){return '<div class="expl'+(ok?' ok':'')+'"><b class="t">'+(ok?'Corect':'Greșit')+'</b>'+txt+'</div>';}
+var EX=[{res:null,total:V1.length},{res:null,total:P2.length*2},{res:null,total:Q3.length},{res:null,total:D.length}];
+/* typed ex0, ex3 */
+function inl(arr,cls){return arr.map(function(r,i){return '<div class="it" data-i="'+i+'"><span class="n">'+(i+1)+'.</span>'+esc(r[0])+'<input class="ti '+cls+'" type="text" autocomplete="off" autocapitalize="off" spellcheck="false">'+esc(r[1].replace(/^ ?\. /,'. ').replace(/^ \?/,'?'))+'<div class="fb"></div></div>';}).join("");}
+$("c0").innerHTML=V1.map(function(r,i){var post=r[1].replace(/^ ([.?])/,'$1');return '<div class="it" data-i="'+i+'"><span class="n">'+(i+1)+'.</span>'+esc(r[0])+'<input class="ti" type="text" autocomplete="off" autocapitalize="off" spellcheck="false">'+esc(post)+'<div class="fb"></div></div>';}).join("");
+$("c3").innerHTML=D.map(function(r,i){var post=r[1];return '<div class="it" data-i="'+i+'"><span class="n">'+(i+2)+'.</span>'+esc(r[0])+'<input class="ti w" type="text" autocomplete="off" autocapitalize="off" spellcheck="false">'+esc(post)+'<div class="fb"></div></div>';}).join("");
+$("c2").innerHTML=Q3.map(function(r,i){return '<div class="it" data-i="'+i+'"><span class="n">'+(i+1)+'.</span>'+esc(r[0])+'<span class="uu">'+esc(r[1])+'</span>'+esc(r[2])+'<br><input class="ti" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Fragewort…"><div class="fb"></div></div>';}).join("");
+["c0","c2","c3"].forEach(function(id,j){$(id).addEventListener("input",function(){upd(+id.slice(1));});});
+/* Ex1 drag & drop, 2 banks */
+var BW=[B1,B2],BK=[[0,1,2,3].map(function(){return null;}),[0,1,2,3].map(function(){return null;})],KEY=[P2.map(function(p){return p[1];}),P2.map(function(p){return p[2];})],sel=null,drag=null,locked=false;
+(function(){var h='<div class="bank" id="bank"><div class="bk" data-b="0"><span class="lb">Fragewörter</span><span class="items"></span></div><div class="bk" data-b="1"><span class="lb">Antworten</span><span class="items" style="display:flex;flex-wrap:wrap;gap:8px"></span></div></div>';
+ h+='<div class="it"><span class="n">1.</span>Ich freu’ mich so!<div class="pair"><span class="gap fix">Auf wen?</span><span class="gap fix ans">Auf meine Freundin. Sie kommt heute zurück.</span></div></div>';
+ P2.forEach(function(p,i){h+='<div class="it"><span class="n">'+(i+2)+'.</span>'+esc(p[0])+'<div class="pair"><span class="gap" data-b="0" data-g="'+i+'"></span><span class="gap ans" data-b="1" data-g="'+i+'"></span></div><div class="fb"></div></div>';});
+ $("c1").innerHTML=h;})();
+function chipH(b,id,inSlot){var w=BW[b][id];return '<span class="chip'+(b?' long':'')+(inSlot?' in':'')+(!inSlot&&sel&&sel.b===b&&sel.id===id?' sel':'')+'" draggable="'+(locked?'false':'true')+'" data-b="'+b+'" data-id="'+id+'">'+esc(w)+'</span>';}
+function render1(){[0,1].forEach(function(b){var h="";BW[b].forEach(function(w,i){if(BK[b].indexOf(i)<0)h+=chipH(b,i,false);});document.querySelector('#bank .bk[data-b="'+b+'"] .items').innerHTML=h;});
+ document.querySelectorAll("#c1 .gap[data-b]").forEach(function(g){var b=+g.dataset.b,gi=+g.dataset.g,p=BK[b][gi];g.innerHTML=p===null?"":chipH(b,p,true);});upd(1);}
+render1();
+$("c1").addEventListener("click",function(e){if(locked||EX[1].res!==null)return;var g=e.target.closest(".gap[data-b]"),c=e.target.closest(".chip");
+ if(g){var b=+g.dataset.b,gi=+g.dataset.g;if(sel&&sel.b===b){BK[b][gi]=sel.id;sel=null;}else if(BK[b][gi]!==null){BK[b][gi]=null;}render1();}
+ else if(c&&c.closest("#bank")){var b2=+c.dataset.b,id=+c.dataset.id;sel=(sel&&sel.b===b2&&sel.id===id)?null:{b:b2,id:id};render1();}});
+$("c1").addEventListener("dragstart",function(e){var c=e.target.closest(".chip");if(!c||locked){e.preventDefault();return;}var g=c.closest(".gap[data-b]");drag={b:+c.dataset.b,id:+c.dataset.id,src:g?+g.dataset.g:-1};try{e.dataTransfer.setData("text/plain","x");e.dataTransfer.effectAllowed="move";}catch(x){}});
+$("c1").addEventListener("dragover",function(e){if(locked||!drag)return;var g=e.target.closest(".gap[data-b]");if((g&&+g.dataset.b===drag.b)||e.target.closest("#bank")){e.preventDefault();document.querySelectorAll(".gap.over").forEach(function(x){x.classList.remove("over");});if(g)g.classList.add("over");}});
+$("c1").addEventListener("drop",function(e){if(locked||!drag)return;e.preventDefault();var g=e.target.closest(".gap[data-b]");
+ if(g&&+g.dataset.b===drag.b){var gi=+g.dataset.g,old=BK[drag.b][gi];if(drag.src>=0)BK[drag.b][drag.src]=old;BK[drag.b][gi]=drag.id;}else if(e.target.closest("#bank")){if(drag.src>=0)BK[drag.b][drag.src]=null;}
+ drag=null;sel=null;document.querySelectorAll(".gap.over").forEach(function(x){x.classList.remove("over");});render1();});
+$("c1").addEventListener("dragend",function(){drag=null;document.querySelectorAll(".gap.over").forEach(function(x){x.classList.remove("over");});});
 function bar(k){return document.querySelector('.bar[data-bar="'+k+'"]');}
-function upd(k){if(!EX[k]||EX[k].res!==null)return;var b=bar(k),n=answered(k),t=EX[k].total;
- b.querySelector(".chk").disabled=n<t;b.querySelector(".msg").textContent=n<t?"Ai completat "+n+" din "+t+".":"Gata! Apasă „Verifică răspunsurile”.";}
-$("sents").addEventListener("input",function(){upd(0);});$("gaps").addEventListener("input",function(){upd(2);});
-function updTotal(){var c=0,t=0,any=false;EX.forEach(function(e,k){document.querySelector('.tab[data-ex="'+k+'"]').classList.toggle("done",e.res!==null);if(e.res!==null){c+=e.res;t+=e.total;any=true;}});
- $("total").textContent=any?"Gesamt: "+c+" / "+t:"";if(any)scorm.report(c,t);}
+function filled(sel){var n=0;document.querySelectorAll(sel).forEach(function(x){if(x.value.trim()!=="")n++;});return n;}
+function answered(k){if(k===1)return BK[0].concat(BK[1]).filter(function(x){return x!==null;}).length;return filled("#c"+k+" input");}
+function need(k){return k===1?P2.length*2:EX[k].total;}
+function upd(k){if(EX[k].res!==null)return;var b=bar(k),n=answered(k),t=need(k);b.querySelector(".chk").disabled=n<t;b.querySelector(".msg").textContent=n<t?(k===1?"Ai pus "+n+" din "+t+".":"Ai completat "+n+" din "+t+"."):"Gata! Apasă „Verifică răspunsurile”.";}
+function updTotal(){var c=0,t=0,any=false;EX.forEach(function(e,k){document.querySelector('.tab[data-ex="'+k+'"]').classList.toggle("done",e.res!==null);if(e.res!==null){c+=e.res;t+=e.total;any=true;}});$("total").textContent=any?"Gesamt: "+c+" / "+t:"";if(any)scorm.report(c,t);}
+function typed(id,keys,exps){var c=0;document.querySelectorAll("#"+id+" .it").forEach(function(it){var i=+it.dataset.i,x=it.querySelector("input"),ok=same(x.value,keys[i]);if(ok)c++;x.disabled=true;x.classList.add(ok?"ok":"no");if(!ok)x.insertAdjacentHTML("afterend",' <span class="tag">→ '+esc(keys[i])+'</span>');it.querySelector(".fb").innerHTML=ex(ok,(ok?'':'Corect: <b>'+esc(keys[i])+'</b>.<br>')+exps[i]);});return c;}
 function check(k){var c=0;
- if(k===0){document.querySelectorAll("#sents .s").forEach(function(d,i){var inp=d.querySelector("input"),fb=d.querySelector(".fb"),v=normS(inp.value);
-   var ok=SENT[i].a.some(function(a){return normS(a)===v;});inp.readOnly=true;inp.classList.add(ok?"ok":"no");if(ok){c++;fb.className="fb ok";fb.textContent="Corect";}else{fb.className="fb no";fb.textContent="→ "+SENT[i].a[0];}});EX[0].res=c;}
- else if(k===1){EX[1].res=0;sel=null;TG.forEach(function(a,s){var o=occupant(s);if(o!==null&&norm(BANK[o])===norm(a))c++;});EX[1].res=c;renderT();}
- else{document.querySelectorAll("#gaps .g").forEach(function(sp){var g=KG[+sp.dataset.g],inp=sp.querySelector("input"),full=norm(g.p+g.r),v=inp.value;
-   var ok=norm(g.p+v)===full||norm(v)===full;inp.readOnly=true;sp.classList.add(ok?"ok":"no");if(ok)c++;else{var f=document.createElement("span");f.className="fix";f.textContent="→ "+g.p+g.r;sp.appendChild(f);}});EX[2].res=c;}
- var t=EX[k].total,p=Math.round(c/t*100),b=bar(k),s=b.querySelector(".score");
- s.textContent="Rezultat: "+c+" / "+t+" ("+p+"%)";s.className="score "+(p>=80?"good":p>=PASS_PERCENT?"mid":"low");
+ if(k===0)c=typed("c0",V1.map(function(r){return r[2];}),V1.map(function(r){return r[3];}));
+ else if(k===2)c=typed("c2",Q3.map(function(r){return r[3];}),Q3.map(function(r){return r[4];}));
+ else if(k===3)c=typed("c3",D.map(function(r){return r[2];}),D.map(function(r){return r[3];}));
+ else{locked=true;var items=document.querySelectorAll("#c1 .it .fb");
+  P2.forEach(function(p,i){var q=BK[0][i]!==null?BW[0][BK[0][i]]:"",a=BK[1][i]!==null?BW[1][BK[1][i]]:"",qo=q===p[1],ao=a===p[2];if(qo)c++;if(ao)c++;
+   var gq=document.querySelector('#c1 .gap[data-b="0"][data-g="'+i+'"]'),ga=document.querySelector('#c1 .gap[data-b="1"][data-g="'+i+'"]');gq.classList.add(qo?"ok":"no");ga.classList.add(ao?"ok":"no");
+   var tag="";if(!qo)tag+='<div class="cs"><b>Fragewort corect:</b> '+esc(p[1])+'</div>';if(!ao)tag+='<div class="cs"><b>Răspuns corect:</b> '+esc(p[2])+'</div>';
+   items[i].innerHTML=tag+ex(qo&&ao,(qo&&ao?'':'Verifică ambele părți. ')+p[3]);});render1();}
+ EX[k].res=c;var t=EX[k].total,pc=Math.round(c/t*100),b=bar(k),s=b.querySelector(".score");
+ s.textContent="Rezultat: "+c+" / "+t+" ("+pc+"%)";s.className="score "+(pc>=80?"good":pc>=PASS_PERCENT?"mid":"low");
  b.querySelector(".msg").classList.add("hidden");b.querySelector(".chk").classList.add("hidden");b.querySelector(".rty").classList.remove("hidden");updTotal();}
 function retry(k){EX[k].res=null;
- if(k===0)document.querySelectorAll("#sents .s").forEach(function(d){var i=d.querySelector("input");i.value="";i.readOnly=false;i.className="sent";var f=d.querySelector(".fb");f.className="fb";f.textContent="";});
- else if(k===1){chipSlot={};sel=null;document.querySelectorAll("#tobias .slot").forEach(function(s){s.className="slot";});}
- else document.querySelectorAll("#gaps .g").forEach(function(sp){sp.className="g";var i=sp.querySelector("input");i.value="";i.readOnly=false;var f=sp.querySelector(".fix");if(f)f.remove();});
- var b=bar(k);b.querySelector(".score").className="score hidden";b.querySelector(".msg").classList.remove("hidden");b.querySelector(".chk").classList.remove("hidden");b.querySelector(".rty").classList.add("hidden");
- if(k===1)renderT();else upd(k);updTotal();}
-[0,1,2].forEach(function(k){var b=bar(k);b.querySelector(".chk").addEventListener("click",function(){check(k);});b.querySelector(".rty").addEventListener("click",function(){retry(k);});});
-document.querySelectorAll(".tab").forEach(function(t){t.addEventListener("click",function(){
- document.querySelectorAll(".tab").forEach(function(x){x.classList.toggle("on",x===t);});
- document.querySelectorAll("section.ex").forEach(function(s,i){s.classList.toggle("on",i===+t.dataset.ex);});window.scrollTo(0,0);});});
-renderT();upd(0);upd(2);scorm.init();window.addEventListener("pagehide",scorm.finish);
-</script>
-</body>
-</html>
+ if(k===1){locked=false;BK=[[0,1,2,3].map(function(){return null;}),[0,1,2,3].map(function(){return null;})];sel=null;document.querySelectorAll("#c1 .gap").forEach(function(g){g.classList.remove("ok","no");});document.querySelectorAll("#c1 .fb").forEach(function(f){f.innerHTML="";});render1();}
+ else{document.querySelectorAll("#c"+k+" input").forEach(function(x){x.disabled=false;x.value="";x.className=x.className.replace(/\b(ok|no)\b/g,"").trim();});document.querySelectorAll("#c"+k+" .tag").forEach(function(t){t.parentNode.removeChild(t);});document.querySelectorAll("#c"+k+" .fb").forEach(function(f){f.innerHTML="";});}
+ var b=bar(k);b.querySelector(".score").className="score hidden";b.querySelector(".msg").classList.remove("hidden");b.querySelector(".chk").classList.remove("hidden");b.querySelector(".rty").classList.add("hidden");upd(k);updTotal();}
+EX.forEach(function(_,k){var b=bar(k);b.querySelector(".chk").addEventListener("click",function(){check(k);});b.querySelector(".rty").addEventListener("click",function(){retry(k);});});
+document.querySelectorAll(".tab").forEach(function(t){t.addEventListener("click",function(){document.querySelectorAll(".tab").forEach(function(x){x.classList.toggle("on",x===t);});document.querySelectorAll("section.ex").forEach(function(s,i){s.classList.toggle("on",i===+t.dataset.ex);});window.scrollTo(0,0);});});
+EX.forEach(function(_,k){upd(k);});
+scorm.init();window.addEventListener("pagehide",scorm.finish);
+</script></body></html>
