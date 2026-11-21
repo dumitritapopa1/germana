@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trennbar oder nicht?</title>
+<style>
+
+:root{--bg:#f4f5f7;--card:#fff;--ink:#1f2430;--muted:#5d6472;--line:#e3e6eb;--accent:#3b5bdb;--accent-soft:#e8edff;--ok:#1f8a5b;--ok-soft:#e6f5ee;--bad:#c92a2a;--bad-soft:#fdecec}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;font-size:16px;line-height:1.55;display:flex;flex-direction:column}
+header{padding:10px 24px;border-bottom:1px solid var(--line);background:var(--card);display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+header h1{margin:0;font-size:20px}
+.tabs{display:flex;gap:6px}
+.tab{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:7px 16px;font-size:15px;font-weight:700;cursor:pointer;color:var(--ink)}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.tab .dn{display:none;margin-left:4px}.tab.done .dn{display:inline}
+.total{margin-left:auto;font-size:14px;font-weight:700;color:var(--muted)}
+section.ex{display:none;flex:1;min-height:0;flex-direction:column}
+section.ex.on{display:flex}
+.wrap{flex:1;padding:16px 24px;min-height:0;display:flex;gap:16px;justify-content:center}
+.pane{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow-y:auto;min-height:0}
+.wrap.split .pane{flex:1}
+.wrap.one .pane{width:100%;max-width:780px}
+.pi{padding:20px 26px}
+.instr{margin:0 0 14px;padding:12px 16px;background:var(--accent-soft);border-left:4px solid var(--accent);border-radius:6px;font-weight:600}
+.instr small{display:block;font-weight:400;color:var(--muted);margin-top:2px}
+.txt h2{margin:0 0 12px;font-size:20px}
+.txt p{margin:0 0 14px;font-size:17px;line-height:1.7}
+.q{padding:16px 0;border-top:1px solid var(--line)}
+.q:first-of-type{border-top:none}
+.q h3{margin:0 0 10px;font-size:17px}
+.opt{display:flex;align-items:center;gap:12px;padding:9px 13px;border:1.5px solid var(--line);border-radius:10px;margin-bottom:7px;cursor:pointer;font-size:16px}
+.opt:hover{border-color:#aeb6c8}
+.opt{position:relative}.opt input{position:absolute;opacity:0;pointer-events:none}
+.dot{flex:0 0 22px;height:22px;border-radius:50%;border:2px solid #b7bfce;background:#fff;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:800}
+.opt.on{border-color:var(--accent);background:var(--accent-soft)}
+.opt.on .dot{border-color:var(--accent);background:var(--accent);box-shadow:inset 0 0 0 4px #fff,inset 0 0 0 12px var(--accent)}
+.opt.locked{cursor:default}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}.opt.right .dot{border-color:var(--ok);background:var(--ok);box-shadow:none}.opt.right .dot::after{content:"✓"}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}.opt.wrong .dot{border-color:var(--bad);background:var(--bad);box-shadow:none}.opt.wrong .dot::after{content:"✕"}
+.opt.missed{border-color:var(--ok);border-style:dashed}
+.opt .tag{margin-left:auto;font-size:13px;font-weight:700;white-space:nowrap}
+.opt.right .tag,.opt.missed .tag{color:var(--ok)}.opt.wrong .tag{color:var(--bad)}
+.gaps p{font-size:18px;line-height:2.3;margin:0 0 14px}
+.g{display:inline-flex;align-items:baseline;white-space:nowrap}
+.g .pre{font-weight:600}
+.g input{font:inherit;font-size:17px;border:none;border-bottom:2px solid #9aa3b5;background:var(--accent-soft);padding:0 3px;margin:0 1px;border-radius:3px 3px 0 0;color:var(--ink);text-align:left}
+.g input:focus{outline:none;border-bottom-color:var(--accent);background:#dbe3ff}
+.g sup{font-size:11px;color:var(--muted);margin-left:1px}
+.g.ok input{background:var(--ok-soft);border-bottom-color:var(--ok);color:var(--ok);font-weight:600}
+.g.no input{background:var(--bad-soft);border-bottom-color:var(--bad);color:var(--bad);text-decoration:line-through}
+.fix{color:var(--ok);font-weight:700;font-size:15px;margin-left:4px}
+audio{width:100%;height:40px}
+.audio{position:sticky;top:0;background:var(--card);padding-bottom:10px;z-index:2}
+.s{padding:14px 0;border-top:1px solid var(--line)}
+.s:first-of-type{border-top:none}
+.s .st{font-size:17px;margin-bottom:8px}
+.rf{display:flex;gap:8px}
+.rf button{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:8px 20px;font-size:15px;font-weight:700;cursor:pointer;color:var(--ink)}
+.rf button.on{border-color:var(--accent);background:var(--accent-soft)}
+.rf button.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+.rf button.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.rf button.missed{border-color:var(--ok);border-style:dashed;color:var(--ok)}
+.fb{font-size:14px;font-weight:700;margin-top:6px}.fb.ok{color:var(--ok)}.fb.no{color:var(--bad)}
+.bar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:12px 24px;background:var(--card);border-top:1px solid var(--line)}
+.btn{border:none;border-radius:8px;padding:10px 22px;font-size:15px;font-weight:700;cursor:pointer}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:disabled{opacity:.45;cursor:not-allowed}
+.btn-ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line)}
+.msg{font-size:15px;color:var(--muted)}
+.score{font-size:16px;font-weight:700}.score.good{color:var(--ok)}.score.mid{color:#b06a00}.score.low{color:var(--bad)}
+.hidden{display:none!important}
+@media (max-width:820px){
+ body{height:auto;min-height:100%}
+ header{padding:10px 14px}
+ .wrap{padding:10px;flex-direction:column}
+ .pane{overflow:visible}
+ .pi{padding:16px}
+ .total{margin-left:0;width:100%}
+ .bar{position:sticky;bottom:0;padding:10px 14px;z-index:5}
+ .audio{top:0}
+}
+
+.sent{width:100%;font:inherit;font-size:17px;border:1.5px solid var(--line);border-radius:8px;padding:9px 12px;background:var(--accent-soft);color:var(--ink)}
+.sent:focus{outline:none;border-color:var(--accent);background:#dbe3ff}
+.sent.ok{background:var(--ok-soft);border-color:var(--ok);color:var(--ok);font-weight:600}
+.sent.no{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.cue{font-weight:600}
+.bank{display:flex;flex-wrap:wrap;gap:8px;padding:12px;background:#eef1f6;border-radius:10px;margin-bottom:18px;min-height:56px}
+.chip{border:1.5px solid #cfd5e1;background:#fff;border-radius:8px;padding:6px 14px;font-size:16px;cursor:grab;user-select:none;display:inline-block}
+.chip.sel{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 2px rgba(59,91,219,.25)}
+.slot{display:inline-block;min-width:8ch;min-height:36px;vertical-align:middle;border:1.5px dashed #9aa3b5;border-radius:8px;padding:2px 4px;margin:0 3px;background:#fff;text-align:center;line-height:1.6}
+.slot.over{border-color:var(--accent);background:var(--accent-soft)}
+.slot .chip{padding:1px 10px;font-size:17px}
+.slot.ok{border-style:solid;border-color:var(--ok);background:var(--ok-soft)}
+.slot.ok .chip{color:var(--ok);border-color:var(--ok);background:transparent;font-weight:600}
+.slot.no{border-style:solid;border-color:var(--bad);background:var(--bad-soft)}
+.slot.no .chip{color:var(--bad);border-color:var(--bad);background:transparent;text-decoration:line-through}
+.bank.over{background:var(--accent-soft)}
+.img img{width:100%;height:auto;display:block;border-radius:8px}
+.sl .g{margin:0 2px}
+.sl p{margin:0 0 6px;font-size:18px;line-height:2.4}
+
+.audiorow{background:var(--card);border-bottom:1px solid var(--line);padding:8px 24px;position:sticky;top:0;z-index:6}
+.audiorow audio{max-width:900px;display:block;margin:0 auto}
+.wordlist{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}
+.wordlist span{background:#eef1f6;border-radius:8px;padding:5px 12px;font-style:italic;font-weight:600}
+.s audio{margin:4px 0 10px}
+.sg p{margin:0 0 4px;font-size:18px;line-height:2.4}
+@media (max-width:820px){.audiorow{padding:8px 12px}}
+
+.tabs{flex-wrap:wrap}
+.tab{padding:7px 12px}
+.row{display:flex;align-items:baseline;gap:8px;padding:6px 0;font-size:18px;line-height:2.2}
+.row .n{color:var(--muted);min-width:1.8em}
+.row .base{font-weight:600;min-width:6.5em}
+.row.ex{color:var(--muted)}
+.row.ex .ans{font-weight:700;color:var(--ok)}
+.hint{color:var(--muted);font-size:14px}
+.convs{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:6px}
+.conv{border:2px dashed var(--line);border-radius:12px;padding:10px;background:#fafbfc;min-height:150px}
+.conv.over,.pool.over{border-color:var(--accent);background:var(--accent-soft)}
+.conv h3{margin:0 0 6px;text-align:center;font-size:16px}
+.conv audio{height:36px;margin-bottom:8px}
+.pool{display:flex;flex-wrap:wrap;gap:8px;padding:10px;border:2px dashed var(--line);border-radius:12px;min-height:54px;margin-bottom:14px}
+.pool .chip{margin:0}
+.conv .chip{display:block;margin:0 0 7px;text-align:left}
+.chip small{display:block;font-weight:700;font-size:12px;margin-top:2px}
+.chip.ok{border-color:var(--ok);background:var(--ok-soft);color:var(--ok);cursor:default}
+.chip.no{border-color:var(--bad);background:var(--bad-soft);color:var(--bad);cursor:default}
+.aw{display:inline-flex;gap:4px;vertical-align:middle;margin:0 3px}
+.aw button{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:2px 14px;font-size:16px;font-weight:700;cursor:pointer;color:var(--ink)}
+.aw button.on{border-color:var(--accent);background:var(--accent-soft)}
+.aw button.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+.aw button.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.aw button.missed{border-color:var(--ok);border-style:dashed;color:var(--ok)}
+.forum p{margin:0 0 4px;font-size:17px;line-height:2.3}
+.forum .gap{height:10px}
+@media (max-width:820px){.convs{grid-template-columns:1fr}}
+
+.qrow{display:grid;grid-template-columns:1fr 1.15fr;gap:10px;margin-bottom:10px;align-items:stretch}
+.qbox{border:1.5px solid var(--line);border-radius:10px;padding:10px 14px;background:#fff;font-weight:600;display:flex;align-items:center}
+.aslot{border:2px dashed #b7bfce;border-radius:10px;min-height:56px;padding:4px;background:#fafbfc;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:14px;text-align:center}
+.aslot.over{border-color:var(--accent);background:var(--accent-soft)}
+.aslot .chip{display:block;width:100%;margin:0;text-align:left}
+.aslot.ok{border-style:solid;border-color:var(--ok);background:var(--ok-soft)}
+.aslot.no{border-style:solid;border-color:var(--bad);background:var(--bad-soft)}
+.aslot .chip.ok{border-color:var(--ok);background:transparent;color:var(--ok)}
+.aslot .chip.no{border-color:var(--bad);background:transparent;color:var(--bad);text-decoration:line-through}
+.aslot .fixt{display:block;color:var(--ok);font-size:13px;font-weight:700;margin-top:3px;text-decoration:none}
+.abank{display:flex;flex-direction:column;gap:8px;padding:12px;background:#eef1f6;border-radius:10px;margin-bottom:18px;min-height:56px}
+.abank .chip{margin:0;text-align:left;display:block}
+.abank.over{background:var(--accent-soft)}
+.fqitem{margin-bottom:12px;padding:10px 12px;background:#f7f8fb;border-radius:10px}
+.fqbuilt{min-height:48px;padding:6px;border:2px dashed #b7bfce;border-radius:10px;background:#fff;display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:4px 0 8px}
+.fqbuilt.ok{border-style:solid;border-color:var(--ok);background:var(--ok-soft)}
+.fqbuilt.no{border-style:solid;border-color:var(--bad);background:var(--bad-soft)}
+.fqtiles{display:flex;flex-wrap:wrap;gap:8px}
+.fqitem .chip{margin:0;cursor:pointer}
+.cmpd{font-size:19px;line-height:2.4;padding:4px 0}
+.cmpd .n{color:var(--muted);display:inline-block;min-width:1.8em}
+@media (min-width:821px){.abank{display:grid;grid-template-columns:1fr 1fr}}
+@media (max-width:820px){.qrow{grid-template-columns:1fr}}
+
+.txt .title{font-weight:700;font-size:18px;margin:0 0 6px}
+.txt p{margin:0 0 12px;font-size:17px;line-height:1.7}
+.rfs{padding:14px 0;border-top:1px solid var(--line)}
+.rfs:first-of-type{border-top:none}
+.rfs .st{font-size:17px;margin-bottom:8px}
+.rf{display:flex;gap:8px}
+.rf button{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:8px 20px;font-size:15px;font-weight:700;cursor:pointer;color:var(--ink)}
+.rf button.on{border-color:var(--accent);background:var(--accent-soft)}
+.rf button.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+.rf button.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.rf button.missed{border-color:var(--ok);border-style:dashed;color:var(--ok)}
+.corr{display:none;margin-top:10px}
+.corr.show{display:block}
+.corr label{display:block;font-size:13px;color:var(--muted);margin-bottom:4px}
+.sug{margin-top:8px;font-size:14px;color:var(--ok);font-weight:700}
+.film{padding:14px 0;border-top:1px solid var(--line)}
+.film:first-of-type{border-top:none}
+.film h3{margin:0 0 6px;font-size:17px}
+.film audio{margin-bottom:10px}
+
+.drow{padding:12px 0;border-top:1px solid var(--line)}
+.drow:first-of-type{border-top:none}
+.drow .st{font-size:17px;margin-bottom:6px}
+.dline{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dline .pre{font-weight:700;white-space:nowrap;font-size:17px}
+.dline input{flex:1;min-width:220px}
+.drow.ex{background:#f3f7f4;border-radius:10px;padding:12px 14px;margin-bottom:6px;border:1px solid var(--ok)}
+.drow.ex .ans{color:var(--ok);font-weight:700;font-size:17px}
+.tip{background:#fff8e6;border-left:4px solid #e0a100;border-radius:6px;padding:10px 14px;margin:0 0 14px;font-size:15px}
+.tip b{color:#8a5a00}
+.convs.four{grid-template-columns:1fr 1fr}
+
+.mbank{display:flex;flex-wrap:wrap;gap:8px;padding:12px;background:#eef1f6;border-radius:10px;margin-bottom:18px;min-height:56px}
+.mbank.over{background:var(--accent-soft)}
+.mbank .chip{margin:0}
+.pgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.pcell{text-align:center}
+.pcell img{width:100%;height:auto;display:block;border-radius:6px}
+.pcell .slot{display:block;margin:6px auto 0;width:76px;min-width:0;min-height:38px;font-size:18px}
+.pcell .slot .chip{padding:1px 10px;font-size:18px;font-weight:700}
+.msl .slot .chip{font-size:16px}
+.sl2 p{margin:0 0 4px;font-size:18px;line-height:2.5}
+.post{margin-bottom:14px}
+.post .nm{font-weight:700}
+.post p{margin:4px 0 0;font-size:17px;line-height:1.75}
+.post .ttl{display:inline-block;vertical-align:middle}
+.exchip{display:inline-block;border:1.5px solid var(--ok);background:var(--ok-soft);color:var(--ok);border-radius:8px;padding:2px 10px;font-size:16px;font-weight:600}
+.fixs{color:var(--ok);font-weight:700;font-size:13px;display:block}
+@media (max-width:820px){.pgrid{grid-template-columns:repeat(2,1fr)}}
+
+
+.part{font-weight:700;font-size:18px;margin:16px 0 6px;color:var(--accent)}
+.aud{position:sticky;top:0;z-index:5;background:#fff;padding:6px 0 8px;margin:0 0 8px}.aud audio{width:100%;max-width:520px;height:40px}
+.illu{text-align:center;margin:0 0 10px}.illu img{max-width:100%;width:380px;height:auto;border-radius:12px;border:1.5px solid var(--line)}
+.mo{display:flex;gap:10px;align-items:flex-start;padding:8px 12px;border:1.5px solid var(--line);border-radius:10px;background:#fff;margin:6px 0;cursor:pointer;font-size:17px;line-height:1.45}
+.mo input{width:20px;height:20px;margin-top:3px;flex:none}
+.mo.exa{background:#e8f6fd;border-color:#29a8e0}
+.mo.ok{border-color:var(--ok);background:var(--ok-soft)}.mo.bad{border-color:var(--bad);background:var(--bad-soft)}.mo.miss{border-color:var(--ok);border-style:dashed}
+.expl{font-weight:400;margin:6px 0 0;padding:8px 12px;background:var(--bad-soft);border-left:4px solid var(--bad);border-radius:6px;font-size:15px;line-height:1.5}
+.expl.ok{background:var(--ok-soft);border-left-color:var(--ok)}
+.expl b.t{display:block;margin-bottom:2px;font-weight:700}.expl.ok b.t{color:var(--ok)}.expl:not(.ok) b.t{color:var(--bad)}
+.rb{border:2px solid #f0b6cf;background:#fdeaf3;border-radius:12px;margin:0 0 14px}.rb summary{cursor:pointer;padding:9px 14px;font-weight:700;color:#a3225d}.rb .rbx{padding:0 14px 12px;font-size:16px;line-height:1.7}
+.exm{background:#e8f6fd;border-left:4px solid #29a8e0;border-radius:10px;padding:8px 14px;margin:0 0 8px;font-size:17px;line-height:1.6}
+.sent{padding:8px 0;border-top:1px solid var(--line);font-size:17.5px;line-height:2.1}.sent .n{font-weight:700;color:var(--muted);margin-right:6px}
+.sent .exg{color:#2a4a9a;font-style:italic;text-decoration:underline}
+.ti{font:inherit;font-size:16px;padding:3px 8px;border:1.5px solid var(--line);border-radius:6px;width:9.5em;max-width:100%}.ti:focus{outline:none;border-color:var(--accent)}
+.ti.ok{border-color:var(--ok);background:var(--ok-soft);color:var(--ok);font-weight:700}.ti.no{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}.tag{font-size:14px;color:var(--ok);font-weight:700}
+.bank{position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;gap:8px;min-height:50px;padding:10px;border:2px dashed #aeb6c8;border-radius:12px;background:#f5f7fb;margin:0 0 12px}
+.chip{display:inline-block;padding:4px 14px;border:1.5px solid var(--accent);border-radius:999px;background:#fff;color:var(--accent);font-weight:700;font-size:17px;cursor:grab;user-select:none;-webkit-user-select:none}
+.chip.sel{background:var(--accent);color:#fff}
+.gap{display:inline-block;min-width:6.2em;min-height:1.7em;vertical-align:middle;border-bottom:2.5px dashed #8a94ab;margin:0 2px;text-align:center;background:#fafbfd;border-radius:6px 6px 0 0;cursor:pointer}
+.gap.fix{border-bottom:2.5px solid #29a8e0;background:#e8f6fd;cursor:default;font-style:italic;color:#2a4a9a;padding:0 8px}
+.gap .chip{padding:1px 12px;font-size:16.5px}.gap.ok .chip{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}.gap.no .chip{border-color:var(--bad);background:var(--bad-soft);color:var(--bad);text-decoration:line-through}
+.gap.over{background:var(--accent-soft)}
+.ctext{font-size:18px;line-height:2.4;margin:0 0 10px}.ctext sup{color:var(--muted);font-size:12px}
+.rd{background:#fffef8;border:1.5px solid var(--line);border-radius:12px;padding:12px 16px;margin:0 0 16px;font-size:16.5px;line-height:1.65;overflow:hidden}
+.rd h3{margin:0 0 8px;color:var(--accent);font-size:19px}.rd p{margin:0 0 10px}.rd img{float:right;width:210px;max-width:46%;height:auto;margin:0 0 8px 14px;border-radius:10px}
+.grp{margin:14px 0 0}.grp .h{display:inline-block;background:#e9ecf4;border-radius:8px;padding:3px 12px;font-weight:700;margin:0 0 4px}
+.item{padding:10px 0;border-top:1px solid var(--line);font-size:17px;line-height:1.5}.item .h{display:block;margin-bottom:4px}
+.cw.mc{width:100%;text-align:left;margin:6px 0;flex:none}.cw.mc b{margin-right:6px}
+.cw{display:block;text-align:center;flex:1;border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:6px 14px;font:inherit;font-size:16.5px;cursor:pointer;color:var(--ink)}
+.cw:hover{border-color:#aeb6c8}.cw.on{border-color:var(--accent);background:var(--accent-soft);font-weight:700}
+.cw.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok);font-weight:700}.cw.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad);text-decoration:line-through}
+.cw.missed{border-color:var(--ok);border-style:dashed;color:var(--ok);font-weight:700}.cw:disabled{cursor:default}
+@media(max-width:560px){.rd img{float:none;display:block;margin:0 auto 10px;width:200px;max-width:80%}}
+
+.q{padding:10px 0;border-top:1px solid var(--line);font-size:18px;line-height:1.7}.q .sn{font-weight:700;color:#555;margin-right:4px}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 6px}.nw{white-space:nowrap;display:inline-flex;align-items:center;max-width:100%}
+.ti.sm{width:7em}.ti.md{width:11em}.ti.lg{width:14em}.ti:disabled{opacity:1}
+.ti.exi{border-color:#29a8e0;background:#e8f6fd;font-weight:700;color:#0b6a99}
+.sub{color:#777;font-size:15px}
+.ch{display:inline-block;margin:4px 4px 0 0;padding:2px 16px;border:1.5px solid var(--line);background:#fff;border-radius:999px;font:inherit;font-size:17px;cursor:pointer;color:var(--ink);line-height:1.6}
+.ch:hover{border-color:#aeb6c8}.ch.on{border-color:var(--accent);background:var(--accent-soft);font-weight:700}
+.ch.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok);font-weight:700}.ch.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad);text-decoration:line-through}
+.ch.missed{border-color:var(--ok);border-style:dashed;color:var(--ok);font-weight:700}.ch:disabled{cursor:default}
+.fb{margin-top:6px}.fb .expl{line-height:1.5}
+.vb{border-collapse:collapse;margin:6px 0 0;font-size:14.5px;width:100%;table-layout:fixed}.vb td,.vb th{overflow-wrap:anywhere}.vb td,.vb th{padding:4px 10px;border:1px solid #e6b3cb;text-align:left;vertical-align:top}.vb th{background:#fbe3ee}
+.tiles{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px;padding:10px;border:1.5px dashed #aeb6c8;border-radius:12px;background:#f5f7fb}.tiles span{background:#fff;border:1.5px solid #d5dbea;border-radius:6px;padding:2px 12px;font-size:17px;font-weight:700}
+.mail{background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:12px 16px;margin:0 0 14px;font-size:17.5px;line-height:1.8}.mail u{text-decoration:underline;text-decoration-thickness:2px;text-decoration-color:var(--accent)}.mail sup{color:var(--accent);font-weight:700}
+.sg{background:#fff;border:2px solid #cfd6e6;border-radius:6px;padding:10px 14px;margin:12px 0;box-shadow:2px 3px 0 #e1e6f0}.sg .tt{font-weight:700;font-size:18px}.sg .ss{font-size:16px;line-height:1.5}
+.sg.exs{background:#e8f6fd;border-color:#29a8e0}
+.sts{background:#f5f7fb;border:1.5px solid #dfe4f0;border-radius:12px;padding:8px 14px;margin:0 0 12px;font-size:16px;line-height:1.5}.sts p{margin:6px 0}
+
+</style></head><body>
+<header><h1>Trennbar oder nicht?</h1><div class="tabs"><button class="tab on" data-ex="0">Übung 1<span class="dn"> ✓</span></button><button class="tab" data-ex="1">Übung 2<span class="dn"> ✓</span></button><button class="tab" data-ex="2">Übung 3<span class="dn"> ✓</span></button><button class="tab" data-ex="3">Übung 4<span class="dn"> ✓</span></button><button class="tab" data-ex="4">Übung 5<span class="dn"> ✓</span></button></div><span class="total" id="total"></span></header>
+<section class="ex on" id="ex0">
+ <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
+  <p class="instr">Übung 1: Das Partizip II steht im falschen Satz.<small>Citește propozițiile și înlocuiește participiul care nu se potrivește cu participiul corect.</small></p>
+  <div class="sts"><b>Ce ai de făcut:</b><p><b>1.</b> Propozițiile spun povestea unui pachet cu o jachetă comandată pe internet. În fiecare propoziție, <b>participiul de la sfârșit</b> (Partizip II) nu se potrivește cu sensul.</p><p><b>2.</b> Găsește cuvântul greșit și gândește-te ce s-a întâmplat de fapt în acel moment al poveștii.</p><p><b>3.</b> Scrie în câmpul de lângă săgeată <b>Partizip II corect</b>.</p><p><b>Exemplu (1):</b> „Andreas hat im Internet eine Jacke <u>probiert</u>.” – nu poți proba o jachetă pe internet, ci o comanzi → corect: <b>bestellt</b>.</p><p><b>Indiciu:</b> participiile corecte sunt chiar cele greșite din alte propoziții – fiecare se folosește o singură dată (exceptând varianta anprobiert la 5).</p></div><details class="rb" open><summary>Reține: Partizip II la verbele separabile și inseparabile</summary><div class="rbx"><p><b>Separabile</b> (an-, auf-, aus-, ein-, mit-, um-, weg-, zurück-):<br>prefix + <b>ge</b> + rădăcină → an<b>ge</b>kommen, auf<b>ge</b>standen, um<b>ge</b>tauscht</p><p><b>Inseparabile</b> (be-, emp-, ent-, er-, ge-, ver-, zer-, unter-):<br>fără <b>ge-</b> → bestellt, empfohlen, verstanden</p><p>Verbe în <b>-ieren</b>:<br>fără <b>ge-</b> → probiert, telefoniert</p></div></details><div id="c0"></div>
+ </div></div></div>
+ <div class="bar" data-bar="0">
+  <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
+  <span class="msg"></span><span class="score hidden"></span>
+ </div>
+</section>
+<section class="ex" id="ex1">
+ <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
+  <p class="instr">Übung 2: Ergänzen Sie das Partizip II.<small>Completează în dreapta Partizip II al verbului din paranteză. Atenție la ge- între prefix și rădăcină!</small></p>
+  <div id="c1"></div>
+ </div></div></div>
+ <div class="bar" data-bar="1">
+  <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
+  <span class="msg"></span><span class="score hidden"></span>
+ </div>
+</section>
+<section class="ex" id="ex2">
+ <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
+  <p class="instr">Übung 3: Ergänzen Sie das Verb im Perfekt.<small>Completează auxiliarul (haben/sein) și participiul. Silabele de mai jos te ajută: fiecare se folosește o singură dată.</small></p>
+  <div class="tiles"><span>be</span><span>ben</span><span>den</span><span>emp</span><span>fal</span><span>foh</span><span>ge</span><span>ge</span><span>gon</span><span>len</span><span>len</span><span>nen</span><span>nen</span><span>schrie</span><span>stan</span><span>ter</span><span>un</span><span>ver</span><span>won</span></div><div id="c2"></div>
+ </div></div></div>
+ <div class="bar" data-bar="2">
+  <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
+  <span class="msg"></span><span class="score hidden"></span>
+ </div>
+</section>
+<section class="ex" id="ex3">
+ <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
+  <p class="instr">Übung 4: Korrigieren Sie die Fehler in der Mail.<small>Corectează greșelile din mail (cuvintele subliniate și numerotate). Scrie forma corectă. Exemplul 1 e rezolvat.</small></p>
+  <div class="mail">Hallo Ines,<br>so ein Glück! Letzte Woche <u>ich habe</u><sup>1</sup> bei Trapp in der Siebererstraße Schuhe gesehen. Wahnsinn, echt super. Ich habe sie auch gleich <u>geprobiert</u><sup>2</sup>, aber nicht gekauft. Sie waren zu teuer, aber sooo schön. Gestern <u>hat</u><sup>3</sup> ich nach der Arbeit Mira <u>besuchen</u><sup>4</sup>. Und weißt du was? Jetzt ist Schlussverkauf, 50 % Rabatt. Heute <u>habe</u><sup>5</sup> ich gleich zum Geschäft gegangen. Yeah! Du musst auch schnell hin!!<br>Liebe Grüße<br>Jana</div><div id="c3"></div>
+ </div></div></div>
+ <div class="bar" data-bar="3">
+  <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
+  <span class="msg"></span><span class="score hidden"></span>
+ </div>
+</section>
+<section class="ex" id="ex4">
+ <div class="wrap one" style="overflow-y:auto"><div class="pane" style="height:fit-content"><div class="pi">
+  <p class="instr">Übung 5: Was steht auf den Schildern?<small>Potrivește fiecare indicator cu afirmația corectă A–E. (La Café Maurer e dat exemplul: D.)</small></p>
+  <div class="sts"><p><b>A</b> – Man kann jeden Tag von neun bis sieben Uhr abends einkaufen, nur nicht am Sonntag.</p><p><b>B</b> – Wir schließen mittags, das Geschäft ist nur am Vormittag offen.</p><p><b>C</b> – Wir haben immer offen, aber nicht an diesem Donnerstag.</p><p><b>D</b> – Am Wochenende schließen wir schon um vier.</p><p><b>E</b> – Sie bekommen auch am Sonntag frisches Brot, aber nur am Vormittag.</p></div><div id="c4"></div>
+ </div></div></div>
+ <div class="bar" data-bar="4">
+  <button class="btn btn-primary chk" disabled>Verifică răspunsurile</button>
+  <button class="btn btn-ghost rty hidden">Încearcă din nou</button>
+  <span class="msg"></span><span class="score hidden"></span>
+ </div>
+</section>
+
+<script>
+var PASS_PERCENT=50;
+var IT=[[["1", ["Andreas hat im Internet eine Jacke probiert.", "→", {"k": ["bestellt"], "c": "lg"}], true, ""], ["2", ["Jana hat ihm die Jacke ausgesehen.", "→", {"k": ["empfohlen"], "c": "lg"}], false, "«Jana hat ihm die Jacke <b>empfohlen</b>» = i-a recomandat jacheta. «empfehlen»: prefixul <b>emp-</b> e inseparabil → <b>fără ge-</b> (empfohlen). «ausgesehen» (de la «aussehen» = a arăta) nu se potrivește cu «ihm die Jacke»."], ["3", ["Er hat die Jacke auch gleich online zurückgeschickt.", "→", {"k": ["bezahlt"], "c": "lg"}], false, "«Er hat die Jacke auch gleich online <b>bezahlt</b>.» «bezahlen»: prefixul <b>be-</b> e inseparabil → fără ge-: bezahlt. («zurückgeschickt» vine mai târziu în poveste, la 7.)"], ["4", ["Heute ist das Paket mit der Jacke empfohlen.", "→", {"k": ["angekommen"], "c": "lg"}], false, "«Heute ist das Paket … <b>angekommen</b>.» «ankommen» e separabil (<b>an</b>-kommen) → participiul: an + <b>ge</b> + kommen = angekommen; cu <b>sein</b> (ist), pentru că e mișcare/ajungere."], ["5", ["Andreas hat die Jacke auch gleich angekommen.", "→", {"k": ["probiert", "anprobiert"], "c": "lg"}], false, "«Andreas hat die Jacke auch gleich <b>probiert</b>» (sau anprobiert). Verbele în <b>-ieren</b> (probieren, anprobieren) formează participiul <b>fără ge-</b>: probiert / an·probiert."], ["6", ["Im Internet hat die Jacke toll umgetauscht.", "→", {"k": ["ausgesehen"], "c": "lg"}], false, "«Im Internet hat die Jacke toll <b>ausgesehen</b>.» «aussehen» (a arăta) e separabil: aus + <b>ge</b> + sehen = ausgesehen."], ["7", ["Aber sie war zu groß, er hat sie bestellt.", "→", {"k": ["zurückgeschickt"], "c": "lg"}], false, "«Aber sie war zu groß, er hat sie <b>zurückgeschickt</b>.» «zurückschicken» e separabil: zurück + <b>ge</b> + schickt = zurückgeschickt."], ["8", ["Er war auf der Post und hat sie bezahlt.", "→", {"k": ["umgetauscht"], "c": "lg"}], false, "«Er war auf der Post und hat sie <b>umgetauscht</b>.» «umtauschen» e separabil: um + <b>ge</b> + tauscht = umgetauscht."]],[["1", ["Wer hat so laut gerufen?", "(anrufen)", "→", "Wen hast du gerade", {"k": ["angerufen"], "c": "md"}, "?"], true, ""], ["2", ["Haben Sie den Film gesehen?", "(ansehen)", "→", "Ja, ich habe ihn gestern", {"k": ["angesehen"], "c": "md"}, "."], false, "«ansehen» e separabil: an + <b>ge</b> + sehen = <b>angesehen</b> (ge- între prefix și rădăcină)."], ["3", ["Wohin seid ihr gefahren?", "(wegfahren)", "→", "Wir sind dieses Wochenende nicht", {"k": ["weggefahren"], "c": "md"}, "."], false, "«wegfahren» e separabil: weg + <b>ge</b> + fahren = <b>weggefahren</b>; cu <b>sein</b> (mișcare)."], ["4", ["Wann sind Sie gekommen?", "(ankommen)", "→", "Ich bin gestern Abend", {"k": ["angekommen"], "c": "md"}, "."], false, "«ankommen»: an + <b>ge</b> + kommen = <b>angekommen</b>; cu sein."], ["5", ["Eva ist nach Hause gegangen.", "(weggehen)", "→", "Sie ist am Abend", {"k": ["weggegangen"], "c": "md"}, "."], false, "«weggehen»: weg + <b>ge</b> + gangen = <b>weggegangen</b>; cu sein."], ["6", ["Peter hat im Zug gestanden.", "(aufstehen)", "→", "Heute Morgen ist er früh", {"k": ["aufgestanden"], "c": "md"}, "."], false, "«aufstehen»: auf + <b>ge</b> + standen = <b>aufgestanden</b>; cu sein (schimbare de poziție)."]],[["1", ["Können Sie das bitte wiederholen? Ich", {"k": ["habe"], "c": "sm"}, "es nicht", {"k": ["verstanden"], "c": "lg"}, "."], true, ""], ["2", ["Schmeckt das gut? Ja, sehr! Der Kellner", {"k": ["hat"], "c": "sm"}, "mir das", {"k": ["empfohlen"], "c": "lg"}, "."], false, "Auxiliar: <b>haben</b> (er = hat). «empfehlen»: <b>emp-</b> inseparabil → fără ge-: emp + foh + len = <b>empfohlen</b>."], ["3", ["Wir haben eine Wohnung! Heute morgen", {"k": ["haben"], "c": "sm"}, "wir den Vertrag", {"k": ["unterschrieben"], "c": "lg"}, "."], false, "Auxiliar: <b>haben</b> (wir = haben). «unterschreiben»: <b>unter-</b> inseparabil aici → fără ge-: un + ter + schrie + ben = <b>unterschrieben</b>."], ["4", ["In meinem Job als Promoter", {"k": ["habe"], "c": "sm"}, "ich neue Kunden", {"k": ["gewonnen"], "c": "lg"}, "."], false, "Auxiliar: <b>haben</b> (ich = habe). «gewinnen» → participiu neregulat: ge + won + nen = <b>gewonnen</b>."], ["5", ["Der Job als Nikolaus", {"k": ["hat"], "c": "sm"}, "Max sehr gut", {"k": ["gefallen"], "c": "lg"}, "."], false, "Auxiliar: <b>haben</b> (der Job = hat). «gefallen» are deja prefixul <b>ge-</b>, deci participiul rămâne <b>gefallen</b> (ge + fal + len)."], ["6", ["Heute habe ich frei und lang geschlafen. Der Tag", {"k": ["hat"], "c": "sm"}, "wirklich gut", {"k": ["begonnen"], "c": "lg"}, "."], false, "Auxiliar: <b>haben</b> (der Tag = hat). «beginnen»: <b>be-</b> inseparabil → fără ge-: be + gon + nen = <b>begonnen</b>."]],[["1", ["→", {"k": ["habe ich"], "c": "md"}], true, ""], ["2", ["→", {"k": ["probiert"], "c": "md"}], false, "«probieren» se termină în <b>-ieren</b> → participiul <b>fără ge-</b>: <b>probiert</b> (nu «geprobiert»). Auxiliar: «Ich habe sie … probiert»."], ["3", ["→", {"k": ["habe"], "c": "md"}], false, "«Gestern <b>habe</b> ich …»: cu «ich» auxiliarul e <b>habe</b> (nu «hat»: hat = er/sie/es)."], ["4", ["→", {"k": ["besucht"], "c": "md"}], false, "«besuchen» → participiul: <b>besucht</b> (be- inseparabil, fără ge-). La Perfekt participiul stă la <b>sfârșit</b>, nu la infinitiv: «Ich habe Mira besucht»."], ["5", ["→", {"k": ["bin"], "c": "md"}], false, "«Heute <b>bin</b> ich gleich zum Geschäft gegangen.» «gehen» = mișcare → Perfekt cu <b>sein</b>: ich bin gegangen."]]],SG=[["Café Maurer", "Täglich offen von 7.00–18.00 Uhr<br>Samstag und Sonntag bis 16.00 Uhr.", "D", true, "La Café Maurer: «Samstag und Sonntag bis 16.00 Uhr» = <b>D</b> «Am Wochenende schließen wir schon um vier» (exemplu)."], ["Fessler – Obst und Gemüse", "Geöffnet Montag bis Samstag von 9.00–19.00 Uhr.", "A", false, "«Montag bis Samstag, 9.00–19.00» = în fiecare zi de la nouă la șapte seara, dar <b>nu duminica</b> → <b>A</b>."], ["Restaurant Happ", "Am Do, 29. Juli ist unser Restaurant geschlossen.", "C", false, "«Am Do, 29. Juli … geschlossen» = închis doar <b>în această joi</b>, altfel e deschis → <b>C</b>."], ["Bäckerei Resch", "Wir öffnen unsere Bäckerei auch am Sonntag von 7–11 Uhr.", "E", false, "«auch am Sonntag von 7–11 Uhr» = pâine proaspătă și duminica, <b>doar dimineața</b> (Vormittag) → <b>E</b>."], ["Metzgerei Schelling", "Liebe Kunden! Wir schließen in dieser Woche täglich um 12.00 Uhr.", "B", false, "«täglich um 12.00 Uhr» schließen = închidem la <b>prânz</b>; magazinul e deschis doar dimineața → <b>B</b>."]];
+var scorm=(function(){var api=null,active=false;
+ function find(w){var n=0;while(w&&n<10){try{if(w.API)return w.API;}catch(e){}if(w.parent&&w.parent!==w){w=w.parent;n++;}else break;}return null;}
+ function init(){api=find(window);if(!api){try{if(window.opener)api=find(window.opener);}catch(e){}}
+  if(api){try{active=String(api.LMSInitialize(""))==="true";if(active){var st=api.LMSGetValue("cmi.core.lesson_status");if(st==="not attempted"||st==="")api.LMSSetValue("cmi.core.lesson_status","incomplete");api.LMSCommit("");}}catch(e){active=false;}}}
+ function report(c,t){if(!active)return;var p=Math.round(c/t*100);try{api.LMSSetValue("cmi.core.score.min","0");api.LMSSetValue("cmi.core.score.max","100");api.LMSSetValue("cmi.core.score.raw",String(p));api.LMSSetValue("cmi.core.lesson_status",p>=PASS_PERCENT?"passed":"failed");api.LMSCommit("");}catch(e){}}
+ function finish(){if(!active)return;try{api.LMSFinish("");}catch(e){}active=false;}
+ return{init:init,report:report,finish:finish};})();
+
+
+
+
+
+
+
+
+
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function normS(s){return String(s).toLowerCase().replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss").replace(/[.,!?;:"„“]/g,"").replace(/\s+/g," ").trim();}
+function ex(ok,txt){return '<div class="expl'+(ok?' ok':'')+'"><b class="t">'+(ok?'Corect':'Greșit')+'</b>'+txt+'</div>';}
+var nGaps=IT.map(function(L){var n=0;L.forEach(function(it){if(!it[2])it[1].forEach(function(s){if(typeof s!=="string")n++;});});return n;});
+var EX=[0,1,2,3].map(function(k){return {res:null,total:nGaps[k]};});EX.push({res:null,total:SG.filter(function(s){return !s[3];}).length});
+var LS=SG.map(function(s){return s[3]?s[2]:null;});
+IT.forEach(function(L,k){$("c"+k).innerHTML=L.map(function(it){var h='<div class="q" data-n="'+it[0]+'"><div class="row"><span class="sn">'+it[0]+'.</span>';
+ it[1].forEach(function(s){if(typeof s==="string")h+='<span>'+esc(s)+'</span>';else h+='<span class="nw"><input type="text" class="ti '+s.c+(it[2]?' exi':'')+'" data-key="'+esc(s.k[0])+'" '+(it[2]?'value="'+esc(s.k[0])+'" disabled':'')+' data-alt="'+esc(s.k.join("|"))+'" autocomplete="off" autocapitalize="off" spellcheck="false"></span>';});
+ return h+(it[2]?'<span class="sub">(exemplu)</span>':'')+'</div><div class="fb"></div></div>';}).join("");
+ $("c"+k).addEventListener("input",function(){upd(k);});});
+$("c4").innerHTML=SG.map(function(s,i){return '<div class="sg'+(s[3]?' exs':'')+'" data-i="'+i+'"><div class="tt">'+esc(s[0])+(s[3]?' <span class="sub">(exemplu: D)</span>':'')+'</div><div class="ss">'+s[1]+'</div>'+(s[3]?'':['A','B','C','D','E'].map(function(L){return '<button type="button" class="ch" data-l="'+L+'">'+L+'</button>';}).join(""))+'<div class="fb"></div></div>';}).join("");
+$("c4").addEventListener("click",function(e){var b=e.target.closest(".ch");if(!b||b.disabled||EX[4].res!==null)return;var i=+b.closest(".sg").dataset.i;LS[i]=b.dataset.l;b.closest(".sg").querySelectorAll(".ch").forEach(function(x){x.classList.toggle("on",x.dataset.l===LS[i]);});upd(4);});
+function bar(k){return document.querySelector('.bar[data-bar="'+k+'"]');}
+function answered(k){if(k===4)return LS.filter(function(x,i){return x&&!SG[i][3];}).length;var n=0;document.querySelectorAll("#c"+k+" input.ti:not(.exi)").forEach(function(i){if(i.value.trim())n++;});return n;}
+function upd(k){if(EX[k].res!==null)return;var b=bar(k),n=answered(k),t=EX[k].total;b.querySelector(".chk").disabled=n<t;b.querySelector(".msg").textContent=n<t?"Ai completat "+n+" din "+t+".":"Gata! Apasă „Verifică răspunsurile”.";}
+function updTotal(){var c=0,t=0,any=false;EX.forEach(function(e,k){document.querySelector('.tab[data-ex="'+k+'"]').classList.toggle("done",e.res!==null);if(e.res!==null){c+=e.res;t+=e.total;any=true;}});$("total").textContent=any?"Gesamt: "+c+" / "+t:"";if(any)scorm.report(c,t);}
+function check(k){var c=0;
+ if(k<4){document.querySelectorAll("#c"+k+" .q").forEach(function(q,qi){var it=IT[k][qi];if(it[2])return;var all=true;
+  q.querySelectorAll("input.ti").forEach(function(inp){var v=normS(inp.value),ok=inp.dataset.alt.split("|").some(function(a){return normS(a)===v;});if(ok)c++;else all=false;inp.disabled=true;inp.classList.add(ok?"ok":"no");if(!ok)inp.parentNode.insertAdjacentHTML("beforeend",'<span class="tag">→ '+esc(inp.dataset.key)+'</span>');});
+  q.querySelector(".fb").innerHTML=ex(all,it[3]||"");});}
+ else{document.querySelectorAll("#c4 .sg").forEach(function(r){var i=+r.dataset.i,s=SG[i];if(s[3]){r.querySelector(".fb").innerHTML=ex(true,s[4]);return;}var ok=LS[i]===s[2];if(ok)c++;r.querySelectorAll(".ch").forEach(function(b){b.disabled=true;b.classList.remove("on");if(b.dataset.l===LS[i]&&ok)b.classList.add("right");else if(b.dataset.l===LS[i])b.classList.add("wrong");else if(b.dataset.l===s[2])b.classList.add("missed");});r.querySelector(".fb").innerHTML=ex(ok,(ok?'':'Corect: <b>'+s[2]+'</b>.<br>')+s[4]);});}
+ EX[k].res=c;var t=EX[k].total,pc=Math.round(c/t*100),b=bar(k),s=b.querySelector(".score");
+ s.textContent="Rezultat: "+c+" / "+t+" ("+pc+"%)";s.className="score "+(pc>=80?"good":pc>=PASS_PERCENT?"mid":"low");
+ b.querySelector(".msg").classList.add("hidden");b.querySelector(".chk").classList.add("hidden");b.querySelector(".rty").classList.remove("hidden");updTotal();}
+function retry(k){EX[k].res=null;
+ if(k<4){document.querySelectorAll("#c"+k+" input.ti:not(.exi)").forEach(function(i){i.disabled=false;i.value="";i.classList.remove("ok","no");});document.querySelectorAll("#c"+k+" .tag").forEach(function(t){t.parentNode.removeChild(t);});}
+ else{LS=SG.map(function(s){return s[3]?s[2]:null;});document.querySelectorAll("#c4 .ch").forEach(function(b){b.disabled=false;b.className="ch";});}
+ document.querySelectorAll("#c"+k+" .fb").forEach(function(f){f.innerHTML="";});
+ var b=bar(k);b.querySelector(".score").className="score hidden";b.querySelector(".msg").classList.remove("hidden");b.querySelector(".chk").classList.remove("hidden");b.querySelector(".rty").classList.add("hidden");upd(k);updTotal();}
+EX.forEach(function(_,k){var b=bar(k);b.querySelector(".chk").addEventListener("click",function(){check(k);});b.querySelector(".rty").addEventListener("click",function(){retry(k);});});
+document.querySelectorAll(".tab").forEach(function(t){t.addEventListener("click",function(){document.querySelectorAll(".tab").forEach(function(x){x.classList.toggle("on",x===t);});document.querySelectorAll("section.ex").forEach(function(s,i){s.classList.toggle("on",i===+t.dataset.ex);});window.scrollTo(0,0);});});
+EX.forEach(function(_,k){upd(k);});
+scorm.init();window.addEventListener("pagehide",scorm.finish);
+</script></body></html>
